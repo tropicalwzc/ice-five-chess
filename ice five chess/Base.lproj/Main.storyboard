@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="7Fy-2j-02I">
+    <device id="retina4_0" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Opmenu-->
+        <scene sceneID="yT7-nA-NWp">
+            <objects>
+                <viewController id="J5s-g6-zmd" customClass="opmenu" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="NXU-jI-rEV">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="wnj-VY-ifo"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="dAI-pa-rzI"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Dnj-CN-urr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-924" y="33"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="xyC-O9-ugY">
+            <objects>
+                <navigationController id="7Fy-2j-02I" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="KGC-No-bzi">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="J5s-g6-zmd" kind="relationship" relationship="rootViewController" id="aOw-ld-mZG"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rkR-wc-OJw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-698" y="-697"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="6FN-u8-aff">
+            <objects>
+                <navigationController storyboardIdentifier="iphoneview" id="X1o-3N-WyZ" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Rax-ZK-pL1">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="toC-TL-fcO"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="YlA-DU-iS0" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="143" y="-711"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController storyboardIdentifier="iphoneviewreal" useStoryboardIdentifierAsRestorationIdentifier="YES" id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5xD-gQ-39w">
+                                <rect key="frame" x="0.0" y="4" width="320" height="604"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ef6-9T-BKM">
+                                <rect key="frame" x="0.0" y="503" width="320" height="65"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="65" id="tmB-yJ-Wjz"/>
+                                </constraints>
+                                <items>
+                                    <barButtonItem title="Item" image="icons8-undo" id="XyL-1h-wbm">
+                                        <connections>
+                                            <action selector="undo_act:" destination="BYZ-38-t0r" id="Nen-nj-jMf"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="6eQ-qr-FIO"/>
+                                    <barButtonItem style="plain" id="wjl-RO-x7e">
+                                        <segmentedControl key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="5D8-WM-Ocr">
+                                            <rect key="frame" x="79.5" y="16" width="161" height="33"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <segments>
+                                                <segment title="⚫️"/>
+                                                <segment title="⚪️"/>
+                                            </segments>
+                                            <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <connections>
+                                                <action selector="player_chess_change:" destination="BYZ-38-t0r" eventType="valueChanged" id="bcE-cH-bFd"/>
+                                            </connections>
+                                        </segmentedControl>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="OXf-ua-kf8"/>
+                                    <barButtonItem title="Item" image="icons8-restart" id="tcO-1a-Z2F">
+                                        <connections>
+                                            <action selector="restart_act:" destination="BYZ-38-t0r" id="2kn-T6-6Mb"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3RZ-TG-uPe">
+                                <rect key="frame" x="0.0" y="44" width="320" height="44"/>
+                                <items>
+                                    <barButtonItem style="plain" id="ST7-G0-mi6">
+                                        <segmentedControl key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="68L-i0-0S1">
+                                            <rect key="frame" x="16" y="5.5" width="212" height="33"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <segments>
+                                                <segment title="⭕️"/>
+                                                <segment title="🚫"/>
+                                            </segments>
+                                            <connections>
+                                                <action selector="ban_choice_change:" destination="BYZ-38-t0r" eventType="valueChanged" id="Z25-rG-C7s"/>
+                                            </connections>
+                                        </segmentedControl>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="ngy-JW-Ah8"/>
+                                    <barButtonItem image="icons8-invisible" id="X5X-SS-Fbj">
+                                        <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <connections>
+                                            <action selector="helping_predict:" destination="BYZ-38-t0r" id="Dwd-Xc-h7R"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DUV-Wh-MjS">
+                                <rect key="frame" x="116" y="193" width="42" height="42"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" red="0.0" green="0.56031829119999998" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <connections>
+                                    <action selector="sure_here:" destination="BYZ-38-t0r" eventType="touchUpInside" id="C1p-Me-rMH"/>
+                                </connections>
+                            </button>
+                            <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0aT-aD-mtd">
+                                <rect key="frame" x="0.0" y="459" width="320" height="44"/>
+                                <items>
+                                    <barButtonItem style="plain" id="p77-xy-aTs">
+                                        <segmentedControl key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="ixI-KZ-1we">
+                                            <rect key="frame" x="16" y="5.5" width="288" height="33"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <segments>
+                                                <segment title="⭐️⭐️⭐️"/>
+                                                <segment title="⭐️⭐️"/>
+                                                <segment title="⭐️"/>
+                                            </segments>
+                                            <connections>
+                                                <action selector="diff_change:" destination="BYZ-38-t0r" eventType="valueChanged" id="BWb-0a-bHL"/>
+                                            </connections>
+                                        </segmentedControl>
+                                    </barButtonItem>
+                                </items>
+                                <color key="tintColor" red="0.0" green="0.56031829119999998" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </toolbar>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="M8f-wq-cUF">
+                                <rect key="frame" x="239" y="56" width="20" height="20"/>
+                            </activityIndicatorView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uBN-s2-2vu">
+                                <rect key="frame" x="0.0" y="72" width="320" height="47"/>
+                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="5xD-gQ-39w" secondAttribute="trailing" id="0z1-3y-Ppa"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="ef6-9T-BKM" secondAttribute="bottom" id="47N-h4-JO1"/>
+                            <constraint firstItem="0aT-aD-mtd" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="7to-zR-vKe"/>
+                            <constraint firstItem="M8f-wq-cUF" firstAttribute="top" secondItem="3RZ-TG-uPe" secondAttribute="bottom" constant="-32" id="A7K-sz-9Ts"/>
+                            <constraint firstItem="uBN-s2-2vu" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="AHV-Ki-uES"/>
+                            <constraint firstItem="3RZ-TG-uPe" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="BUt-FK-YdW"/>
+                            <constraint firstItem="ef6-9T-BKM" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="CIF-6c-G0X"/>
+                            <constraint firstItem="5xD-gQ-39w" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="-40" id="DE2-b5-Mdv"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="uBN-s2-2vu" secondAttribute="trailing" id="N8V-f6-QCL"/>
+                            <constraint firstItem="3RZ-TG-uPe" firstAttribute="leading" secondItem="ef6-9T-BKM" secondAttribute="leading" id="Vln-Fu-Xc7"/>
+                            <constraint firstItem="M8f-wq-cUF" firstAttribute="leading" secondItem="3RZ-TG-uPe" secondAttribute="trailing" constant="-81" id="dKS-NK-Pcc"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="5xD-gQ-39w" secondAttribute="bottom" constant="-40" id="dou-wl-RwQ"/>
+                            <constraint firstItem="uBN-s2-2vu" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="dtO-Zr-YNj"/>
+                            <constraint firstItem="uBN-s2-2vu" firstAttribute="top" secondItem="3RZ-TG-uPe" secondAttribute="bottom" constant="8" id="eEM-n9-M3j"/>
+                            <constraint firstItem="ef6-9T-BKM" firstAttribute="top" secondItem="0aT-aD-mtd" secondAttribute="bottom" id="iz1-0O-7l5"/>
+                            <constraint firstItem="3RZ-TG-uPe" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="n4y-gy-yyu"/>
+                            <constraint firstItem="ef6-9T-BKM" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="nRp-Y6-7I5"/>
+                            <constraint firstItem="0aT-aD-mtd" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="tQV-Bf-iBY"/>
+                            <constraint firstItem="5xD-gQ-39w" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="xg8-7j-gR0"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="IlC-x5-voP"/>
+                    <connections>
+                        <outlet property="ban_choice" destination="68L-i0-0S1" id="qUS-kv-ocx"/>
+                        <outlet property="banbar" destination="68L-i0-0S1" id="Rpd-nN-PcW"/>
+                        <outlet property="db_texter" destination="uBN-s2-2vu" id="uFa-Hm-cmN"/>
+                        <outlet property="difficulty_choice_seg" destination="ixI-KZ-1we" id="ewB-16-EWr"/>
+                        <outlet property="player_choice_seg" destination="5D8-WM-Ocr" id="Kdg-YU-4ol"/>
+                        <outlet property="player_sure_btn" destination="DUV-Wh-MjS" id="KuY-fV-Uhy"/>
+                        <outlet property="rotater" destination="M8f-wq-cUF" id="S3u-pA-skA"/>
+                        <outlet property="sudoback" destination="5xD-gQ-39w" id="aiE-4f-Yv8"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="63.75" y="32.74647887323944"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="icons8-invisible" width="33.666667938232422" height="33.666667938232422"/>
+        <image name="icons8-restart" width="33.666667938232422" height="33.666667938232422"/>
+        <image name="icons8-undo" width="33.666667938232422" height="33.666667938232422"/>
+    </resources>
+</document>

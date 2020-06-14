@@ -1,0 +1,667 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 51;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B41B33EB238BAF2C004C9908 /* opmenu.m in Sources */ = {isa = PBXBuildFile; fileRef = B41B33EA238BAF2C004C9908 /* opmenu.m */; };
+		B41B33ED238BB531004C9908 /* HDAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B41B33EC238BB531004C9908 /* HDAssets.xcassets */; };
+		B43C430A2286A38100871DD1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B43C43092286A38100871DD1 /* AppDelegate.m */; };
+		B43C430D2286A38100871DD1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B43C430C2286A38100871DD1 /* ViewController.m */; };
+		B43C43102286A38100871DD1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B43C430E2286A38100871DD1 /* Main.storyboard */; };
+		B43C43132286A38100871DD1 /* ice_five_chess.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B43C43112286A38100871DD1 /* ice_five_chess.xcdatamodeld */; };
+		B43C43182286A38200871DD1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B43C43162286A38200871DD1 /* LaunchScreen.storyboard */; };
+		B43C431B2286A38200871DD1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B43C431A2286A38200871DD1 /* main.m */; };
+		B43C43252286A38200871DD1 /* ice_five_chessTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B43C43242286A38200871DD1 /* ice_five_chessTests.m */; };
+		B43C43302286A38200871DD1 /* ice_five_chessUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B43C432F2286A38200871DD1 /* ice_five_chessUITests.m */; };
+		B43C433F2286A43700871DD1 /* doublethree.m in Sources */ = {isa = PBXBuildFile; fileRef = B43C433E2286A43700871DD1 /* doublethree.m */; };
+		B43C434A2288281600871DD1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B43C43492288281600871DD1 /* Assets.xcassets */; };
+		B43C4356228848B300871DD1 /* smallwindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B43C4354228848B300871DD1 /* smallwindow.m */; };
+		B498B87522965D3F003D25A4 /* numbers.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B498B87422965D3E003D25A4 /* numbers.xcassets */; };
+		B499A9562290272A000D59CD /* file.m in Sources */ = {isa = PBXBuildFile; fileRef = B499A9542290272A000D59CD /* file.m */; };
+		B4D021DF238B810700A48508 /* HDMain.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B4D021DD238B810700A48508 /* HDMain.storyboard */; };
+		B4D021E4238B81D800A48508 /* HDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B4D021E1238B81D700A48508 /* HDViewController.m */; };
+		B4D021E5238B81D800A48508 /* HDsmallwindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B4D021E3238B81D700A48508 /* HDsmallwindow.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B43C43212286A38200871DD1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B43C42FD2286A38100871DD1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B43C43042286A38100871DD1;
+			remoteInfo = "ice five chess";
+		};
+		B43C432C2286A38200871DD1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B43C42FD2286A38100871DD1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B43C43042286A38100871DD1;
+			remoteInfo = "ice five chess";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		B41B33E9238BAF2C004C9908 /* opmenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opmenu.h; sourceTree = "<group>"; };
+		B41B33EA238BAF2C004C9908 /* opmenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = opmenu.m; sourceTree = "<group>"; };
+		B41B33EC238BB531004C9908 /* HDAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = HDAssets.xcassets; sourceTree = "<group>"; };
+		B43C43052286A38100871DD1 /* ice five chess.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ice five chess.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B43C43082286A38100871DD1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		B43C43092286A38100871DD1 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		B43C430B2286A38100871DD1 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		B43C430C2286A38100871DD1 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		B43C430F2286A38100871DD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		B43C43122286A38100871DD1 /* ice_five_chess.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ice_five_chess.xcdatamodel; sourceTree = "<group>"; };
+		B43C43172286A38200871DD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		B43C43192286A38200871DD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B43C431A2286A38200871DD1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B43C43202286A38200871DD1 /* ice five chessTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ice five chessTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B43C43242286A38200871DD1 /* ice_five_chessTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ice_five_chessTests.m; sourceTree = "<group>"; };
+		B43C43262286A38200871DD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B43C432B2286A38200871DD1 /* ice five chessUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ice five chessUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B43C432F2286A38200871DD1 /* ice_five_chessUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ice_five_chessUITests.m; sourceTree = "<group>"; };
+		B43C43312286A38200871DD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B43C433D2286A42100871DD1 /* doublethree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = doublethree.h; sourceTree = "<group>"; };
+		B43C433E2286A43700871DD1 /* doublethree.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = doublethree.m; sourceTree = "<group>"; };
+		B43C43492288281600871DD1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B43C4354228848B300871DD1 /* smallwindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = smallwindow.m; sourceTree = "<group>"; };
+		B43C4355228848B300871DD1 /* smallwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smallwindow.h; sourceTree = "<group>"; };
+		B498B87422965D3E003D25A4 /* numbers.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = numbers.xcassets; sourceTree = "<group>"; };
+		B499A9542290272A000D59CD /* file.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = file.m; sourceTree = "<group>"; };
+		B499A9552290272A000D59CD /* file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = file.h; sourceTree = "<group>"; };
+		B4D021DE238B810700A48508 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/HDMain.storyboard; sourceTree = "<group>"; };
+		B4D021E0238B81D700A48508 /* HDViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HDViewController.h; sourceTree = "<group>"; };
+		B4D021E1238B81D700A48508 /* HDViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HDViewController.m; sourceTree = "<group>"; };
+		B4D021E2238B81D700A48508 /* HDsmallwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HDsmallwindow.h; sourceTree = "<group>"; };
+		B4D021E3238B81D700A48508 /* HDsmallwindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HDsmallwindow.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B43C43022286A38100871DD1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B43C431D2286A38200871DD1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B43C43282286A38200871DD1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B43C42FC2286A38100871DD1 = {
+			isa = PBXGroup;
+			children = (
+				B43C43072286A38100871DD1 /* ice five chess */,
+				B43C43232286A38200871DD1 /* ice five chessTests */,
+				B43C432E2286A38200871DD1 /* ice five chessUITests */,
+				B43C43062286A38100871DD1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B43C43062286A38100871DD1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B43C43052286A38100871DD1 /* ice five chess.app */,
+				B43C43202286A38200871DD1 /* ice five chessTests.xctest */,
+				B43C432B2286A38200871DD1 /* ice five chessUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B43C43072286A38100871DD1 /* ice five chess */ = {
+			isa = PBXGroup;
+			children = (
+				B41B33EC238BB531004C9908 /* HDAssets.xcassets */,
+				B43C43492288281600871DD1 /* Assets.xcassets */,
+				B498B87422965D3E003D25A4 /* numbers.xcassets */,
+				B41B33E9238BAF2C004C9908 /* opmenu.h */,
+				B41B33EA238BAF2C004C9908 /* opmenu.m */,
+				B43C43082286A38100871DD1 /* AppDelegate.h */,
+				B43C43092286A38100871DD1 /* AppDelegate.m */,
+				B43C430B2286A38100871DD1 /* ViewController.h */,
+				B43C430C2286A38100871DD1 /* ViewController.m */,
+				B4D021E0238B81D700A48508 /* HDViewController.h */,
+				B4D021E1238B81D700A48508 /* HDViewController.m */,
+				B4D021E2238B81D700A48508 /* HDsmallwindow.h */,
+				B4D021E3238B81D700A48508 /* HDsmallwindow.m */,
+				B43C430E2286A38100871DD1 /* Main.storyboard */,
+				B4D021DD238B810700A48508 /* HDMain.storyboard */,
+				B43C43162286A38200871DD1 /* LaunchScreen.storyboard */,
+				B43C43192286A38200871DD1 /* Info.plist */,
+				B43C431A2286A38200871DD1 /* main.m */,
+				B43C43112286A38100871DD1 /* ice_five_chess.xcdatamodeld */,
+				B43C433D2286A42100871DD1 /* doublethree.h */,
+				B43C433E2286A43700871DD1 /* doublethree.m */,
+				B43C4355228848B300871DD1 /* smallwindow.h */,
+				B43C4354228848B300871DD1 /* smallwindow.m */,
+				B499A9552290272A000D59CD /* file.h */,
+				B499A9542290272A000D59CD /* file.m */,
+			);
+			path = "ice five chess";
+			sourceTree = "<group>";
+		};
+		B43C43232286A38200871DD1 /* ice five chessTests */ = {
+			isa = PBXGroup;
+			children = (
+				B43C43242286A38200871DD1 /* ice_five_chessTests.m */,
+				B43C43262286A38200871DD1 /* Info.plist */,
+			);
+			path = "ice five chessTests";
+			sourceTree = "<group>";
+		};
+		B43C432E2286A38200871DD1 /* ice five chessUITests */ = {
+			isa = PBXGroup;
+			children = (
+				B43C432F2286A38200871DD1 /* ice_five_chessUITests.m */,
+				B43C43312286A38200871DD1 /* Info.plist */,
+			);
+			path = "ice five chessUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B43C43042286A38100871DD1 /* ice five chess */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B43C43342286A38200871DD1 /* Build configuration list for PBXNativeTarget "ice five chess" */;
+			buildPhases = (
+				B43C43012286A38100871DD1 /* Sources */,
+				B43C43022286A38100871DD1 /* Frameworks */,
+				B43C43032286A38100871DD1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "ice five chess";
+			productName = "ice five chess";
+			productReference = B43C43052286A38100871DD1 /* ice five chess.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B43C431F2286A38200871DD1 /* ice five chessTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B43C43372286A38200871DD1 /* Build configuration list for PBXNativeTarget "ice five chessTests" */;
+			buildPhases = (
+				B43C431C2286A38200871DD1 /* Sources */,
+				B43C431D2286A38200871DD1 /* Frameworks */,
+				B43C431E2286A38200871DD1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B43C43222286A38200871DD1 /* PBXTargetDependency */,
+			);
+			name = "ice five chessTests";
+			productName = "ice five chessTests";
+			productReference = B43C43202286A38200871DD1 /* ice five chessTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B43C432A2286A38200871DD1 /* ice five chessUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B43C433A2286A38200871DD1 /* Build configuration list for PBXNativeTarget "ice five chessUITests" */;
+			buildPhases = (
+				B43C43272286A38200871DD1 /* Sources */,
+				B43C43282286A38200871DD1 /* Frameworks */,
+				B43C43292286A38200871DD1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B43C432D2286A38200871DD1 /* PBXTargetDependency */,
+			);
+			name = "ice five chessUITests";
+			productName = "ice five chessUITests";
+			productReference = B43C432B2286A38200871DD1 /* ice five chessUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B43C42FD2286A38100871DD1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1020;
+				ORGANIZATIONNAME = "王子诚";
+				TargetAttributes = {
+					B43C43042286A38100871DD1 = {
+						CreatedOnToolsVersion = 10.2.1;
+					};
+					B43C431F2286A38200871DD1 = {
+						CreatedOnToolsVersion = 10.2.1;
+						TestTargetID = B43C43042286A38100871DD1;
+					};
+					B43C432A2286A38200871DD1 = {
+						CreatedOnToolsVersion = 10.2.1;
+						TestTargetID = B43C43042286A38100871DD1;
+					};
+				};
+			};
+			buildConfigurationList = B43C43002286A38100871DD1 /* Build configuration list for PBXProject "ice five chess" */;
+			compatibilityVersion = "Xcode 10.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B43C42FC2286A38100871DD1;
+			productRefGroup = B43C43062286A38100871DD1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B43C43042286A38100871DD1 /* ice five chess */,
+				B43C431F2286A38200871DD1 /* ice five chessTests */,
+				B43C432A2286A38200871DD1 /* ice five chessUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B43C43032286A38100871DD1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B498B87522965D3F003D25A4 /* numbers.xcassets in Resources */,
+				B43C43182286A38200871DD1 /* LaunchScreen.storyboard in Resources */,
+				B43C434A2288281600871DD1 /* Assets.xcassets in Resources */,
+				B43C43102286A38100871DD1 /* Main.storyboard in Resources */,
+				B41B33ED238BB531004C9908 /* HDAssets.xcassets in Resources */,
+				B4D021DF238B810700A48508 /* HDMain.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B43C431E2286A38200871DD1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B43C43292286A38200871DD1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B43C43012286A38100871DD1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4D021E4238B81D800A48508 /* HDViewController.m in Sources */,
+				B41B33EB238BAF2C004C9908 /* opmenu.m in Sources */,
+				B43C43132286A38100871DD1 /* ice_five_chess.xcdatamodeld in Sources */,
+				B499A9562290272A000D59CD /* file.m in Sources */,
+				B43C4356228848B300871DD1 /* smallwindow.m in Sources */,
+				B43C433F2286A43700871DD1 /* doublethree.m in Sources */,
+				B43C430D2286A38100871DD1 /* ViewController.m in Sources */,
+				B43C431B2286A38200871DD1 /* main.m in Sources */,
+				B43C430A2286A38100871DD1 /* AppDelegate.m in Sources */,
+				B4D021E5238B81D800A48508 /* HDsmallwindow.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B43C431C2286A38200871DD1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B43C43252286A38200871DD1 /* ice_five_chessTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B43C43272286A38200871DD1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B43C43302286A38200871DD1 /* ice_five_chessUITests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B43C43222286A38200871DD1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B43C43042286A38100871DD1 /* ice five chess */;
+			targetProxy = B43C43212286A38200871DD1 /* PBXContainerItemProxy */;
+		};
+		B43C432D2286A38200871DD1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B43C43042286A38100871DD1 /* ice five chess */;
+			targetProxy = B43C432C2286A38200871DD1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		B43C430E2286A38100871DD1 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B43C430F2286A38100871DD1 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		B43C43162286A38200871DD1 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B43C43172286A38200871DD1 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		B4D021DD238B810700A48508 /* HDMain.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B4D021DE238B810700A48508 /* Base */,
+			);
+			name = HDMain.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		B43C43322286A38200871DD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		B43C43332286A38200871DD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B43C43352286A38200871DD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = 39R699SCD9;
+				INFOPLIST_FILE = "ice five chess/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "Tropical-fish.ice-five-chess";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B43C43362286A38200871DD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = 39R699SCD9;
+				INFOPLIST_FILE = "ice five chess/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "Tropical-fish.ice-five-chess";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B43C43382286A38200871DD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 39R699SCD9;
+				INFOPLIST_FILE = "ice five chessTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Tropical-fish.ice-five-chessTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ice five chess.app/ice five chess";
+			};
+			name = Debug;
+		};
+		B43C43392286A38200871DD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 39R699SCD9;
+				INFOPLIST_FILE = "ice five chessTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Tropical-fish.ice-five-chessTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ice five chess.app/ice five chess";
+			};
+			name = Release;
+		};
+		B43C433B2286A38200871DD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 39R699SCD9;
+				INFOPLIST_FILE = "ice five chessUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Tropical-fish.ice-five-chessUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "ice five chess";
+			};
+			name = Debug;
+		};
+		B43C433C2286A38200871DD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 39R699SCD9;
+				INFOPLIST_FILE = "ice five chessUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Tropical-fish.ice-five-chessUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "ice five chess";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B43C43002286A38100871DD1 /* Build configuration list for PBXProject "ice five chess" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B43C43322286A38200871DD1 /* Debug */,
+				B43C43332286A38200871DD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B43C43342286A38200871DD1 /* Build configuration list for PBXNativeTarget "ice five chess" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B43C43352286A38200871DD1 /* Debug */,
+				B43C43362286A38200871DD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B43C43372286A38200871DD1 /* Build configuration list for PBXNativeTarget "ice five chessTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B43C43382286A38200871DD1 /* Debug */,
+				B43C43392286A38200871DD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B43C433A2286A38200871DD1 /* Build configuration list for PBXNativeTarget "ice five chessUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B43C433B2286A38200871DD1 /* Debug */,
+				B43C433C2286A38200871DD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		B43C43112286A38100871DD1 /* ice_five_chess.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				B43C43122286A38100871DD1 /* ice_five_chess.xcdatamodel */,
+			);
+			currentVersion = B43C43122286A38100871DD1 /* ice_five_chess.xcdatamodel */;
+			path = ice_five_chess.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = B43C42FD2286A38100871DD1 /* Project object */;
+}
