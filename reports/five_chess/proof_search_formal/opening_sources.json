@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "libraryVersion": "gomocup-2024-2025-freestyle15-v2",
+  "generatedAt": "2026-08-13T00:00:00+08:00",
+  "selectionPolicy": "Use bounded prefixes from the official expert-selected Freestyle-15 set only; no game outcomes or learned weights are used.",
+  "sources": [
+    {
+      "organization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "resultsUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "packageSha256": "f6b45f816fd9fe3f94ea751a48b1c3a7db0a52ea3f806b4def1f12464a43eab6",
+      "memberPath": "openings/openings_freestyle15.txt",
+      "retrievedAt": "2026-08-13",
+      "openingCount": 12,
+      "attribution": "Official Gomocup 2024 page names the opening selectors and states that twelve openings were prepared for every rule.",
+      "redistributionReview": "Approved for this repository as a small attributed extraction of factual board coordinates from an official public download; the source archive itself is not redistributed. Re-review before external redistribution."
+    },
+    {
+      "organization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "resultsUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "packageSha256": "91fc8cbefee5918994e028dd3f17143c5a46b948ed09b21c10ac0c1f1d4a8f09",
+      "memberPath": "openings/openings_freestyle15.txt",
+      "retrievedAt": "2026-08-13",
+      "openingCount": 12,
+      "attribution": "Official Gomocup 2025 page credits Alexander Bogatirev, Nguyễn Minh, Zijun Shu, Tao Tao, and Qichao Wang with selecting twelve openings for every rule.",
+      "redistributionReview": "Approved for this repository as a small attributed extraction of factual board coordinates from an official public download; the source archive itself is not redistributed. Re-review before external redistribution."
+    },
+    {
+      "organization": "Renju International Federation / RenjuNet",
+      "event": "Opening and game database discovery",
+      "year": 2026,
+      "rule": "Multiple",
+      "boardSize": 15,
+      "resultsUrl": "https://www.renju.net/",
+      "retrievedAt": "2026-08-13",
+      "redistributionReview": "Research-only: the site displays All rights reserved, so no raw RenjuNet game or opening record is bundled."
+    }
+  ]
+}

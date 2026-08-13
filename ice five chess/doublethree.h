@@ -9,8 +9,8 @@
 #ifndef doublethree_h
 #define doublethree_h
 
-#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#import "FiveChessAI.h"
 
 
 @interface doublethree : NSObject
@@ -41,6 +41,15 @@
     int last_pos[2];
     int last_color;
     NSString* now_tech;
+    FCAIProfile production_ai_profile;
+    FCAnalysisResult last_ai_analysis;
+    uint64_t ai_random_seed;
+    uint64_t ai_decision_sequence;
+    uint64_t legacy_random_state;
+    BOOL legacy_random_isolated;
+    int harsh_four_depth;
+    int harsh_double_three_depth;
+    int harsh_forcing_depth;
 }
 -(doublethree*)init;
 -(int)get_last_pos_return_color:(int[2])pos;
@@ -60,6 +69,8 @@
 -(int) doublethreetest_save:(int) x y:(int) y mode:(int) mode savers:(int[7]) saver border:(int) border;
 -(void) egg_analysisboard:(int) mode;
 -(void) harsh_analysisboard:(int) mode;
+-(void) optimized_analysisboard:(int) mode;
+-(void) four_star_analysisboard:(int) mode;
 -(void) easy_analysisboard:(int) mode;
 -(int) add_a_chess:(int) pl_x pl_y:(int) pl_y mode:(int) mode;
 -(void)emoji_techer:(double)sc;
@@ -87,6 +98,12 @@
 -(void) update_border;
 -(void) clear_all_data;
 -(NSString*)get_now_tech;
+-(void)set_ai_random_seed:(uint64_t)seed;
+-(void)set_legacy_random_seed:(uint64_t)seed;
+-(void)enable_optimized_path_depths;
+-(void)set_proof_guided_ai_enabled:(BOOL)enabled opening_book:(BOOL)openingBook;
+-(NSDictionary*)last_ai_analysis_summary;
+-(NSString*)production_ai_profile_snapshot;
 
 @end
 

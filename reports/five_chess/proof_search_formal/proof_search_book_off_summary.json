@@ -1,0 +1,99 @@
+{
+  "results": {
+    "newWhite": {
+      "games": 100,
+      "wins": 52,
+      "draws": 0,
+      "losses": 48,
+      "points": 52.0,
+      "scoreRate": 0.52,
+      "wilson95": [
+        0.4231657776522397,
+        0.615354482419481
+      ]
+    },
+    "legacyWhiteOpponent": {
+      "games": 100,
+      "wins": 32,
+      "draws": 1,
+      "losses": 67,
+      "points": 32.5,
+      "scoreRate": 0.325,
+      "wilson95": [
+        0.24115576012044787,
+        0.4217919642519971
+      ]
+    },
+    "newBlack": {
+      "games": 100,
+      "wins": 67,
+      "draws": 1,
+      "losses": 32,
+      "points": 67.5,
+      "scoreRate": 0.675,
+      "wilson95": [
+        0.578208035748003,
+        0.7588442398795522
+      ]
+    },
+    "overall": {
+      "games": 200,
+      "wins": 119,
+      "draws": 1,
+      "losses": 80,
+      "points": 119.5,
+      "scoreRate": 0.5975,
+      "wilson95": [
+        0.5283160193687717,
+        0.6630091419876614
+      ]
+    },
+    "legacySelfPlayControlWhite": {
+      "games": 100,
+      "wins": 52,
+      "draws": 0,
+      "losses": 48,
+      "points": 52.0,
+      "scoreRate": 0.52,
+      "wilson95": [
+        0.4231657776522397,
+        0.615354482419481
+      ]
+    }
+  },
+  "whiteDeltaVsLegacyOpponent": 0.195,
+  "classification": "demonstrated stronger",
+  "telemetry": {
+    "moves": 2705,
+    "latencyMs": {
+      "p50": 190.788,
+      "p95": 460.98479999999995,
+      "max": 1346.652,
+      "mean": 195.6754865064695
+    },
+    "defaultSources": {
+      "0": 0,
+      "1": 2705,
+      "2": 0
+    },
+    "overrideReasons": {
+      "0": 2139,
+      "1": 119,
+      "2": 172,
+      "3": 134,
+      "4": 141,
+      "5": 0
+    },
+    "bookHits": 0,
+    "proofStatus": {
+      "0": 1286,
+      "1": 612,
+      "2": 807
+    },
+    "proofNodes": 59947,
+    "verifiedCertificates": 612,
+    "budgetExhaustions": 995
+  },
+  "rawFile": "proof_search_book_off_raw.json",
+  "rawSha256": "eeeecd9100cc681904ae06d9deee77a0eb09f5db1d5845a35317a4a17e979c32"
+}

@@ -1,0 +1,4183 @@
+{
+  "schemaVersion": 1,
+  "seedDomain": "proof-final-proof-v2",
+  "masterSeed": "0xc0dec0de20260813",
+  "identityCount": 100,
+  "uniqueCanonicalIdentityCount": 100,
+  "excludedDiagnosticCanonicalIds": [
+    "236fbb649c7e4093dc49",
+    "6ff5fb580606ee170659",
+    "759a17ac41dedfaaebb2",
+    "8e57142149964561bcd2",
+    "8efd0e936429e37a7a97",
+    "a31de7b121fe4725f864",
+    "b271caf6f7ae9d59da87",
+    "cd629014e43f04f18dd8",
+    "d5c050728d3132bebf2e",
+    "efce8d266e30eb2141af",
+    "f8db75c0c241479ab5e6",
+    "fd6fae9caa050fb4c2bf"
+  ],
+  "sourcePackages": [
+    {
+      "year": 2024,
+      "sha256": "f6b45f816fd9fe3f94ea751a48b1c3a7db0a52ea3f806b4def1f12464a43eab6",
+      "member": "openings/openings_freestyle15.txt"
+    },
+    {
+      "year": 2025,
+      "sha256": "91fc8cbefee5918994e028dd3f17143c5a46b948ed09b21c10ac0c1f1d4a8f09",
+      "member": "openings/openings_freestyle15.txt"
+    }
+  ],
+  "selection": "SHA-256 ordering of held-out canonical prefixes after diagnostic exclusion",
+  "entries": [
+    {
+      "openingId": 0,
+      "canonicalId": "6a0f08b8a5e772aa975d",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 6,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 1,
+      "canonicalId": "eb616d0d00e9a9095397",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -7,
+          -5
+        ],
+        [
+          -5,
+          -7
+        ],
+        [
+          -7,
+          -4
+        ],
+        [
+          -4,
+          -7
+        ],
+        [
+          -7,
+          -3
+        ],
+        [
+          -3,
+          -7
+        ],
+        [
+          -2,
+          -7
+        ],
+        [
+          -7,
+          -2
+        ],
+        [
+          -1,
+          -7
+        ],
+        [
+          -7,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 0,
+          "prefixLength": 10
+        }
+      ]
+    },
+    {
+      "openingId": 2,
+      "canonicalId": "18aa42593b059beb0807",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          -7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 1,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 3,
+      "canonicalId": "7c3f1d38771e38550941",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          5,
+          7
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 5,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 4,
+      "canonicalId": "1122eda0abd5202248b2",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          7
+        ],
+        [
+          -4,
+          7
+        ],
+        [
+          -5,
+          6
+        ],
+        [
+          -4,
+          6
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 5,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 5,
+      "canonicalId": "e072cbb94ab32aed2b2f",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          5,
+          -2
+        ],
+        [
+          4,
+          -3
+        ],
+        [
+          2,
+          -4
+        ],
+        [
+          3,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 2,
+          "prefixLength": 6
+        }
+      ]
+    },
+    {
+      "openingId": 6,
+      "canonicalId": "b31138d108d30429ca07",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          7,
+          5
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          4,
+          7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 0,
+          "prefixLength": 4
+        },
+        {
+          "year": 2025,
+          "openingIndex": 4,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 7,
+      "canonicalId": "15b66fbe538d425b0fbe",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          0
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          0,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 8,
+      "canonicalId": "689446aafdf1fdd83e9c",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          0,
+          -3
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 14
+        }
+      ]
+    },
+    {
+      "openingId": 9,
+      "canonicalId": "d59c220a87e67cce82a0",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          0,
+          -3
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          0,
+          -4
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 22
+        }
+      ]
+    },
+    {
+      "openingId": 10,
+      "canonicalId": "8fd3d12007db15b862b1",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 3,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 11,
+      "canonicalId": "824bd9da8899a937db39",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -6,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          -4,
+          5
+        ],
+        [
+          -5,
+          4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 0,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 12,
+      "canonicalId": "cafa000f00db1b40e034",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -7,
+          2
+        ],
+        [
+          -7,
+          0
+        ],
+        [
+          -6,
+          7
+        ],
+        [
+          -6,
+          3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 10,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 13,
+      "canonicalId": "8843001112c6ad708093",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          -4
+        ],
+        [
+          1,
+          -5
+        ],
+        [
+          -6,
+          -6
+        ],
+        [
+          -3,
+          -3
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 1,
+          "prefixLength": 5
+        }
+      ]
+    },
+    {
+      "openingId": 14,
+      "canonicalId": "57a67495911aaeaa15d4",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          0,
+          3
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          -1
+        ],
+        [
+          3,
+          -1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          1,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 7
+        }
+      ]
+    },
+    {
+      "openingId": 15,
+      "canonicalId": "ff2c3bbc51abcb55137c",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -2,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 7,
+          "prefixLength": 1
+        },
+        {
+          "year": 2025,
+          "openingIndex": 8,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 16,
+      "canonicalId": "0b7f7574af594f07e0e6",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          3,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 9
+        }
+      ]
+    },
+    {
+      "openingId": 17,
+      "canonicalId": "e66fe6835eaabd86bff6",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          -7
+        ],
+        [
+          -4,
+          -7
+        ],
+        [
+          -5,
+          -6
+        ],
+        [
+          -4,
+          -6
+        ],
+        [
+          -5,
+          -5
+        ],
+        [
+          -4,
+          -5
+        ],
+        [
+          1,
+          -7
+        ],
+        [
+          0,
+          -7
+        ],
+        [
+          1,
+          -6
+        ],
+        [
+          0,
+          -6
+        ],
+        [
+          1,
+          -5
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 5,
+          "prefixLength": 11
+        }
+      ]
+    },
+    {
+      "openingId": 18,
+      "canonicalId": "80b9fa85179ae084506a",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          3,
+          -5
+        ],
+        [
+          2,
+          -5
+        ],
+        [
+          2,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 11,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 19,
+      "canonicalId": "25b27d61793684c490a5",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          7,
+          5
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          6,
+          5
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          7,
+          -1
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          6,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 5,
+          "prefixLength": 9
+        }
+      ]
+    },
+    {
+      "openingId": 20,
+      "canonicalId": "67fd4901f05e100031f3",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          1,
+          -6
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          5,
+          -4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 0,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 21,
+      "canonicalId": "78fa4fc13870c122061f",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -7,
+          -4
+        ],
+        [
+          -7,
+          -7
+        ],
+        [
+          -4,
+          -7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 1,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 22,
+      "canonicalId": "a345c3e0996f4b71338f",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 4,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 23,
+      "canonicalId": "f80d1e711dbcc2005b01",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 9,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 24,
+      "canonicalId": "d2fcfd642427ce49cede",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 4,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 25,
+      "canonicalId": "34197d77152ceb645571",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -2,
+          2
+        ],
+        [
+          -2,
+          3
+        ],
+        [
+          0,
+          3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 7,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 26,
+      "canonicalId": "cb59cc15b7c7041d59c0",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          3,
+          0
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          -1,
+          -4
+        ],
+        [
+          -1,
+          -3
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -2,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 15
+        }
+      ]
+    },
+    {
+      "openingId": 27,
+      "canonicalId": "273652e903a88e8a6a67",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          1,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 2,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 28,
+      "canonicalId": "912b59bcd544338c1670",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          3,
+          0
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          -1,
+          -4
+        ],
+        [
+          -1,
+          -3
+        ],
+        [
+          -1,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 6
+        }
+      ]
+    },
+    {
+      "openingId": 29,
+      "canonicalId": "5084f02406f1b18da7c8",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 9,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 30,
+      "canonicalId": "9d578612f6a8f8d56338",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          5,
+          -7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 0,
+          "prefixLength": 1
+        },
+        {
+          "year": 2025,
+          "openingIndex": 4,
+          "prefixLength": 1
+        },
+        {
+          "year": 2025,
+          "openingIndex": 5,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 31,
+      "canonicalId": "e991e69f2f9049744f11",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          4,
+          -3
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          -6
+        ],
+        [
+          3,
+          -3
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          2,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 1,
+          "prefixLength": 6
+        }
+      ]
+    },
+    {
+      "openingId": 32,
+      "canonicalId": "42501307ec42c46f867e",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          0,
+          3
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 21
+        }
+      ]
+    },
+    {
+      "openingId": 33,
+      "canonicalId": "f83ea814430eed8d3a85",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          -7
+        ],
+        [
+          -4,
+          -7
+        ],
+        [
+          -5,
+          -6
+        ],
+        [
+          -4,
+          -6
+        ],
+        [
+          -5,
+          -5
+        ],
+        [
+          -4,
+          -5
+        ],
+        [
+          1,
+          -7
+        ],
+        [
+          0,
+          -7
+        ],
+        [
+          1,
+          -6
+        ],
+        [
+          0,
+          -6
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 5,
+          "prefixLength": 10
+        }
+      ]
+    },
+    {
+      "openingId": 34,
+      "canonicalId": "9d86ea9857dec3e8257f",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 11,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 35,
+      "canonicalId": "3ed3aaf7742fdee82ad4",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 2,
+          "prefixLength": 2
+        },
+        {
+          "year": 2024,
+          "openingIndex": 3,
+          "prefixLength": 2
+        },
+        {
+          "year": 2024,
+          "openingIndex": 4,
+          "prefixLength": 2
+        },
+        {
+          "year": 2024,
+          "openingIndex": 5,
+          "prefixLength": 2
+        },
+        {
+          "year": 2024,
+          "openingIndex": 6,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 36,
+      "canonicalId": "25a9391ae7be80698599",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 3,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 37,
+      "canonicalId": "39eb0f8d01ef76e1eae0",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          3
+        ],
+        [
+          -5,
+          1
+        ],
+        [
+          -5,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 2,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 38,
+      "canonicalId": "5bd430f8aef68b80ceaa",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          0,
+          3
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          0,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 8
+        }
+      ]
+    },
+    {
+      "openingId": 39,
+      "canonicalId": "ece51eeb26982538a673",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          -2,
+          5
+        ],
+        [
+          -3,
+          4
+        ],
+        [
+          -4,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -1,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 2,
+          "prefixLength": 9
+        }
+      ]
+    },
+    {
+      "openingId": 40,
+      "canonicalId": "e3b8ae6cf658719aa404",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          4,
+          -4
+        ],
+        [
+          -1,
+          5
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 3,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 41,
+      "canonicalId": "0fc391cbbc85ffe948b4",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          2,
+          7
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          7,
+          6
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 10,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 42,
+      "canonicalId": "b818e876699e86dd61a3",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          3,
+          -4
+        ],
+        [
+          -1,
+          -5
+        ],
+        [
+          6,
+          -6
+        ],
+        [
+          3,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 1,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 43,
+      "canonicalId": "efb5e0fed671aed58825",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          4
+        ],
+        [
+          -1,
+          5
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 2,
+          "prefixLength": 7
+        }
+      ]
+    },
+    {
+      "openingId": 44,
+      "canonicalId": "911f624f343f529c5324",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          3,
+          0
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          -1,
+          -4
+        ],
+        [
+          -1,
+          -3
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -1,
+          -5
+        ],
+        [
+          1,
+          5
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 24
+        }
+      ]
+    },
+    {
+      "openingId": 45,
+      "canonicalId": "57c586507873bd1dc55a",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          4,
+          -4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 3,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 46,
+      "canonicalId": "3df39cb102ca64c9ca1b",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          5,
+          7
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          7,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 0,
+          "prefixLength": 7
+        },
+        {
+          "year": 2025,
+          "openingIndex": 4,
+          "prefixLength": 7
+        }
+      ]
+    },
+    {
+      "openingId": 47,
+      "canonicalId": "3cfb7c57403e5ac95c37",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -7,
+          2
+        ],
+        [
+          -7,
+          0
+        ],
+        [
+          -7,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 9,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 48,
+      "canonicalId": "d8d779ab36f7aaf06b80",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          4,
+          -4
+        ],
+        [
+          -1,
+          5
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          -1,
+          -4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 3,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 49,
+      "canonicalId": "ea7d17dc7578ff49ef75",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          5,
+          7
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          7,
+          2
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          0,
+          7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 0,
+          "prefixLength": 12
+        }
+      ]
+    },
+    {
+      "openingId": 50,
+      "canonicalId": "4d42640b00a348848567",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          3
+        ],
+        [
+          -5,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 11,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 51,
+      "canonicalId": "a6879a20f5e46bae6615",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          7,
+          -5
+        ],
+        [
+          5,
+          -7
+        ],
+        [
+          7,
+          -4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 0,
+          "prefixLength": 3
+        },
+        {
+          "year": 2025,
+          "openingIndex": 4,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 52,
+      "canonicalId": "2e72717eefa500e0c3a0",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          -7
+        ],
+        [
+          -7,
+          -5
+        ],
+        [
+          -4,
+          -7
+        ],
+        [
+          -7,
+          -4
+        ],
+        [
+          -3,
+          -7
+        ],
+        [
+          -7,
+          -3
+        ],
+        [
+          -7,
+          -2
+        ],
+        [
+          -2,
+          -7
+        ],
+        [
+          -7,
+          -1
+        ],
+        [
+          -1,
+          -7
+        ],
+        [
+          -7,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 0,
+          "prefixLength": 11
+        }
+      ]
+    },
+    {
+      "openingId": 53,
+      "canonicalId": "9d071c2c2984e10e6833",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 11,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 54,
+      "canonicalId": "6e52b5073d371f89fc7d",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 7,
+          "prefixLength": 2
+        },
+        {
+          "year": 2024,
+          "openingIndex": 8,
+          "prefixLength": 2
+        },
+        {
+          "year": 2024,
+          "openingIndex": 9,
+          "prefixLength": 2
+        },
+        {
+          "year": 2024,
+          "openingIndex": 10,
+          "prefixLength": 2
+        },
+        {
+          "year": 2024,
+          "openingIndex": 11,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 55,
+      "canonicalId": "adafd899c459daf1a11f",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          0,
+          -3
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 5
+        }
+      ]
+    },
+    {
+      "openingId": 56,
+      "canonicalId": "ef15ca509b8202112e09",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -7,
+          5
+        ],
+        [
+          -7,
+          4
+        ],
+        [
+          -6,
+          5
+        ],
+        [
+          -6,
+          4
+        ],
+        [
+          -5,
+          5
+        ],
+        [
+          -5,
+          4
+        ],
+        [
+          -7,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 5,
+          "prefixLength": 7
+        }
+      ]
+    },
+    {
+      "openingId": 57,
+      "canonicalId": "07b59df13763eba354f9",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          7
+        ],
+        [
+          -7,
+          5
+        ],
+        [
+          -4,
+          7
+        ],
+        [
+          -7,
+          4
+        ],
+        [
+          -3,
+          7
+        ],
+        [
+          -7,
+          3
+        ],
+        [
+          -7,
+          2
+        ],
+        [
+          -2,
+          7
+        ],
+        [
+          -7,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 0,
+          "prefixLength": 9
+        }
+      ]
+    },
+    {
+      "openingId": 58,
+      "canonicalId": "451dbd837c10bc3d437a",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          3
+        ],
+        [
+          -5,
+          1
+        ],
+        [
+          -5,
+          -2
+        ],
+        [
+          -4,
+          -3
+        ],
+        [
+          -2,
+          -4
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          -2,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 2,
+          "prefixLength": 8
+        }
+      ]
+    },
+    {
+      "openingId": 59,
+      "canonicalId": "8a944690cb43ba607676",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          7
+        ],
+        [
+          -7,
+          5
+        ],
+        [
+          -4,
+          7
+        ],
+        [
+          -7,
+          4
+        ],
+        [
+          -3,
+          7
+        ],
+        [
+          -7,
+          3
+        ],
+        [
+          -7,
+          2
+        ],
+        [
+          -2,
+          7
+        ],
+        [
+          -5,
+          5
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 4,
+          "prefixLength": 9
+        }
+      ]
+    },
+    {
+      "openingId": 60,
+      "canonicalId": "3c971034d062fb2b46ca",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 7,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 61,
+      "canonicalId": "5d3119e54382aa320b90",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          7,
+          5
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          7,
+          3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 0,
+          "prefixLength": 5
+        },
+        {
+          "year": 2025,
+          "openingIndex": 4,
+          "prefixLength": 5
+        }
+      ]
+    },
+    {
+      "openingId": 62,
+      "canonicalId": "04771faaad8fbfb60127",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          7,
+          -5
+        ],
+        [
+          5,
+          -7
+        ],
+        [
+          7,
+          -4
+        ],
+        [
+          4,
+          -7
+        ],
+        [
+          7,
+          -3
+        ],
+        [
+          3,
+          -7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 0,
+          "prefixLength": 6
+        },
+        {
+          "year": 2025,
+          "openingIndex": 4,
+          "prefixLength": 6
+        }
+      ]
+    },
+    {
+      "openingId": 63,
+      "canonicalId": "1e8054fbee2e491eec41",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          3,
+          -5
+        ],
+        [
+          2,
+          -5
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          3,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 11,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 64,
+      "canonicalId": "f6feb9b7de1482a4ed81",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          0,
+          3
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          -1
+        ],
+        [
+          3,
+          -1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -4
+        ],
+        [
+          5,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 23
+        }
+      ]
+    },
+    {
+      "openingId": 65,
+      "canonicalId": "73b8073a4a941546898c",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          5,
+          7
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          -1,
+          7
+        ],
+        [
+          0,
+          7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 5,
+          "prefixLength": 8
+        }
+      ]
+    },
+    {
+      "openingId": 66,
+      "canonicalId": "63e3019665309d557478",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          0,
+          3
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          -1
+        ],
+        [
+          3,
+          -1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          -1,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 18
+        }
+      ]
+    },
+    {
+      "openingId": 67,
+      "canonicalId": "2e97607c2db50699dc59",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 5,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 68,
+      "canonicalId": "67c637801375e94cbe9d",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 7,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 69,
+      "canonicalId": "1921cfc03517ad262d76",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -7,
+          -5
+        ],
+        [
+          -5,
+          -7
+        ],
+        [
+          -7,
+          -4
+        ],
+        [
+          -4,
+          -7
+        ],
+        [
+          -7,
+          -3
+        ],
+        [
+          -3,
+          -7
+        ],
+        [
+          -2,
+          -7
+        ],
+        [
+          -7,
+          -2
+        ],
+        [
+          -5,
+          -5
+        ],
+        [
+          -3,
+          -3
+        ],
+        [
+          -3,
+          -5
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 4,
+          "prefixLength": 11
+        }
+      ]
+    },
+    {
+      "openingId": 70,
+      "canonicalId": "4bb30f8a136f4d94fd9b",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -2,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 10,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 71,
+      "canonicalId": "bf48b1fec451987663cd",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          -1,
+          -4
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          -2,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 16
+        }
+      ]
+    },
+    {
+      "openingId": 72,
+      "canonicalId": "b8cc624f1a3102953d8f",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          0,
+          -3
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          4,
+          -1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          0,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 17
+        }
+      ]
+    },
+    {
+      "openingId": 73,
+      "canonicalId": "73c832d9ce166d0e7d3b",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 6,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 74,
+      "canonicalId": "1afec9f25b94079c71d7",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -7,
+          -2
+        ],
+        [
+          -7,
+          0
+        ],
+        [
+          -7,
+          2
+        ],
+        [
+          -6,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 9,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 75,
+      "canonicalId": "a13068a3794895ef06af",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          7,
+          -5
+        ],
+        [
+          5,
+          -7
+        ],
+        [
+          7,
+          -4
+        ],
+        [
+          4,
+          -7
+        ],
+        [
+          7,
+          -3
+        ],
+        [
+          3,
+          -7
+        ],
+        [
+          2,
+          -7
+        ],
+        [
+          7,
+          -2
+        ],
+        [
+          5,
+          -5
+        ],
+        [
+          3,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 4,
+          "prefixLength": 10
+        }
+      ]
+    },
+    {
+      "openingId": 76,
+      "canonicalId": "2fcb5dc1d911c72327e7",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -3,
+          -2
+        ],
+        [
+          0,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 8,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 77,
+      "canonicalId": "c7318631dda493898e0c",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -3
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          -1,
+          -4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 7,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 78,
+      "canonicalId": "769d74ca1729f921bc1a",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 8,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 79,
+      "canonicalId": "a9993372c6fe1aedfd7c",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -2,
+          7
+        ],
+        [
+          0,
+          7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 9,
+          "prefixLength": 2
+        },
+        {
+          "year": 2025,
+          "openingIndex": 10,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 80,
+      "canonicalId": "0b254ebc15a010404936",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          0,
+          3
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 11
+        }
+      ]
+    },
+    {
+      "openingId": 81,
+      "canonicalId": "4713d1e774355bf0c7b3",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          5,
+          7
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          7,
+          2
+        ],
+        [
+          2,
+          7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 0,
+          "prefixLength": 8
+        },
+        {
+          "year": 2025,
+          "openingIndex": 4,
+          "prefixLength": 8
+        }
+      ]
+    },
+    {
+      "openingId": 82,
+      "canonicalId": "bbfac89b6e2524b2322e",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          -4
+        ],
+        [
+          -1,
+          -5
+        ],
+        [
+          2,
+          -5
+        ],
+        [
+          3,
+          -4
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          1,
+          -3
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 2,
+          "prefixLength": 10
+        }
+      ]
+    },
+    {
+      "openingId": 83,
+      "canonicalId": "7ffa9b297bb1b2214cb5",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -7,
+          -5
+        ],
+        [
+          -7,
+          -4
+        ],
+        [
+          -6,
+          -5
+        ],
+        [
+          -6,
+          -4
+        ],
+        [
+          -5,
+          -5
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 5,
+          "prefixLength": 5
+        }
+      ]
+    },
+    {
+      "openingId": 84,
+      "canonicalId": "06d7a3dd42e4015b66d0",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          3,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 85,
+      "canonicalId": "4a49942cb2bbf1eb25b0",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          -1,
+          -4
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -3
+        ],
+        [
+          -4,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 20
+        }
+      ]
+    },
+    {
+      "openingId": 86,
+      "canonicalId": "6776076b41499f469097",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          -3
+        ],
+        [
+          -5,
+          -1
+        ],
+        [
+          -5,
+          2
+        ],
+        [
+          -4,
+          3
+        ],
+        [
+          -2,
+          4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 2,
+          "prefixLength": 5
+        }
+      ]
+    },
+    {
+      "openingId": 87,
+      "canonicalId": "a8ea63bbcbfc57ef2007",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -3,
+          -2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          -4,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 8,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 88,
+      "canonicalId": "b69849eed322d1991289",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          0
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          1,
+          -4
+        ],
+        [
+          1,
+          -3
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 10
+        }
+      ]
+    },
+    {
+      "openingId": 89,
+      "canonicalId": "79689d7f9d9bebc6c0f8",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          7
+        ],
+        [
+          -7,
+          7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 1,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 90,
+      "canonicalId": "54b26f1ce48df5c6c7e1",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          3,
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          -1,
+          4
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          1,
+          -4
+        ],
+        [
+          0,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 12
+        }
+      ]
+    },
+    {
+      "openingId": 91,
+      "canonicalId": "272c1a9e968cd3664162",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          0,
+          -3
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 92,
+      "canonicalId": "d1400087a6659345128f",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          -4
+        ],
+        [
+          1,
+          -5
+        ],
+        [
+          -6,
+          -6
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 1,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 93,
+      "canonicalId": "7334821429a99561be94",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 2,
+          "prefixLength": 1
+        },
+        {
+          "year": 2024,
+          "openingIndex": 3,
+          "prefixLength": 1
+        },
+        {
+          "year": 2024,
+          "openingIndex": 4,
+          "prefixLength": 1
+        },
+        {
+          "year": 2024,
+          "openingIndex": 5,
+          "prefixLength": 1
+        },
+        {
+          "year": 2024,
+          "openingIndex": 6,
+          "prefixLength": 1
+        },
+        {
+          "year": 2024,
+          "openingIndex": 7,
+          "prefixLength": 1
+        },
+        {
+          "year": 2024,
+          "openingIndex": 8,
+          "prefixLength": 1
+        },
+        {
+          "year": 2024,
+          "openingIndex": 9,
+          "prefixLength": 1
+        },
+        {
+          "year": 2024,
+          "openingIndex": 10,
+          "prefixLength": 1
+        },
+        {
+          "year": 2024,
+          "openingIndex": 11,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 94,
+      "canonicalId": "d30882608e4375659ea6",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -3,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 8,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 95,
+      "canonicalId": "f6c2d87fcfbf607af7b1",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          0,
+          -3
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 13
+        }
+      ]
+    },
+    {
+      "openingId": 96,
+      "canonicalId": "2c888ef2c8b31700512a",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          7,
+          5
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          6,
+          5
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 5,
+          "prefixLength": 6
+        }
+      ]
+    },
+    {
+      "openingId": 97,
+      "canonicalId": "6c7261b05ada47b94efd",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          4
+        ],
+        [
+          -1,
+          5
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 2,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 98,
+      "canonicalId": "c3f5243983f5fb04cd0a",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 10,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 99,
+      "canonicalId": "2815466bb9e795fc813d",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          4
+        ],
+        [
+          5,
+          -1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          5,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 3,
+          "prefixLength": 5
+        }
+      ]
+    }
+  ]
+}

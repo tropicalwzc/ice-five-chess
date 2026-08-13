@@ -8,6 +8,18 @@
 
 #import "ViewController.h"
 
+// Keep persisted values compatible with earlier releases:
+// 0 = legacy three-star, 1 = two-star, 2 = one-star, 3 = proof-guided four-star.
+static int fc_difficulty_for_segment(NSInteger segment)
+{
+    return segment >= 0 && segment < 4 ? ((int)segment + 3) % 4 : 0;
+}
+
+static NSInteger fc_segment_for_difficulty(int difficulty)
+{
+    return difficulty >= 0 && difficulty < 4 ? (difficulty + 1) % 4 : 1;
+}
+
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UISegmentedControl *player_choice_seg;
 @property (weak, nonatomic) IBOutlet UIButton *player_sure_btn;
@@ -34,6 +46,8 @@
     perheight=perwidth;
     focus_y=focus_x=0;
     player_chess_id=1;
+    player_prefer_difficulty=0;
+    _difficulty_choice_seg.selectedSegmentIndex=fc_segment_for_difficulty(player_prefer_difficulty);
     think_flag=0;
     teacher_on=0;
     ice_fiver=[[doublethree alloc] init];
@@ -213,7 +227,9 @@
         _player_choice_seg.selectedSegmentIndex=0;
     }
     player_prefer_difficulty=(int)pl_df.integerValue;
-    _difficulty_choice_seg.selectedSegmentIndex=player_prefer_difficulty;
+    if(player_prefer_difficulty<0||player_prefer_difficulty>3)
+        player_prefer_difficulty=0;
+    _difficulty_choice_seg.selectedSegmentIndex=fc_segment_for_difficulty(player_prefer_difficulty);
     
     if(_ban_choice.selectedSegmentIndex!=pl_ban.integerValue)
     {
@@ -511,6 +527,9 @@
             case 2:
                 [ice_fiver egg_analysisboard:-player_chess_id];
                 break;
+            case 3:
+                [ice_fiver four_star_analysisboard:-player_chess_id];
+                break;
             default:
                 [ice_fiver harsh_analysisboard:-player_chess_id];
                 break;
@@ -670,7 +689,7 @@
     [self restart_funct];
 }
 - (IBAction)diff_change:(UISegmentedControl *)sender {
-    player_prefer_difficulty=(int)[sender selectedSegmentIndex];
+    player_prefer_difficulty=fc_difficulty_for_segment(sender.selectedSegmentIndex);
 }
 -(void)change_chess_and_restart
 {

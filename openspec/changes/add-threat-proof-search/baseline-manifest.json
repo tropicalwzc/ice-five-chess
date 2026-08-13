@@ -1,0 +1,43 @@
+{
+  "capturedAt": "2026-08-13T00:00:00+08:00",
+  "repositoryCommit": "8f0436edfbb1228f2b3d7c0709a113e3ac434ac3",
+  "legacyThreeStar": {
+    "name": "legacy-three-star@5224020",
+    "sourceFile": "ice five chess/doublethree.m",
+    "workingSourceSha256": "eda298b7ad374d6f38668688bfbe7d7609575cf8547ad4c3bb01fddae3d86d55"
+  },
+  "currentProduction": {
+    "name": "three-star-production@2.2.0-legacy-hint-safe-gate",
+    "sourceFile": "ice five chess/FiveChessAI.c",
+    "workingSourceSha256": "eda760e333abdf0dc94e25c5c6bee32b8dae179b293dc5650898cb763cdceeaf",
+    "profile": {
+      "maxDepth": 3,
+      "quiescenceDepth": 3,
+      "fourDepth": 10,
+      "doubleThreeDepth": 10,
+      "forcingDepth": 12,
+      "candidateLimit": 12,
+      "nodeBudget": 14000,
+      "timeBudgetMs": 850,
+      "transpositionCapacity": 65536,
+      "attackWeight": 100,
+      "defenseWeight": 112,
+      "nearBestWindow": 60,
+      "randomTemperature": 45.0,
+      "maxRandomCandidates": 2
+    }
+  },
+  "rules": {
+    "boardSize": 15,
+    "formalForbiddenBlack": false,
+    "optionalForbiddenBlackSupported": true,
+    "maxMoves": 120
+  },
+  "previousFinalV2": {
+    "report": "reports/five_chess/final-v2-three-star-production-vs-legacy_20260813T094635Z.md",
+    "reportSha256": "364fbc786bd6d078205e76858d81418091787c8ec30c3434991284fa299644a5",
+    "raw": "reports/five_chess/final-v2-three-star-production-vs-legacy_20260813T094635Z_raw.json",
+    "rawSha256": "ad8b6af5476679cd15d5b51b4e6516ba68a32ee725873456760a2ecb573d7193"
+  },
+  "reproduce": "BENCHMARK_PATH=$(tools/build_five_chess_benchmark.sh) && \"$BENCHMARK_PATH\" --profile production --suite final --random-mode user --seed 0xf1ce5eed20260814 --opening-start 0 --opening-count 100 --max-moves 120 --forbidden-black 0 --output final-v2.jsonl"
+}

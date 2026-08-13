@@ -1,0 +1,20 @@
+{
+  "name": "legacy-three-star",
+  "version": "5224020-2020-06-14",
+  "repositoryCommitContainingBaseline": "8f0436edfbb1228f2b3d7c0709a113e3ac434ac3",
+  "sourceCommit": "5224020",
+  "sourcePath": "ice five chess/doublethree.m",
+  "sourceSha256": "8cd57ccf80a82240594d08f3956d1bdb4853fe52ca09fd4a9d5ab5ede4e31194",
+  "entryPoint": "-[doublethree harsh_analysisboard:]",
+  "weights": [1400, 2000, 1000, 8500, 6000, 8000, 30000, 28500, 6000, 2000, 1000, 1200],
+  "blackWeight11": 1000,
+  "pathDepths": {
+    "advanceDoubleThree": 5,
+    "advanceFour": 5,
+    "harshDoubleThree": 8,
+    "harshFour": 8,
+    "harshSuperFastAttack": 10
+  },
+  "randomBehavior": "C rand() score noise and defense-order selection; benchmark resets srand() from the per-move derived seed before each legacy decision",
+  "freezePolicy": "The legacy harsh_analysisboard implementation remains callable and is not used by the production three-star UI after this change. Correctness fixes are implemented in FiveChessAI instead."
+}

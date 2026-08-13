@@ -1,0 +1,1944 @@
+{
+  "schemaVersion": 2,
+  "libraryVersion": "gomocup-2024-2025-freestyle15-v2",
+  "sourcePackages": [
+    {
+      "year": 2024,
+      "resultsUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "packageSha256": "f6b45f816fd9fe3f94ea751a48b1c3a7db0a52ea3f806b4def1f12464a43eab6"
+    },
+    {
+      "year": 2025,
+      "resultsUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "packageSha256": "91fc8cbefee5918994e028dd3f17143c5a46b948ed09b21c10ac0c1f1d4a8f09"
+    }
+  ],
+  "sourceMember": "openings/openings_freestyle15.txt",
+  "retrievedAt": "2026-08-13",
+  "selectionPolicy": "All official expert-selected Freestyle-15 lines from Gomocup 2024 and 2025; no outcome weights or training data.",
+  "rulePartitions": {
+    "2024": {
+      "freestyle15": {
+        "member": "openings/openings_freestyle15.txt",
+        "present": true,
+        "openingCount": 12,
+        "memberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17"
+      },
+      "standard": {
+        "member": "openings/openings_standard.txt",
+        "present": true,
+        "openingCount": 12,
+        "memberSha256": "52392757571974f9f8b76a3df081bf46e0e6db927e0605520c879943c29945e0"
+      },
+      "renju": {
+        "member": "openings/openings_renju.txt",
+        "present": true,
+        "openingCount": 12,
+        "memberSha256": "5df977745285b5342be1631a50832b8cf6d0ae9b871adb25fe9da2d7f7e6049b"
+      },
+      "caro": {
+        "member": "openings/openings_caro.txt",
+        "present": true,
+        "openingCount": 12,
+        "memberSha256": "dfbe3ac42deefd33a472920bfed6ad0c8a5f35f39c4510b7cc3db6580376d107"
+      },
+      "freestyle20": {
+        "member": "openings/openings_freestyle20.txt",
+        "present": true,
+        "openingCount": 12,
+        "memberSha256": "f093f8a3208bf58b505325441119751d0d7d71c6390c0b75a0140843b3a9b996"
+      }
+    },
+    "2025": {
+      "freestyle15": {
+        "member": "openings/openings_freestyle15.txt",
+        "present": true,
+        "openingCount": 12,
+        "memberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93"
+      },
+      "standard": {
+        "member": "openings/openings_standard.txt",
+        "present": true,
+        "openingCount": 12,
+        "memberSha256": "e0165c5e4ca566fc98c0a2fd0206a58e6870f145924e09f0fbe8f6991a82e3a1"
+      },
+      "renju": {
+        "member": "openings/openings_renju.txt",
+        "present": true,
+        "openingCount": 12,
+        "memberSha256": "d174c391ae1d7533c15029c59cba68d02f15bc81166ef23f96a933252439189f"
+      },
+      "caro": {
+        "member": "openings/openings_caro.txt",
+        "present": true,
+        "openingCount": 12,
+        "memberSha256": "48325f49b552319c6bc4840943a261e858d1e28dbb142608790a08c462c246e7"
+      },
+      "freestyle20": {
+        "member": "openings/openings_freestyle20.txt",
+        "present": true,
+        "openingCount": 12,
+        "memberSha256": "6d40736128c2e53a3208ce6c972ea3e48f8a93879ca81db24bbc16ba833e2763"
+      }
+    }
+  },
+  "entries": [
+    {
+      "openingIndex": 0,
+      "originalIdentifier": "gomocup-2024/openings_freestyle15.txt:1",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 13,
+      "movesRelative": [
+        [
+          -7,
+          5
+        ],
+        [
+          -5,
+          7
+        ],
+        [
+          -7,
+          4
+        ],
+        [
+          -4,
+          7
+        ],
+        [
+          -7,
+          3
+        ],
+        [
+          -3,
+          7
+        ],
+        [
+          -2,
+          7
+        ],
+        [
+          -7,
+          2
+        ],
+        [
+          -1,
+          7
+        ],
+        [
+          -7,
+          1
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          -7,
+          0
+        ],
+        [
+          -2,
+          6
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -7,
+          -5
+        ],
+        [
+          -5,
+          -7
+        ],
+        [
+          -7,
+          -4
+        ],
+        [
+          -4,
+          -7
+        ],
+        [
+          -7,
+          -3
+        ],
+        [
+          -3,
+          -7
+        ],
+        [
+          -2,
+          -7
+        ],
+        [
+          -7,
+          -2
+        ],
+        [
+          -1,
+          -7
+        ],
+        [
+          -7,
+          -1
+        ],
+        [
+          0,
+          -7
+        ],
+        [
+          -7,
+          0
+        ],
+        [
+          -2,
+          -6
+        ]
+      ],
+      "canonicalTransform": 5,
+      "canonicalId": "9141f4bac486f8bc",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "sourceMemberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 1,
+      "originalIdentifier": "gomocup-2024/openings_freestyle15.txt:2",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 4,
+      "movesRelative": [
+        [
+          -7,
+          4
+        ],
+        [
+          -7,
+          7
+        ],
+        [
+          -4,
+          7
+        ],
+        [
+          -4,
+          4
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -7,
+          -4
+        ],
+        [
+          -7,
+          -7
+        ],
+        [
+          -4,
+          -7
+        ],
+        [
+          -4,
+          -4
+        ]
+      ],
+      "canonicalTransform": 5,
+      "canonicalId": "3fa24594255e1497",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "sourceMemberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 2,
+      "originalIdentifier": "gomocup-2024/openings_freestyle15.txt:3",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          0,
+          -3
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -3,
+          0
+        ]
+      ],
+      "canonicalTransform": 1,
+      "canonicalId": "dea982f9891e6a2f",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "sourceMemberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 3,
+      "originalIdentifier": "gomocup-2024/openings_freestyle15.txt:4",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -4
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -4,
+          -1
+        ]
+      ],
+      "canonicalTransform": 1,
+      "canonicalId": "c9a84c0513efda2d",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "sourceMemberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 4,
+      "originalIdentifier": "gomocup-2024/openings_freestyle15.txt:5",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          -2,
+          1
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "canonicalTransform": 1,
+      "canonicalId": "e91a05198e83108d",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "sourceMemberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 5,
+      "originalIdentifier": "gomocup-2024/openings_freestyle15.txt:6",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          -3
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          -3,
+          0
+        ]
+      ],
+      "canonicalTransform": 1,
+      "canonicalId": "a0ef17e46e31f9be",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "sourceMemberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 6,
+      "originalIdentifier": "gomocup-2024/openings_freestyle15.txt:7",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "canonicalTransform": 1,
+      "canonicalId": "64c8ec4dbf0af2fe",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "sourceMemberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 7,
+      "originalIdentifier": "gomocup-2024/openings_freestyle15.txt:8",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -2,
+          -2
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          2
+        ]
+      ],
+      "canonicalTransform": 1,
+      "canonicalId": "08f9f221c710e9cf",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "sourceMemberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 8,
+      "originalIdentifier": "gomocup-2024/openings_freestyle15.txt:9",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -4,
+          0
+        ]
+      ],
+      "canonicalTransform": 4,
+      "canonicalId": "148785654f877fe0",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "sourceMemberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 9,
+      "originalIdentifier": "gomocup-2024/openings_freestyle15.txt:10",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          -2,
+          -3
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          -3
+        ]
+      ],
+      "canonicalTransform": 4,
+      "canonicalId": "985272a997784041",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "sourceMemberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 10,
+      "originalIdentifier": "gomocup-2024/openings_freestyle15.txt:11",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          -1
+        ]
+      ],
+      "canonicalTransform": 4,
+      "canonicalId": "64fc1ec2e5295a5c",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "sourceMemberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 11,
+      "originalIdentifier": "gomocup-2024/openings_freestyle15.txt:12",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          -1,
+          -2
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          1,
+          -2
+        ]
+      ],
+      "canonicalTransform": 4,
+      "canonicalId": "36a167f36b37ac62",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2024",
+      "year": 2024,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2024",
+      "packageUrl": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip",
+      "sourceMemberSha256": "d9e8336dd0f003f1a303c7a028ad283e9055ef4e19f01cf2050551d298e9bf17",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 12,
+      "originalIdentifier": "gomocup-2025/openings_freestyle15.txt:1",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          6,
+          -1
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          4,
+          -5
+        ],
+        [
+          5,
+          -4
+        ],
+        [
+          1,
+          -2
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -6,
+          -1
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          -4,
+          -5
+        ],
+        [
+          -5,
+          -4
+        ],
+        [
+          -1,
+          -2
+        ]
+      ],
+      "canonicalTransform": 4,
+      "canonicalId": "cc64866f9e3c6a08",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "sourceMemberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 13,
+      "originalIdentifier": "gomocup-2025/openings_freestyle15.txt:2",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 7,
+      "movesRelative": [
+        [
+          -3,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          -6,
+          6
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -1,
+          3
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -4,
+          -3
+        ],
+        [
+          -5,
+          1
+        ],
+        [
+          -6,
+          -6
+        ],
+        [
+          -3,
+          -3
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -3,
+          -1
+        ]
+      ],
+      "canonicalTransform": 3,
+      "canonicalId": "70d88d94d2be2c6c",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "sourceMemberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 14,
+      "originalIdentifier": "gomocup-2025/openings_freestyle15.txt:3",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 11,
+      "movesRelative": [
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          -2,
+          5
+        ],
+        [
+          -3,
+          4
+        ],
+        [
+          -4,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -4,
+          -3
+        ],
+        [
+          -5,
+          -1
+        ],
+        [
+          -5,
+          2
+        ],
+        [
+          -4,
+          3
+        ],
+        [
+          -2,
+          4
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "canonicalTransform": 7,
+      "canonicalId": "7d7d746964fc577d",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "sourceMemberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 15,
+      "originalIdentifier": "gomocup-2025/openings_freestyle15.txt:4",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 6,
+      "movesRelative": [
+        [
+          -4,
+          4
+        ],
+        [
+          5,
+          -1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          5,
+          -2
+        ],
+        [
+          -4,
+          1
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -4,
+          -4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          1,
+          -4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          -1,
+          -4
+        ]
+      ],
+      "canonicalTransform": 3,
+      "canonicalId": "81938875c4ff0ccb",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "sourceMemberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 16,
+      "originalIdentifier": "gomocup-2025/openings_freestyle15.txt:5",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 12,
+      "movesRelative": [
+        [
+          5,
+          -7
+        ],
+        [
+          7,
+          -5
+        ],
+        [
+          4,
+          -7
+        ],
+        [
+          7,
+          -4
+        ],
+        [
+          3,
+          -7
+        ],
+        [
+          7,
+          -3
+        ],
+        [
+          7,
+          -2
+        ],
+        [
+          2,
+          -7
+        ],
+        [
+          5,
+          -5
+        ],
+        [
+          3,
+          -3
+        ],
+        [
+          5,
+          -3
+        ],
+        [
+          3,
+          -2
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -7,
+          -5
+        ],
+        [
+          -5,
+          -7
+        ],
+        [
+          -7,
+          -4
+        ],
+        [
+          -4,
+          -7
+        ],
+        [
+          -7,
+          -3
+        ],
+        [
+          -3,
+          -7
+        ],
+        [
+          -2,
+          -7
+        ],
+        [
+          -7,
+          -2
+        ],
+        [
+          -5,
+          -5
+        ],
+        [
+          -3,
+          -3
+        ],
+        [
+          -3,
+          -5
+        ],
+        [
+          -2,
+          -3
+        ]
+      ],
+      "canonicalTransform": 1,
+      "canonicalId": "f1df18461d9189a0",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "sourceMemberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 17,
+      "originalIdentifier": "gomocup-2025/openings_freestyle15.txt:6",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 12,
+      "movesRelative": [
+        [
+          7,
+          -5
+        ],
+        [
+          7,
+          -4
+        ],
+        [
+          6,
+          -5
+        ],
+        [
+          6,
+          -4
+        ],
+        [
+          5,
+          -5
+        ],
+        [
+          5,
+          -4
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          6,
+          0
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          5,
+          0
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -7,
+          -5
+        ],
+        [
+          -7,
+          -4
+        ],
+        [
+          -6,
+          -5
+        ],
+        [
+          -6,
+          -4
+        ],
+        [
+          -5,
+          -5
+        ],
+        [
+          -5,
+          -4
+        ],
+        [
+          -7,
+          1
+        ],
+        [
+          -7,
+          0
+        ],
+        [
+          -6,
+          1
+        ],
+        [
+          -6,
+          0
+        ],
+        [
+          -5,
+          1
+        ],
+        [
+          -5,
+          0
+        ]
+      ],
+      "canonicalTransform": 4,
+      "canonicalId": "24c30d2a1794c5c7",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "sourceMemberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 18,
+      "originalIdentifier": "gomocup-2025/openings_freestyle15.txt:7",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 25,
+      "movesRelative": [
+        [
+          3,
+          0
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          -1,
+          -4
+        ],
+        [
+          -1,
+          -3
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -1,
+          -5
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -3,
+          0
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          1,
+          -4
+        ],
+        [
+          1,
+          -3
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          -1,
+          4
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          1,
+          -5
+        ],
+        [
+          -1,
+          5
+        ],
+        [
+          -4,
+          1
+        ]
+      ],
+      "canonicalTransform": 4,
+      "canonicalId": "8f1db1649ce52c43",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "sourceMemberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 19,
+      "originalIdentifier": "gomocup-2025/openings_freestyle15.txt:8",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -3
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          -1,
+          -4
+        ],
+        [
+          1,
+          -6
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -3,
+          -2
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          -6,
+          1
+        ]
+      ],
+      "canonicalTransform": 6,
+      "canonicalId": "030fd8eba9b806c0",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "sourceMemberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 20,
+      "originalIdentifier": "gomocup-2025/openings_freestyle15.txt:9",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -3
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          -4
+        ],
+        [
+          0,
+          -2
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -2,
+          -2
+        ],
+        [
+          -3,
+          -2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          -2,
+          0
+        ]
+      ],
+      "canonicalTransform": 6,
+      "canonicalId": "1c0ad0fa604bbf98",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "sourceMemberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 21,
+      "originalIdentifier": "gomocup-2025/openings_freestyle15.txt:10",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          -7,
+          -2
+        ],
+        [
+          -7,
+          0
+        ],
+        [
+          -7,
+          2
+        ],
+        [
+          -6,
+          0
+        ],
+        [
+          -4,
+          1
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -7,
+          -2
+        ],
+        [
+          -7,
+          0
+        ],
+        [
+          -7,
+          2
+        ],
+        [
+          -6,
+          0
+        ],
+        [
+          -4,
+          1
+        ]
+      ],
+      "canonicalTransform": 0,
+      "canonicalId": "646fbfe8360e00d7",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "sourceMemberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 22,
+      "originalIdentifier": "gomocup-2025/openings_freestyle15.txt:11",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          -7,
+          -2
+        ],
+        [
+          -7,
+          0
+        ],
+        [
+          -6,
+          -7
+        ],
+        [
+          -6,
+          -3
+        ],
+        [
+          -4,
+          -3
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -7,
+          -2
+        ],
+        [
+          -7,
+          0
+        ],
+        [
+          -6,
+          -7
+        ],
+        [
+          -6,
+          -3
+        ],
+        [
+          -4,
+          -3
+        ]
+      ],
+      "canonicalTransform": 0,
+      "canonicalId": "d0842766036acc95",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "sourceMemberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    },
+    {
+      "openingIndex": 23,
+      "originalIdentifier": "gomocup-2025/openings_freestyle15.txt:12",
+      "rule": "Freestyle-15",
+      "boardSize": 15,
+      "moveCount": 5,
+      "movesRelative": [
+        [
+          -5,
+          -3
+        ],
+        [
+          -5,
+          -2
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -3,
+          -3
+        ],
+        [
+          -4,
+          -5
+        ]
+      ],
+      "canonicalMovesRelative": [
+        [
+          -5,
+          -3
+        ],
+        [
+          -5,
+          -2
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -3,
+          -3
+        ],
+        [
+          -4,
+          -5
+        ]
+      ],
+      "canonicalTransform": 0,
+      "canonicalId": "0d4d4c7230aa735f",
+      "sourceOrganization": "Gomocup",
+      "event": "Gomocup 2025",
+      "year": 2025,
+      "sourceUrl": "https://gomocup.org/results/gomocup-result-2025",
+      "packageUrl": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip",
+      "sourceMemberSha256": "935d69271f763d1e44157ad5e3e1308b747bb8a13ce23891352e7f47ff40bb93",
+      "redistributionStatus": "Attributed coordinate extraction; source archive not bundled"
+    }
+  ],
+  "exactDuplicates": [],
+  "nearDuplicates": [
+    {
+      "left": 0,
+      "right": 16,
+      "commonPrefixPlies": 8
+    }
+  ],
+  "excludedResearchSources": [
+    {
+      "organization": "Renju International Federation / RenjuNet",
+      "url": "https://www.renju.net/",
+      "reason": "Research only: visible All rights reserved notice; no records bundled."
+    }
+  ]
+}

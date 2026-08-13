@@ -1,0 +1,99 @@
+{
+  "results": {
+    "newWhite": {
+      "games": 100,
+      "wins": 38,
+      "draws": 0,
+      "losses": 62,
+      "points": 38.0,
+      "scoreRate": 0.38,
+      "wilson95": [
+        0.29097599252478734,
+        0.47790244704488916
+      ]
+    },
+    "legacyWhiteOpponent": {
+      "games": 100,
+      "wins": 49,
+      "draws": 1,
+      "losses": 50,
+      "points": 49.5,
+      "scoreRate": 0.495,
+      "wilson95": [
+        0.3990211285115932,
+        0.5913488064704766
+      ]
+    },
+    "newBlack": {
+      "games": 100,
+      "wins": 50,
+      "draws": 1,
+      "losses": 49,
+      "points": 50.5,
+      "scoreRate": 0.505,
+      "wilson95": [
+        0.4086511935295234,
+        0.6009788714884068
+      ]
+    },
+    "overall": {
+      "games": 200,
+      "wins": 88,
+      "draws": 1,
+      "losses": 111,
+      "points": 88.5,
+      "scoreRate": 0.4425,
+      "wilson95": [
+        0.3753912427901054,
+        0.5117759697432803
+      ]
+    },
+    "legacySelfPlayControlWhite": {
+      "games": 100,
+      "wins": 52,
+      "draws": 0,
+      "losses": 48,
+      "points": 52.0,
+      "scoreRate": 0.52,
+      "wilson95": [
+        0.4231657776522397,
+        0.615354482419481
+      ]
+    }
+  },
+  "whiteDeltaVsLegacyOpponent": -0.11499999999999999,
+  "classification": "not demonstrated",
+  "telemetry": {
+    "moves": 2674,
+    "latencyMs": {
+      "p50": 191.75900000000001,
+      "p95": 458.99309999999997,
+      "max": 1192.302,
+      "mean": 196.34013051608076
+    },
+    "defaultSources": {
+      "0": 0,
+      "1": 2568,
+      "2": 106
+    },
+    "overrideReasons": {
+      "0": 2080,
+      "1": 88,
+      "2": 225,
+      "3": 105,
+      "4": 176,
+      "5": 0
+    },
+    "bookHits": 106,
+    "proofStatus": {
+      "0": 1212,
+      "1": 583,
+      "2": 879
+    },
+    "proofNodes": 49949,
+    "verifiedCertificates": 583,
+    "budgetExhaustions": 899
+  },
+  "rawFile": "proof_search_book_on_raw.json",
+  "rawSha256": "9b683195d7298f2bf7ad127a8cc48efd4817e759125b9cf5f56dfe798cb0b809"
+}

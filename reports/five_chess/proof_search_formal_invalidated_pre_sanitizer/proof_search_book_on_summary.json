@@ -1,0 +1,87 @@
+{
+  "results": {
+    "newWhite": {
+      "games": 100,
+      "wins": 42,
+      "draws": 0,
+      "losses": 58,
+      "points": 42.0,
+      "scoreRate": 0.42,
+      "wilson95": [
+        0.3279838267435473,
+        0.5179351329695703
+      ]
+    },
+    "legacyControlWhite": {
+      "games": 100,
+      "wins": 34,
+      "draws": 0,
+      "losses": 66,
+      "points": 34.0,
+      "scoreRate": 0.34,
+      "wilson95": [
+        0.25461520797348164,
+        0.43722271145275377
+      ]
+    },
+    "newBlack": {
+      "games": 100,
+      "wins": 58,
+      "draws": 0,
+      "losses": 42,
+      "points": 58.0,
+      "scoreRate": 0.58,
+      "wilson95": [
+        0.4820648670304296,
+        0.6720161732564526
+      ]
+    },
+    "overall": {
+      "games": 200,
+      "wins": 100,
+      "draws": 0,
+      "losses": 100,
+      "points": 100.0,
+      "scoreRate": 0.5,
+      "wilson95": [
+        0.43136085960389187,
+        0.5686391403961082
+      ]
+    }
+  },
+  "whiteDeltaVsControl": 0.07999999999999996,
+  "classification": "not demonstrated",
+  "telemetry": {
+    "moves": 2815,
+    "latencyMs": {
+      "p50": 186.223,
+      "p95": 447.4321999999999,
+      "max": 1214.463,
+      "mean": 188.07611261101243
+    },
+    "defaultSources": {
+      "0": 0,
+      "1": 2711,
+      "2": 104
+    },
+    "overrideReasons": {
+      "0": 2267,
+      "1": 100,
+      "2": 179,
+      "3": 115,
+      "4": 154,
+      "5": 0
+    },
+    "bookHits": 104,
+    "proofStatus": {
+      "0": 1199,
+      "1": 582,
+      "2": 1034
+    },
+    "proofNodes": 50233,
+    "verifiedCertificates": 582,
+    "budgetExhaustions": 920
+  },
+  "rawFile": "proof_search_book_on_raw.json",
+  "rawSha256": "24615eaec16d192c6dd1aa0c1f452c1bc8d32ca993416c5c69ee911aa28696e1"
+}

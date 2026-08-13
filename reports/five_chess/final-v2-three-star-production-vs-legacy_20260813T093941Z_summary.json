@@ -1,0 +1,89 @@
+{
+  "generatedAtUTC": "20260813T093941Z",
+  "gameCount": 200,
+  "results": {
+    "overall": {
+      "games": 200,
+      "wins": 100,
+      "draws": 0,
+      "losses": 100,
+      "winRate": 0.5,
+      "drawRate": 0.0,
+      "lossRate": 0.5,
+      "scoreRate": 0.5,
+      "wilson95": [
+        0.43136085960389187,
+        0.5686391403961082
+      ]
+    },
+    "newBlack": {
+      "games": 100,
+      "wins": 82,
+      "draws": 0,
+      "losses": 18,
+      "winRate": 0.82,
+      "drawRate": 0.0,
+      "lossRate": 0.18,
+      "scoreRate": 0.82,
+      "wilson95": [
+        0.7333264161369926,
+        0.8829977450105364
+      ]
+    },
+    "newWhite": {
+      "games": 100,
+      "wins": 18,
+      "draws": 0,
+      "losses": 82,
+      "winRate": 0.18,
+      "drawRate": 0.0,
+      "lossRate": 0.82,
+      "scoreRate": 0.18,
+      "wilson95": [
+        0.1170022549894635,
+        0.2666735838630073
+      ]
+    }
+  },
+  "performance": {
+    "new": {
+      "moves": 1534,
+      "timeMs": {
+        "p50": 205.924,
+        "p95": 677.9764499999998,
+        "max": 953.878,
+        "mean": 241.8554328552803
+      },
+      "nodes": {
+        "p50": 1271.5,
+        "p95": 5763.0,
+        "max": 14000.0,
+        "mean": 1747.8441981747067
+      },
+      "averageDepth": 2.710560625814863,
+      "budgetExhaustions": 36,
+      "transpositionHits": 55400
+    },
+    "legacy": {
+      "moves": 1534,
+      "timeMs": {
+        "p50": 1.7200000000000002,
+        "p95": 102.98609999999987,
+        "max": 250.331,
+        "mean": 21.05077966101695
+      },
+      "nodes": {
+        "p50": 0.0,
+        "p95": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "averageDepth": 0.0,
+      "budgetExhaustions": 0,
+      "transpositionHits": 0
+    }
+  },
+  "anomalyCount": 0,
+  "rawFile": "final-v2-three-star-production-vs-legacy_20260813T093941Z_raw.json",
+  "rawSha256": "ad8b6af5476679cd15d5b51b4e6516ba68a32ee725873456760a2ecb573d7193"
+}

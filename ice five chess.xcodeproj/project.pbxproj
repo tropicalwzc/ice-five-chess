@@ -18,6 +18,7 @@
 		B43C43252286A38200871DD1 /* ice_five_chessTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B43C43242286A38200871DD1 /* ice_five_chessTests.m */; };
 		B43C43302286A38200871DD1 /* ice_five_chessUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B43C432F2286A38200871DD1 /* ice_five_chessUITests.m */; };
 		B43C433F2286A43700871DD1 /* doublethree.m in Sources */ = {isa = PBXBuildFile; fileRef = B43C433E2286A43700871DD1 /* doublethree.m */; };
+		FA1000012F00000100000001 /* FiveChessAI.c in Sources */ = {isa = PBXBuildFile; fileRef = FA1000022F00000100000001 /* FiveChessAI.c */; };
 		B43C434A2288281600871DD1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B43C43492288281600871DD1 /* Assets.xcassets */; };
 		B43C4356228848B300871DD1 /* smallwindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B43C4354228848B300871DD1 /* smallwindow.m */; };
 		B498B87522965D3F003D25A4 /* numbers.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B498B87422965D3E003D25A4 /* numbers.xcassets */; };
@@ -66,6 +67,8 @@
 		B43C43312286A38200871DD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B43C433D2286A42100871DD1 /* doublethree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = doublethree.h; sourceTree = "<group>"; };
 		B43C433E2286A43700871DD1 /* doublethree.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = doublethree.m; sourceTree = "<group>"; };
+		FA1000022F00000100000001 /* FiveChessAI.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = FiveChessAI.c; sourceTree = "<group>"; };
+		FA1000032F00000100000001 /* FiveChessAI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FiveChessAI.h; sourceTree = "<group>"; };
 		B43C43492288281600871DD1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B43C4354228848B300871DD1 /* smallwindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = smallwindow.m; sourceTree = "<group>"; };
 		B43C4355228848B300871DD1 /* smallwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smallwindow.h; sourceTree = "<group>"; };
@@ -148,6 +151,8 @@
 				B43C43112286A38100871DD1 /* ice_five_chess.xcdatamodeld */,
 				B43C433D2286A42100871DD1 /* doublethree.h */,
 				B43C433E2286A43700871DD1 /* doublethree.m */,
+				FA1000032F00000100000001 /* FiveChessAI.h */,
+				FA1000022F00000100000001 /* FiveChessAI.c */,
 				B43C4355228848B300871DD1 /* smallwindow.h */,
 				B43C4354228848B300871DD1 /* smallwindow.m */,
 				B499A9552290272A000D59CD /* file.h */,
@@ -313,6 +318,7 @@
 				B499A9562290272A000D59CD /* file.m in Sources */,
 				B43C4356228848B300871DD1 /* smallwindow.m in Sources */,
 				B43C433F2286A43700871DD1 /* doublethree.m in Sources */,
+				FA1000012F00000100000001 /* FiveChessAI.c in Sources */,
 				B43C430D2286A38100871DD1 /* ViewController.m in Sources */,
 				B43C431B2286A38200871DD1 /* main.m in Sources */,
 				B43C430A2286A38100871DD1 /* AppDelegate.m in Sources */,

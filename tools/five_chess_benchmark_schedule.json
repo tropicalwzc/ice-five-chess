@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "training": {
+    "seedDomain": "training-v1",
+    "masterSeed": "0xa8b6c4d220260813",
+    "openingIds": "0..19",
+    "purpose": "AIProfile depth, width, weight and randomness selection only"
+  },
+  "final": {
+    "seedDomain": "final-v2",
+    "masterSeed": "0xf1ce5eed20260814",
+    "openingIds": "0..99",
+    "gamesPerOpening": 2,
+    "newBlackGames": 100,
+    "newWhiteGames": 100,
+    "purpose": "held-out legacy-three-star versus frozen production acceptance; final-v1 was invalidated after revealing a weaker candidate"
+  },
+  "rules": {
+    "boardSize": 15,
+    "forbiddenBlack": false,
+    "openingMoves": 6,
+    "maxMoves": 120,
+    "anomalyPolicy": "record and invalidate the complete formal schedule"
+  },
+  "legacyBaseline": {
+    "name": "legacy-three-star",
+    "sourceCommit": "5224020",
+    "sourceSha256": "8cd57ccf80a82240594d08f3956d1bdb4853fe52ca09fd4a9d5ab5ede4e31194"
+  }
+}

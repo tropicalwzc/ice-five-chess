@@ -1,0 +1,48 @@
+{
+  "frozenAtUTC": "2026-08-13T08:57:00Z",
+  "repositoryHead": "8f0436edfbb1228f2b3d7c0709a113e3ac434ac3",
+  "workingTreePolicy": "The listed SHA-256 values freeze the uncommitted implementation used by the formal benchmark.",
+  "newProfile": {
+    "name": "three-star-production",
+    "version": "2.2.0-legacy-hint-safe-gate",
+    "maxDepth": 3,
+    "quiescenceDepth": 3,
+    "fourDepth": 10,
+    "doubleThreeDepth": 10,
+    "forcingDepth": 12,
+    "candidateLimit": 12,
+    "nodeBudget": 14000,
+    "timeBudgetMs": 850,
+    "transpositionCapacity": 65536,
+    "attackWeight": 100,
+    "defenseWeight": 112,
+    "centerWeight": 4,
+    "nearBestWindow": 60,
+    "randomTemperature": 45.0,
+    "maxRandomCandidates": 2
+  },
+  "formalSchedule": {
+    "suite": "final",
+    "seedDomain": "final-v2",
+    "masterSeed": "0xf1ce5eed20260814",
+    "openingIds": "0..99",
+    "newBlackGames": 100,
+    "newWhiteGames": 100,
+    "randomMode": "user-softmax",
+    "forbiddenBlack": false,
+    "maxMoves": 120
+  },
+  "sourceSha256": {
+    "FiveChessAI.c": "eda760e333abdf0dc94e25c5c6bee32b8dae179b293dc5650898cb763cdceeaf",
+    "FiveChessAI.h": "fee5d0ede579c7bd960810e53a8de7c4b2dbba504009bfd1181f7f23d94a20eb",
+    "doublethree.m": "eda298b7ad374d6f38668688bfbe7d7609575cf8547ad4c3bb01fddae3d86d55",
+    "five_chess_benchmark.m": "175c32dd18258ac7b6e9c588f105b8c48477ad7f2e72ec0bb37b8597eee7ba47",
+    "generate_five_chess_report.py": "6a7825e530d3919daaf323a7fe02ba1e7fc5ecd76a554cb107aa3632064a4ae4"
+  },
+  "legacyBaseline": {
+    "name": "legacy-three-star",
+    "sourceCommit": "5224020",
+    "sourceSha256": "8cd57ccf80a82240594d08f3956d1bdb4853fe52ca09fd4a9d5ab5ede4e31194"
+  },
+  "reproduce": "BENCHMARK_PATH=$(tools/build_five_chess_benchmark.sh); $BENCHMARK_PATH --output final.jsonl --profile production --suite final --random-mode user --seed 0xf1ce5eed20260814 --opening-start 0 --opening-count 100 --max-moves 120 --forbidden-black 0"
+}

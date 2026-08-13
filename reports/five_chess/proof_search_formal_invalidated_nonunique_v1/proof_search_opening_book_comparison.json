@@ -1,0 +1,206 @@
+{
+  "bookOn": {
+    "results": {
+      "newWhite": {
+        "games": 100,
+        "wins": 42,
+        "draws": 0,
+        "losses": 58,
+        "points": 42.0,
+        "scoreRate": 0.42,
+        "wilson95": [
+          0.3279838267435473,
+          0.5179351329695703
+        ]
+      },
+      "legacyControlWhite": {
+        "games": 100,
+        "wins": 34,
+        "draws": 0,
+        "losses": 66,
+        "points": 34.0,
+        "scoreRate": 0.34,
+        "wilson95": [
+          0.25461520797348164,
+          0.43722271145275377
+        ]
+      },
+      "newBlack": {
+        "games": 100,
+        "wins": 58,
+        "draws": 0,
+        "losses": 42,
+        "points": 58.0,
+        "scoreRate": 0.58,
+        "wilson95": [
+          0.4820648670304296,
+          0.6720161732564526
+        ]
+      },
+      "overall": {
+        "games": 200,
+        "wins": 100,
+        "draws": 0,
+        "losses": 100,
+        "points": 100.0,
+        "scoreRate": 0.5,
+        "wilson95": [
+          0.43136085960389187,
+          0.5686391403961082
+        ]
+      }
+    },
+    "whiteDeltaVsControl": 0.07999999999999996,
+    "classification": "not demonstrated",
+    "telemetry": {
+      "moves": 2815,
+      "latencyMs": {
+        "p50": 189.022,
+        "p95": 457.26129999999995,
+        "max": 1236.704,
+        "mean": 193.33633570159859
+      },
+      "defaultSources": {
+        "0": 0,
+        "1": 2711,
+        "2": 104
+      },
+      "overrideReasons": {
+        "0": 2267,
+        "1": 100,
+        "2": 179,
+        "3": 115,
+        "4": 154,
+        "5": 0
+      },
+      "bookHits": 104,
+      "proofStatus": {
+        "0": 1211,
+        "1": 582,
+        "2": 1022
+      },
+      "proofNodes": 48929,
+      "verifiedCertificates": 582,
+      "budgetExhaustions": 932
+    },
+    "rawFile": "proof_search_book_on_raw.json",
+    "rawSha256": "84ed935f8e09dc2fe0d3a5b5a7a836e98d34e7a47a0a93e76b04032a19c1e186"
+  },
+  "bookOff": {
+    "results": {
+      "newWhite": {
+        "games": 100,
+        "wins": 38,
+        "draws": 1,
+        "losses": 61,
+        "points": 38.5,
+        "scoreRate": 0.385,
+        "wilson95": [
+          0.29556735779655596,
+          0.4829411467910507
+        ]
+      },
+      "legacyControlWhite": {
+        "games": 100,
+        "wins": 34,
+        "draws": 0,
+        "losses": 66,
+        "points": 34.0,
+        "scoreRate": 0.34,
+        "wilson95": [
+          0.25461520797348164,
+          0.43722271145275377
+        ]
+      },
+      "newBlack": {
+        "games": 100,
+        "wins": 70,
+        "draws": 0,
+        "losses": 30,
+        "points": 70.0,
+        "scoreRate": 0.7,
+        "wilson95": [
+          0.6041514536665332,
+          0.7810511470506724
+        ]
+      },
+      "overall": {
+        "games": 200,
+        "wins": 108,
+        "draws": 1,
+        "losses": 91,
+        "points": 108.5,
+        "scoreRate": 0.5425,
+        "wilson95": [
+          0.4733036519503222,
+          0.6100944953076102
+        ]
+      }
+    },
+    "whiteDeltaVsControl": 0.044999999999999984,
+    "classification": "directional improvement",
+    "telemetry": {
+      "moves": 2744,
+      "latencyMs": {
+        "p50": 193.8825,
+        "p95": 458.1406,
+        "max": 1517.533,
+        "mean": 196.9458494897959
+      },
+      "defaultSources": {
+        "0": 0,
+        "1": 2744,
+        "2": 0
+      },
+      "overrideReasons": {
+        "0": 2216,
+        "1": 108,
+        "2": 163,
+        "3": 104,
+        "4": 153,
+        "5": 0
+      },
+      "bookHits": 0,
+      "proofStatus": {
+        "0": 1214,
+        "1": 567,
+        "2": 963
+      },
+      "proofNodes": 54463,
+      "verifiedCertificates": 567,
+      "budgetExhaustions": 943
+    },
+    "rawFile": "proof_search_book_off_raw.json",
+    "rawSha256": "f0a81406db7cf267ea25011d7f7c924701dd069f6a4c2386a5996d0a07d1e5d3"
+  },
+  "bookOnMinusBookOff": {
+    "newWhite": {
+      "pairs": 100,
+      "difference": 0.035,
+      "normal95": [
+        -0.04410683680547549,
+        0.1141068368054755
+      ]
+    },
+    "newBlack": {
+      "pairs": 100,
+      "difference": -0.12,
+      "normal95": [
+        -0.24232043203623777,
+        0.002320432036237774
+      ]
+    },
+    "overall": {
+      "pairs": 200,
+      "difference": -0.0425,
+      "normal95": [
+        -0.11594610228823163,
+        0.03094610228823163
+      ]
+    }
+  },
+  "rawSha256": {
+    "bookOn": "84ed935f8e09dc2fe0d3a5b5a7a836e98d34e7a47a0a93e76b04032a19c1e186",
+    "bookOff": "f0a81406db7cf267ea25011d7f7c924701dd069f6a4c2386a5996d0a07d1e5d3"
+  }
+}

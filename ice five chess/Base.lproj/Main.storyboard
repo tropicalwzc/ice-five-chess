@@ -141,13 +141,14 @@
                                 <rect key="frame" x="0.0" y="459" width="320" height="44"/>
                                 <items>
                                     <barButtonItem style="plain" id="p77-xy-aTs">
-                                        <segmentedControl key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="ixI-KZ-1we">
+                                        <segmentedControl key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="1" id="ixI-KZ-1we">
                                             <rect key="frame" x="16" y="5.5" width="288" height="33"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <segments>
-                                                <segment title="⭐️⭐️⭐️"/>
-                                                <segment title="⭐️⭐️"/>
-                                                <segment title="⭐️"/>
+                                                <segment title="4⭐️"/>
+                                                <segment title="3⭐️"/>
+                                                <segment title="2⭐️"/>
+                                                <segment title="1⭐️"/>
                                             </segments>
                                             <connections>
                                                 <action selector="diff_change:" destination="BYZ-38-t0r" eventType="valueChanged" id="BWb-0a-bHL"/>

@@ -105,13 +105,14 @@
                                 <rect key="frame" x="0.0" y="50" width="1024" height="50"/>
                                 <items>
                                     <barButtonItem style="plain" id="lqq-EV-5Ij">
-                                        <segmentedControl key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="zNj-iM-gNI">
+                                        <segmentedControl key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="1" id="zNj-iM-gNI">
                                             <rect key="frame" x="20" y="8.5" width="984" height="33"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <segments>
-                                                <segment title="⭐️⭐️⭐️"/>
-                                                <segment title="⭐️⭐️"/>
-                                                <segment title="⭐️"/>
+                                                <segment title="4⭐️"/>
+                                                <segment title="3⭐️"/>
+                                                <segment title="2⭐️"/>
+                                                <segment title="1⭐️"/>
                                             </segments>
                                             <color key="tintColor" red="0.0" green="0.56031829119999998" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <connections>

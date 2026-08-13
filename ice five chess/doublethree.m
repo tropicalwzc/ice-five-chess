@@ -98,7 +98,36 @@
     border=15;
     banned_mode=0;
     totalprocess=0;
+    production_ai_profile=fc_profile_production();
+    arc4random_buf(&ai_random_seed, sizeof(ai_random_seed));
+    if(ai_random_seed==0)
+        ai_random_seed=0x6963656669766563ULL;
+    ai_decision_sequence=0;
+    memset(&last_ai_analysis, 0, sizeof(last_ai_analysis));
+    legacy_random_isolated=NO;
+    legacy_random_state=1;
+    harsh_four_depth=8;
+    harsh_double_three_depth=8;
+    harsh_forcing_depth=10;
     return self;
+}
+
+-(int)legacy_random_mod:(int)upper
+{
+    if(upper<=1)
+        return 0;
+    if(!legacy_random_isolated)
+        return rand()%upper;
+    uint64_t value=legacy_random_state;
+    if(value==0)
+        value=123459876;
+    int64_t high=(int64_t)(value/127773);
+    int64_t low=(int64_t)(value%127773);
+    int64_t next=16807*low-2836*high;
+    if(next<0)
+        next+=2147483647;
+    legacy_random_state=(uint64_t)next;
+    return (int)(legacy_random_state%(uint64_t)upper);
 }
 
 -(int) exist_three:(int) x y:(int) y mode:(int) mode
@@ -140,7 +169,7 @@
             if ([self banned_point:i j:j] == 1)
                 return -50000;
     }
-    int attackscore = rand()%1000;
+    int attackscore = [self legacy_random_mod:1000];
     int defensescore = 0;
     
     if (totalprocess <= 5)
@@ -151,7 +180,7 @@
         }
     }
     else{
-        attackscore = rand()%2000;
+        attackscore = [self legacy_random_mod:2000];
     }
     
     int read_val_id = mode == 1 ? 1 : 0;
@@ -348,7 +377,7 @@
         }
     }
     
-    return A_score - rand()%1000;
+    return A_score - [self legacy_random_mod:1000];
 }
 
 -(int) egg_point_score:(int)i y:(int)j mode:(int)mode
@@ -399,7 +428,7 @@
         defensescore += modelA[read_val_id][4];
     
     int A_score = defensescore + attackscore;
-    return A_score - rand()%1000;
+    return A_score - [self legacy_random_mod:1000];
 }
 
 -(int) no_way_defense_conditon:(int) mode;
@@ -1538,6 +1567,65 @@
     
     [self add_a_chess:pl_x pl_y:pl_y mode:mode];
 }
+-(void) optimized_analysisboard:(int) mode
+{
+    uint64_t decision_seed=ai_random_seed
+        ^ (0x9e3779b97f4a7c15ULL*(ai_decision_sequence+1))
+        ^ ((uint64_t)(chessid+1)<<32)
+        ^ (mode==1?0x424c41434bULL:0x5748495445ULL);
+    ai_decision_sequence++;
+    doublethree *legacy_advisor=[[doublethree alloc]init];
+    [legacy_advisor set_banmode:banned_mode];
+    [legacy_advisor set_legacy_random_seed:decision_seed^0x48494e542d4149ULL];
+    for(int index=0;index<chessid;index++)
+    {
+        int hx=process[index][0];
+        int hy=process[index][1];
+        [legacy_advisor add_a_chess:hx pl_y:hy mode:chessboard[hx][hy]];
+    }
+    [legacy_advisor harsh_analysisboard:mode];
+    int legacy_hint[2]={-1,-1};
+    [legacy_advisor get_last_pos_return_color:legacy_hint];
+    int analysis_board[FC_BOARD_SIZE][FC_BOARD_SIZE];
+    memcpy(analysis_board,chessboard,sizeof(analysis_board));
+    bool found=fc_analyze_with_hint(
+                          (const int (*)[FC_BOARD_SIZE])analysis_board,
+                          mode, banned_mode==1, &production_ai_profile,
+                          decision_seed, FC_RANDOM_USER_GAME,
+                          legacy_hint[0], legacy_hint[1], &last_ai_analysis);
+    if(!found||last_ai_analysis.x<0||last_ai_analysis.y<0)
+    {
+        game_end=-mode;
+        now_tech=@"😵‍💫😵‍💫";
+        return;
+    }
+    [self add_a_chess:last_ai_analysis.x
+                 pl_y:last_ai_analysis.y
+                 mode:mode];
+    switch(last_ai_analysis.tacticalClass)
+    {
+        case FC_TACTICAL_IMMEDIATE_WIN:
+            now_tech=@"🎯🎯";
+            break;
+        case FC_TACTICAL_MUST_DEFEND:
+            now_tech=@"🛡️🛡️";
+            break;
+        case FC_TACTICAL_FORCED_ATTACK:
+            now_tech=@"⚡️⚡️";
+            break;
+        default:
+            [self emoji_techer:last_ai_analysis.score];
+            break;
+    }
+}
+-(void) four_star_analysisboard:(int) mode
+{
+    // The held-out match demonstrated the proof-guided profile without the
+    // opening book. Keep this binding explicit so the weaker book-on profile
+    // cannot be enabled accidentally from the player difficulty UI.
+    production_ai_profile=fc_profile_proof_guided(false);
+    [self optimized_analysisboard:mode];
+}
 -(void) easy_analysisboard:(int) mode
 {
     for (int i = 0; i < 15; i++)
@@ -1590,10 +1678,10 @@
             
             double A_score=[self easy_point_score:i y:j mode:mode];
             if(A_score>3000)
-                A_score -= rand()%1000;
+                A_score -= [self legacy_random_mod:1000];
             else
             {
-                A_score -= rand()%200;
+                A_score -= [self legacy_random_mod:200];
             }
             
             if(i==border_x_min||i==border_x_max||j==border_y_min||j==border_y_max)
@@ -1922,7 +2010,7 @@
         
         if (need_defense_total == 0)
         {
-            int guess_defense_id = rand()% enemy_force_total;
+            int guess_defense_id = [self legacy_random_mod:enemy_force_total];
             int dinger = -1;
             for (int i = 0; i < enemy_force_total; i++)
                 if ([self keypoint:enemy_force[i][0] y:enemy_force[i][1] mode:mode type:0] != 0)
@@ -1954,7 +2042,7 @@
             }
         }
         if (high_id == -1)
-            high_id = rand()% need_defense_total;
+            high_id = [self legacy_random_mod:need_defense_total];
         
         if (banned_mode == 1 && mode == 1)
         {
@@ -2057,7 +2145,7 @@
         
         if (need_defense_total == 0)
         {
-            int guess_defense_id = rand()% enemy_force_total;
+            int guess_defense_id = [self legacy_random_mod:enemy_force_total];
             int dinger = -1;
             for (int i = 0; i < enemy_force_total; i++)
                 if ([self keypoint:enemy_force[i][0] y:enemy_force[i][1] mode:mode type:0] != 0)
@@ -2089,7 +2177,7 @@
             }
         }
         if (high_id == -1)
-            high_id = rand()% need_defense_total;
+            high_id = [self legacy_random_mod:need_defense_total];
         
         if (banned_mode == 1 && mode == 1)
         {
@@ -2582,7 +2670,7 @@
         
         if (need_defense_total == 0)
         {
-            int guess_defense_id = rand()% enemy_force_total;
+            int guess_defense_id = [self legacy_random_mod:enemy_force_total];
             int dinger = -1;
             for (int i = 0; i < enemy_force_total; i++)
                 if ([self keypoint:enemy_force[i][0] y:enemy_force[i][1] mode:mode type:0] != 0)
@@ -2614,7 +2702,7 @@
             }
         }
         if (high_id == -1)
-            high_id = rand()% need_defense_total;
+            high_id = [self legacy_random_mod:need_defense_total];
         
         if (banned_mode == 1 && mode == 1)
         {
@@ -2966,6 +3054,11 @@
     maxchessline=15;
     border=15;
     totalprocess=0;
+    arc4random_buf(&ai_random_seed, sizeof(ai_random_seed));
+    if(ai_random_seed==0)
+        ai_random_seed=0x6963656669766563ULL;
+    ai_decision_sequence=0;
+    memset(&last_ai_analysis, 0, sizeof(last_ai_analysis));
 }
 -(int) current_banmode
 {
@@ -2996,7 +3089,7 @@
 
 -(int) harsh_doublethree_hide_attack:(int)x y:(int)y mode:(int)mode tower:(int)tower
 {
-    if (x < 0 || x > maxchessline - 1 || y < 0 || y > maxchessline - 1 || tower >= 8)
+    if (x < 0 || x > maxchessline - 1 || y < 0 || y > maxchessline - 1 || tower >= harsh_double_three_depth)
         return 0; // if tower is more than 7 which mean has calculate atmost 4^7 steps
     
     int rival_have_to_go[7] = {};
@@ -3076,9 +3169,9 @@
     
     for (int s = 0; s < res; s++) // check if there is a way to break current process
     {
-        int p = rand()%res;
+        int p = [self legacy_random_mod:res];
         while (wented[p] == true)
-            p = rand()%res;
+            p = [self legacy_random_mod:res];
         
         wented[p] = true;
         
@@ -3127,7 +3220,7 @@
 
 -(int) harsh_four_hide_attack:(int)x y:(int)y mode:(int)mode tower:(int)tower
 {
-    if (x < 0 || x > maxchessline - 1 || y < 0 || y > maxchessline - 1 || tower >= 8)
+    if (x < 0 || x > maxchessline - 1 || y < 0 || y > maxchessline - 1 || tower >= harsh_four_depth)
         return 0;
     
     int rival_have_to_go [2] = {};
@@ -3204,7 +3297,7 @@
 }
 -(int) harsh_super_fast_attack:(int)x y:(int)y mode:(int)mode tower:(int)tower
 {
-    if (x < 0 || x > maxchessline - 1 || y < 0 || y > maxchessline - 1 || tower >= 10)
+    if (x < 0 || x > maxchessline - 1 || y < 0 || y > maxchessline - 1 || tower >= harsh_forcing_depth)
         return 0;
     
     int rival_have_to_go [2] = {};
@@ -3313,6 +3406,71 @@
 -(NSString*)get_now_tech
 {
     return now_tech;
+}
+-(void)set_ai_random_seed:(uint64_t)seed
+{
+    ai_random_seed=seed==0?0x6963656669766563ULL:seed;
+    ai_decision_sequence=0;
+}
+-(void)set_legacy_random_seed:(uint64_t)seed
+{
+    legacy_random_isolated=YES;
+    legacy_random_state=(uint32_t)(seed^(seed>>32));
+}
+-(void)enable_optimized_path_depths
+{
+    harsh_four_depth=10;
+    harsh_double_three_depth=10;
+    harsh_forcing_depth=12;
+}
+-(void)set_proof_guided_ai_enabled:(BOOL)enabled opening_book:(BOOL)openingBook
+{
+    production_ai_profile=enabled
+        ? fc_profile_proof_guided(openingBook)
+        : fc_profile_production();
+}
+-(NSDictionary*)last_ai_analysis_summary
+{
+    return @{
+        @"x":@(last_ai_analysis.x),
+        @"y":@(last_ai_analysis.y),
+        @"score":@(last_ai_analysis.score),
+        @"tacticalClass":@(last_ai_analysis.tacticalClass),
+        @"tacticalName":[NSString stringWithUTF8String:fc_tactical_name(last_ai_analysis.tacticalClass)],
+        @"candidateCount":@(last_ai_analysis.candidateCount),
+        @"seed":@(last_ai_analysis.seed),
+        @"nodes":@(last_ai_analysis.stats.nodes),
+        @"transpositionHits":@(last_ai_analysis.stats.transpositionHits),
+        @"cutoffs":@(last_ai_analysis.stats.cutoffs),
+        @"completedDepth":@(last_ai_analysis.stats.completedDepth),
+        @"budgetExhausted":@(last_ai_analysis.stats.budgetExhausted),
+        @"elapsedMilliseconds":@(last_ai_analysis.stats.elapsedMilliseconds)
+        ,@"defaultSource":@(last_ai_analysis.defaultSource)
+        ,@"defaultX":@(last_ai_analysis.defaultX)
+        ,@"defaultY":@(last_ai_analysis.defaultY)
+        ,@"overrideReason":@(last_ai_analysis.overrideReason)
+        ,@"overrideName":[NSString stringWithUTF8String:fc_override_reason_name(last_ai_analysis.overrideReason)]
+        ,@"bookId":@(last_ai_analysis.bookId)
+        ,@"bookPly":@(last_ai_analysis.bookPly)
+        ,@"proofStatus":@(last_ai_analysis.proofStatus)
+        ,@"proofStatusName":[NSString stringWithUTF8String:fc_proof_status_name(last_ai_analysis.proofStatus)]
+        ,@"proofSearchClass":@(last_ai_analysis.proofSearchClass)
+        ,@"proofDistance":@(last_ai_analysis.proofDistance)
+        ,@"proofCertificateId":@(last_ai_analysis.proofCertificateId)
+        ,@"proofCertificateVerified":@(last_ai_analysis.proofCertificateVerified)
+        ,@"proofNodes":@(last_ai_analysis.proofNodes)
+        ,@"proofNumber":@(last_ai_analysis.proofNumber)
+        ,@"disproofNumber":@(last_ai_analysis.disproofNumber)
+        ,@"randomMode":@(last_ai_analysis.randomMode)
+        ,@"randomCandidateCount":@(last_ai_analysis.randomCandidateCount)
+        ,@"randomSelectionUsed":@(last_ai_analysis.randomSelectionUsed)
+    };
+}
+-(NSString*)production_ai_profile_snapshot
+{
+    char buffer[1024]={};
+    fc_profile_snapshot(&production_ai_profile,buffer,sizeof(buffer));
+    return [NSString stringWithUTF8String:buffer];
 }
 -(void) teaching_current_step:(int[15][15])paint_map
 {
