@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "status": "pass",
+  "schedules": [
+    {
+      "path": "openspec/changes/evaluate-parallel-v521-black-five-star/evidence/formal_schedule/freestyle_schedule.json",
+      "sha256": "174656cf1c39cc1c050e03aa38b43ca8b6c68d71829f6951a9137f830264cdf3",
+      "rule": "freestyle",
+      "masterSeed": "0xd48446015af7e6da",
+      "identityCount": 50,
+      "uniqueCanonicalIdentityCount": 50,
+      "uniqueCanonicalPositionCount": 50,
+      "minimumPrefixPlies": 5,
+      "maximumPrefixPlies": 8
+    },
+    {
+      "path": "openspec/changes/evaluate-parallel-v521-black-five-star/evidence/formal_schedule/forbidden_schedule.json",
+      "sha256": "4d7c6de7d1d81778a7fe2bc114d57c8faf3e01960a2102ea2f6b4adbd0d278b7",
+      "rule": "forbidden",
+      "masterSeed": "0xcaff3af96d3c281c",
+      "identityCount": 50,
+      "uniqueCanonicalIdentityCount": 50,
+      "uniqueCanonicalPositionCount": 50,
+      "minimumPrefixPlies": 5,
+      "maximumPrefixPlies": 8
+    }
+  ],
+  "priorSeedCatalog": {
+    "path": "openspec/changes/evaluate-parallel-v521-black-five-star/evidence/prior_seed_catalog.json",
+    "sha256": "5d8d7463ab74b069b386b2278cfd7a6035d9f9b411382e24de56cf01e9a231a9",
+    "count": 37
+  },
+  "sourcePackageManifest": {
+    "path": "openspec/changes/optimize-five-star-proof-engine/evidence/formal_source_packages.json",
+    "sha256": "527c6260763922ddc8e62aa040b5779d190233d13b84ad1773c3c4a58cdecc6a",
+    "count": 13
+  },
+  "excludedOrderedIdentityCount": 2598,
+  "excludedCanonicalPositionCount": 2580,
+  "crossRuleOrderedIdentityOverlap": [],
+  "crossRuleCanonicalPositionOverlap": [],
+  "failures": []
+}

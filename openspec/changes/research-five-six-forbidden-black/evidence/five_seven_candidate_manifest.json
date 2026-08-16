@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "candidateVersion": "5.7.0-white-v541-black-v521-independent-root-parallel8-5s",
+  "status": "research-candidate-only",
+  "freezeDate": "2026-08-15",
+  "limits": {
+    "internalDecisionDeadlineMs": 4500,
+    "playerVisibleHardLimitMs": 5000,
+    "configuredProofWorkers": 8
+  },
+  "components": {
+    "white": "5.4.1-transactional-deadline-root-parallel-5s",
+    "black": "v5.2.1-loss-aware-independent-root-parallel8"
+  },
+  "sourceSha256": {
+    "ice five chess/FiveChessAI.c": "0fdec34f813d44fb7acfddc6745c1b58ea067f3fe7a0caf6114e4d08fe3e9617",
+    "ice five chess/FiveChessAI.h": "c8cca3ff7904a2094c68240a4f057662234eb327f1b3bf431fe04e4b9c9f0758",
+    "tools/five_chess_benchmark.m": "dbbc2bd22d8379fcca5c2b5eea50d2374b0b72a9461debb50590f6de6e952cf1",
+    "tools/five_chess_ai_tests.c": "8629f0dd8a7b16cedaabbd206891706bb44a0884b914d7046a7c8fa36cfa8348"
+  },
+  "openingSchedule": {
+    "path": "tools/FiveChessFormalOpenings.inc",
+    "sha256": "f96ba623537e0e74fc1353c2e5924d47263fe2518820b6839df15198b20a3109",
+    "protocol": "natural-prefix/no-swap",
+    "openings": 50,
+    "gamesPerRule": 100
+  },
+  "cells": {
+    "free": {
+      "raw": "reports/five_chess/five_star_v57_20260815/raw/free_vs_four.jsonl",
+      "sha256": "b01763c0261d8b8095ef60ed4d817bff370bd4cc634c1a9c5988f4a337220e49",
+      "candidateWdl": "21/1/28 white; 29/0/21 black; 50/1/49 overall",
+      "candidateScoreRate": {"white": 0.43, "black": 0.58, "overall": 0.505},
+      "maxStepMs": 4575.796
+    },
+    "forbiddenBlack": {
+      "raw": "reports/five_chess/five_star_v57_20260815/raw/forbidden_vs_four.jsonl",
+      "sha256": "74ec686e97f8936c9ce5aa00e487df47ab27ad28e8adeca77d12daebcf68b1e4",
+      "candidateWdl": "27/0/23 white; 27/0/23 black; 54/0/46 overall",
+      "candidateScoreRate": {"white": 0.54, "black": 0.54, "overall": 0.54},
+      "maxStepMs": 4662.38
+    }
+  },
+  "replay": {
+    "path": "reports/five_chess/five_star_v57_20260815/replay/replay_summary.json",
+    "sha256": "66ab1b079ad8b257f8ffb6a43da90ce44b0b073db4dad7f755a244b14b019e34",
+    "status": "pass",
+    "games": 200,
+    "moves": 3246
+  },
+  "report": {
+    "path": "reports/five_chess/five_star_v57_20260815/report/v57_vs_four_star_report.md",
+    "sha256": "0f81f3afebb7af9396ce9f5d26d231bd5af3095f79aaea4cd220120e79d2d14a"
+  },
+  "production": "unchanged; explicit promotion change required"
+}

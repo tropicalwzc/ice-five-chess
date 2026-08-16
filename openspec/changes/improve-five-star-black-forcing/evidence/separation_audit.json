@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "runtimeDiagnosticIncludeGenerated": false,
+  "historicalIdListPresentInProduction": false,
+  "priorSeedDomains": [
+    "five-star-natural-final-five-star-natural-forbidden-v3",
+    "five-star-natural-final-five-star-natural-free-v3"
+  ],
+  "formalSeedStatus": "must-be-generated-after-profile-freeze",
+  "policy": "prior failures and corpus positions are diagnostic-only; formal schedules use untouched natural seeds"
+}

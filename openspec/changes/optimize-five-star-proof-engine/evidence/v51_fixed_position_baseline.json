@@ -1,0 +1,35 @@
+{
+  "source_note": "Same-seed v5.1 control decisions captured before candidate promotion; historical JSONL is immutable input.",
+  "sources": {
+    "no_forbidden": "reports/five_chess/five_star_loss_aware_20260814/diagnostics/ab_v51_free.jsonl",
+    "forbidden": "reports/five_chess/five_star_loss_aware_20260814/diagnostics/ab_v51_forbidden.jsonl"
+  },
+  "no_forbidden": {
+    "decisions": 326,
+    "p50_ms": 270.742,
+    "p95_ms": 1271.102,
+    "max_ms": 4696.098,
+    "mean_ms": 387.08514110429456,
+    "proof_status_counts": {"unknown": 183, "proven_win": 84, "no_forced_win_in_scope": 59},
+    "deterministic_proof_nodes": 4754,
+    "tt_hits": 1230,
+    "budget_exhausted_decisions": 134
+  },
+  "forbidden": {
+    "decisions": 361,
+    "p50_ms": 384.967,
+    "p95_ms": 2106.962,
+    "max_ms": 4084.675,
+    "mean_ms": 626.8027119113575,
+    "proof_status_counts": {"unknown": 215, "proven_win": 89, "no_forced_win_in_scope": 57},
+    "deterministic_proof_nodes": 3957,
+    "tt_hits": 758,
+    "budget_exhausted_decisions": 160
+  },
+  "legacy_counter_availability": {
+    "allocations": "not present in schema v5; candidate schema records it",
+    "board_copies": "not present in schema v5; candidate schema records it",
+    "full_scan_counters": "not present in schema v5; candidate schema records it"
+  },
+  "percentile_definition": "nearest rank over all steps whose engine is new, using sorted zero-based ceil((n-1)*q) for p95 and floor((n-1)*q) for p50"
+}

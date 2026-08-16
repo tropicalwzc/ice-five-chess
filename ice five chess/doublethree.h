@@ -71,6 +71,7 @@
 -(void) harsh_analysisboard:(int) mode;
 -(void) optimized_analysisboard:(int) mode;
 -(void) four_star_analysisboard:(int) mode;
+-(void) five_star_analysisboard:(int) mode;
 -(void) easy_analysisboard:(int) mode;
 -(int) add_a_chess:(int) pl_x pl_y:(int) pl_y mode:(int) mode;
 -(void)emoji_techer:(double)sc;

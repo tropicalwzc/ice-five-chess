@@ -12,6 +12,7 @@ typedef struct {
     int moves[16][3];
     int moveCount;
     int side;
+    int difficulty;
     unsigned int seed;
     int expectedX;
     int expectedY;
@@ -21,19 +22,50 @@ static LegacyGoldenCase cases[] = {
     {
         "opening-cross",
         {{7,7,1},{7,8,-1},{8,7,1},{6,7,-1}},
-        4, 1, 1001, 8, 8
+        4, 1, 3, 1001, 8, 8
     },
     {
         "must-block-horizontal",
         {{7,7,1},{5,4,-1},{6,7,1},{5,5,-1},{8,8,1},{5,6,-1},{9,9,1},{5,7,-1}},
-        8, 1, 1002, 5, 3
+        8, 1, 3, 1002, 5, 3
     },
     {
         "white-midgame",
         {{7,7,1},{7,8,-1},{8,8,1},{6,6,-1},{8,7,1},{9,7,-1},{6,8,1}},
-        7, -1, 1003, 8, 6
+        7, -1, 3, 1003, 8, 6
+    },
+    {
+        "two-star-opening-cross",
+        {{7,7,1},{7,8,-1},{8,7,1},{6,7,-1}},
+        4, 1, 2, 2001, 8, 8
+    },
+    {
+        "two-star-white-midgame",
+        {{7,7,1},{7,8,-1},{8,8,1},{6,6,-1},{8,7,1},{9,7,-1},{6,8,1}},
+        7, -1, 2, 2002, 8, 6
+    },
+    {
+        "one-star-opening-cross",
+        {{7,7,1},{7,8,-1},{8,7,1},{6,7,-1}},
+        4, 1, 1, 3001, 8, 6
+    },
+    {
+        "one-star-white-midgame",
+        {{7,7,1},{7,8,-1},{8,8,1},{6,6,-1},{8,7,1},{9,7,-1},{6,8,1}},
+        7, -1, 1, 3002, 8, 6
     }
 };
+
+static void analyze_case(doublethree *engine,
+                         const LegacyGoldenCase *testCase)
+{
+    if (testCase->difficulty == 1)
+        [engine egg_analysisboard:testCase->side];
+    else if (testCase->difficulty == 2)
+        [engine easy_analysisboard:testCase->side];
+    else
+        [engine harsh_analysisboard:testCase->side];
+}
 
 static void load_case(doublethree *engine, const LegacyGoldenCase *testCase)
 {
@@ -49,7 +81,7 @@ static void run_case(const LegacyGoldenCase *testCase, int result[2])
     doublethree *engine = [[doublethree alloc] init];
     load_case(engine, testCase);
     srand(testCase->seed);
-    [engine harsh_analysisboard:testCase->side];
+    analyze_case(engine, testCase);
     [engine get_last_pos_return_color:result];
 }
 
@@ -58,7 +90,7 @@ static void run_isolated_case(const LegacyGoldenCase *testCase, int result[2])
     doublethree *engine = [[doublethree alloc] init];
     load_case(engine, testCase);
     [engine set_legacy_random_seed:testCase->seed];
-    [engine harsh_analysisboard:testCase->side];
+    analyze_case(engine, testCase);
     [engine get_last_pos_return_color:result];
 }
 
@@ -83,7 +115,7 @@ int main(int argc, const char *argv[])
                 assert(first[1] == cases[i].expectedY);
             }
         }
-        if (!printOnly) puts("legacy-three-star golden tests passed");
+        if (!printOnly) puts("legacy one/two/three-star golden tests passed");
     }
     return 0;
 }

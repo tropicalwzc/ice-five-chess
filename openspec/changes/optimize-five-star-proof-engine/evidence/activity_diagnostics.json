@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 2,
+  "profileVersion": "5.4.1-transactional-deadline-root-parallel-5s",
+  "reuseStable": true,
+  "iteratedCertificateReplay": true,
+  "quietAnalyzed": true,
+  "freeScopedDisproofReplay": true,
+  "forbiddenScopedDisproofReplay": true,
+  "parallelActive": true,
+  "sections": {
+    "session": {"mostProvingExpansions":19,"proofSessionHits":2,"allocatedBytes":10747904,"proofGraphNodes":88,"proofGraphEdges":86,"proofGraphArenaExhaustions":0,"relevanceVerifiedOmissions":3180,"iteratedRelatedZoneIntersections":0,"iteratedRelatedZoneContinuations":13,"iteratedRelatedZonePointsRemoved":0,"dependencyCombinations":0,"dependencyChainsProposed":0,"quietRootsExamined":0,"completedScopeDisproofs":2,"parallelBatches":0,"parallelWorkersLaunched":0,"parallelRootJobs":0,"parallelRootJobsCompleted":0,"parallelRootWins":0,"parallelAggregateDisproofs":0},
+    "iterated": {"mostProvingExpansions":1,"proofSessionHits":0,"allocatedBytes":10747904,"proofGraphNodes":3,"proofGraphEdges":2,"proofGraphArenaExhaustions":0,"relevanceVerifiedOmissions":0,"iteratedRelatedZoneIntersections":1,"iteratedRelatedZoneContinuations":2,"iteratedRelatedZonePointsRemoved":26,"dependencyCombinations":0,"dependencyChainsProposed":0,"quietRootsExamined":0,"completedScopeDisproofs":0,"parallelBatches":0,"parallelWorkersLaunched":0,"parallelRootJobs":0,"parallelRootJobsCompleted":0,"parallelRootWins":0,"parallelAggregateDisproofs":0},
+    "dependency": {"mostProvingExpansions":133,"proofSessionHits":5,"allocatedBytes":10747904,"proofGraphNodes":453,"proofGraphEdges":456,"proofGraphArenaExhaustions":0,"relevanceVerifiedOmissions":11722,"iteratedRelatedZoneIntersections":0,"iteratedRelatedZoneContinuations":0,"iteratedRelatedZonePointsRemoved":0,"dependencyCombinations":1,"dependencyChainsProposed":1,"quietRootsExamined":0,"completedScopeDisproofs":2,"parallelBatches":0,"parallelWorkersLaunched":0,"parallelRootJobs":0,"parallelRootJobsCompleted":0,"parallelRootWins":0,"parallelAggregateDisproofs":0},
+    "quiet": {"mostProvingExpansions":33,"proofSessionHits":1,"allocatedBytes":96731136,"proofGraphNodes":49,"proofGraphEdges":32,"proofGraphArenaExhaustions":0,"relevanceVerifiedOmissions":1720,"iteratedRelatedZoneIntersections":0,"iteratedRelatedZoneContinuations":0,"iteratedRelatedZonePointsRemoved":0,"dependencyCombinations":0,"dependencyChainsProposed":0,"quietRootsExamined":1,"completedScopeDisproofs":18,"parallelBatches":1,"parallelWorkersLaunched":8,"parallelRootJobs":8,"parallelRootJobsCompleted":8,"parallelRootWins":0,"parallelAggregateDisproofs":1},
+    "freeDisproof": {"mostProvingExpansions":1,"proofSessionHits":0,"allocatedBytes":10747904,"proofGraphNodes":1,"proofGraphEdges":0,"proofGraphArenaExhaustions":0,"relevanceVerifiedOmissions":0,"iteratedRelatedZoneIntersections":0,"iteratedRelatedZoneContinuations":0,"iteratedRelatedZonePointsRemoved":0,"dependencyCombinations":0,"dependencyChainsProposed":0,"quietRootsExamined":0,"completedScopeDisproofs":1,"parallelBatches":0,"parallelWorkersLaunched":0,"parallelRootJobs":0,"parallelRootJobsCompleted":0,"parallelRootWins":0,"parallelAggregateDisproofs":0},
+    "forbiddenDisproof": {"mostProvingExpansions":1,"proofSessionHits":0,"allocatedBytes":10747904,"proofGraphNodes":1,"proofGraphEdges":0,"proofGraphArenaExhaustions":0,"relevanceVerifiedOmissions":0,"iteratedRelatedZoneIntersections":0,"iteratedRelatedZoneContinuations":0,"iteratedRelatedZonePointsRemoved":0,"dependencyCombinations":0,"dependencyChainsProposed":0,"quietRootsExamined":0,"completedScopeDisproofs":1,"parallelBatches":0,"parallelWorkersLaunched":0,"parallelRootJobs":0,"parallelRootJobsCompleted":0,"parallelRootWins":0,"parallelAggregateDisproofs":0}
+  }
+}

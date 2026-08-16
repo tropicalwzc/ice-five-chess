@@ -1,0 +1,3560 @@
+{
+  "schemaVersion": 1,
+  "seedDomain": "five-star-final-v1",
+  "masterSeed": "0x5a7f1a1c20260813",
+  "identityCount": 100,
+  "uniqueCanonicalIdentityCount": 100,
+  "excludedDiagnosticCanonicalIds": [
+    "04771faaad8fbfb60127",
+    "06d7a3dd42e4015b66d0",
+    "07b59df13763eba354f9",
+    "0b254ebc15a010404936",
+    "0b7f7574af594f07e0e6",
+    "0fc391cbbc85ffe948b4",
+    "1122eda0abd5202248b2",
+    "15b66fbe538d425b0fbe",
+    "18aa42593b059beb0807",
+    "1921cfc03517ad262d76",
+    "1afec9f25b94079c71d7",
+    "1e8054fbee2e491eec41",
+    "24235f4a84d1ad877989",
+    "25a9391ae7be80698599",
+    "25b27d61793684c490a5",
+    "272c1a9e968cd3664162",
+    "273652e903a88e8a6a67",
+    "2815466bb9e795fc813d",
+    "2c888ef2c8b31700512a",
+    "2e72717eefa500e0c3a0",
+    "2e97607c2db50699dc59",
+    "2fcb5dc1d911c72327e7",
+    "34197d77152ceb645571",
+    "39eb0f8d01ef76e1eae0",
+    "3c971034d062fb2b46ca",
+    "3cfb7c57403e5ac95c37",
+    "3df39cb102ca64c9ca1b",
+    "3ed3aaf7742fdee82ad4",
+    "42501307ec42c46f867e",
+    "451dbd837c10bc3d437a",
+    "4713d1e774355bf0c7b3",
+    "482657a950b4d21b7d50",
+    "4a49942cb2bbf1eb25b0",
+    "4bb30f8a136f4d94fd9b",
+    "4d42640b00a348848567",
+    "5084f02406f1b18da7c8",
+    "54b26f1ce48df5c6c7e1",
+    "57a67495911aaeaa15d4",
+    "57c586507873bd1dc55a",
+    "5bd430f8aef68b80ceaa",
+    "5d3119e54382aa320b90",
+    "63e3019665309d557478",
+    "6776076b41499f469097",
+    "67c637801375e94cbe9d",
+    "67fd4901f05e100031f3",
+    "689446aafdf1fdd83e9c",
+    "6a0f08b8a5e772aa975d",
+    "6c7261b05ada47b94efd",
+    "6e52b5073d371f89fc7d",
+    "7334821429a99561be94",
+    "73b8073a4a941546898c",
+    "73c832d9ce166d0e7d3b",
+    "769d74ca1729f921bc1a",
+    "78fa4fc13870c122061f",
+    "79689d7f9d9bebc6c0f8",
+    "7c3f1d38771e38550941",
+    "7f788c72d509b4c02210",
+    "7ffa9b297bb1b2214cb5",
+    "80b9fa85179ae084506a",
+    "824bd9da8899a937db39",
+    "8372e3d092611a27ad50",
+    "8389b31643fb804a5e2a",
+    "8843001112c6ad708093",
+    "8a944690cb43ba607676",
+    "8e57142149964561bcd2",
+    "8fd3d12007db15b862b1",
+    "911f624f343f529c5324",
+    "912b59bcd544338c1670",
+    "9742ca7006efc1ad76ea",
+    "9903ca2738d44957fb8c",
+    "9d071c2c2984e10e6833",
+    "9d578612f6a8f8d56338",
+    "9d86ea9857dec3e8257f",
+    "a13068a3794895ef06af",
+    "a18226e515492ee76352",
+    "a33b3fcbaf802984893e",
+    "a345c3e0996f4b71338f",
+    "a6879a20f5e46bae6615",
+    "a6f8da321359ad7566d4",
+    "a8ea63bbcbfc57ef2007",
+    "a9993372c6fe1aedfd7c",
+    "aa32e34f830e5ca53f66",
+    "aaf7b830a7f569d89bc3",
+    "adafd899c459daf1a11f",
+    "b31138d108d30429ca07",
+    "b69849eed322d1991289",
+    "b818e876699e86dd61a3",
+    "b8cc624f1a3102953d8f",
+    "bbfac89b6e2524b2322e",
+    "bf48b1fec451987663cd",
+    "c3f5243983f5fb04cd0a",
+    "c7318631dda493898e0c",
+    "cafa000f00db1b40e034",
+    "cb59cc15b7c7041d59c0",
+    "d1400087a6659345128f",
+    "d16ca82eef65c8ef6ed8",
+    "d2fcfd642427ce49cede",
+    "d30882608e4375659ea6",
+    "d3f8ed4aeb74fe8c458f",
+    "d59c220a87e67cce82a0",
+    "d59ef4907ddef88a27d9",
+    "d8d779ab36f7aaf06b80",
+    "dd2b27271fb43d38113c",
+    "e072cbb94ab32aed2b2f",
+    "e3b8ae6cf658719aa404",
+    "e48c56ba1e2e3eeced21",
+    "e66fe6835eaabd86bff6",
+    "e991e69f2f9049744f11",
+    "ea7d17dc7578ff49ef75",
+    "eb616d0d00e9a9095397",
+    "ece51eeb26982538a673",
+    "ef15ca509b8202112e09",
+    "efb5e0fed671aed58825",
+    "f6c2d87fcfbf607af7b1",
+    "f6feb9b7de1482a4ed81",
+    "f80d1e711dbcc2005b01",
+    "f83ea814430eed8d3a85",
+    "f8db75c0c241479ab5e6",
+    "ff2c3bbc51abcb55137c"
+  ],
+  "sourcePackages": [
+    {
+      "year": 2024,
+      "sha256": "f6b45f816fd9fe3f94ea751a48b1c3a7db0a52ea3f806b4def1f12464a43eab6",
+      "member": "openings/openings_freestyle15.txt"
+    },
+    {
+      "year": 2025,
+      "sha256": "91fc8cbefee5918994e028dd3f17143c5a46b948ed09b21c10ac0c1f1d4a8f09",
+      "member": "openings/openings_freestyle15.txt"
+    },
+    {
+      "year": 2026,
+      "sha256": "d14c1acc0daae22a2f7589ca262abb6f1622c27f1f88ec811814cef4c948bf25",
+      "member": "openings_freestyle15_piskvork.txt"
+    }
+  ],
+  "selection": "SHA-256 ordering of held-out canonical prefixes after diagnostic exclusion",
+  "officialCandidateCountAfterExclusion": 50,
+  "syntheticNeutralCandidatesAdded": 50,
+  "entries": [
+    {
+      "openingId": 0,
+      "canonicalId": "c1877e473893311268bd",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          5,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          0,
+          5
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 8,
+          "prefixLength": 6
+        }
+      ]
+    },
+    {
+      "openingId": 1,
+      "canonicalId": "f38f6ce8f8799be5ab68",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          -4
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          -1
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 22,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 2,
+      "canonicalId": "8efd0e936429e37a7a97",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 1,
+          "prefixLength": 1
+        },
+        {
+          "year": 2025,
+          "openingIndex": 2,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 3,
+      "canonicalId": "1e7e2e6f2d5eab8aef04",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          -4
+        ],
+        [
+          -4,
+          2
+        ],
+        [
+          4,
+          -1
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          1,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 20,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 4,
+      "canonicalId": "148ad9a47e763b52a630",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -3,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 9,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 5,
+      "canonicalId": "9ebd63458f6e031b1211",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -1,
+          -6
+        ],
+        [
+          -1,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 1,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 6,
+      "canonicalId": "c111a31533711ab4610d",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          4,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -4,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 27,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 7,
+      "canonicalId": "efce8d266e30eb2141af",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          0,
+          -3
+        ],
+        [
+          2,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 8,
+      "canonicalId": "58f67700616bc01fdd00",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 4,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 9,
+      "canonicalId": "10c7f0b6c6b4517aeaf0",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -6,
+          -1
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          -1,
+          -3
+        ],
+        [
+          -1,
+          -6
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 1,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 10,
+      "canonicalId": "57b462db0eeb9d4db59b",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -2,
+          3
+        ],
+        [
+          4,
+          -4
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          1,
+          -3
+        ],
+        [
+          -2,
+          4
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 47,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 11,
+      "canonicalId": "cd629014e43f04f18dd8",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          1,
+          6
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 0,
+          "prefixLength": 1
+        },
+        {
+          "year": 2026,
+          "openingIndex": 1,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 12,
+      "canonicalId": "a31de7b121fe4725f864",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          4
+        ],
+        [
+          5,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 3,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 13,
+      "canonicalId": "c56e81d1ca5472f4eacd",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          -1,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 13,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 14,
+      "canonicalId": "a405d76d49ecf1e16cb2",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -6,
+          -6
+        ],
+        [
+          -4,
+          -4
+        ],
+        [
+          -6,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 6,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 15,
+      "canonicalId": "3415e31e59a8a51fbf19",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          2,
+          3
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          2,
+          -4
+        ],
+        [
+          -4,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          -1,
+          -4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 18,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 16,
+      "canonicalId": "f814eb1a2030b0e604a4",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          3,
+          -2
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          -1,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 32,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 17,
+      "canonicalId": "f9c01112b003897d1e60",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          -3
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          -1,
+          -3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 44,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 18,
+      "canonicalId": "9dafc602c1d6ef15073c",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          6,
+          -6
+        ],
+        [
+          4,
+          -4
+        ],
+        [
+          2,
+          -6
+        ],
+        [
+          4,
+          -2
+        ],
+        [
+          2,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 6,
+          "prefixLength": 5
+        }
+      ]
+    },
+    {
+      "openingId": 19,
+      "canonicalId": "d3110605091fae709439",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          -2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          3,
+          -3
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          -3,
+          4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 24,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 20,
+      "canonicalId": "dfcc50e9cb1a3c983af9",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          3,
+          3
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          0,
+          -4
+        ],
+        [
+          4,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 1,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 21,
+      "canonicalId": "70bfa9e9f3c365a6c53d",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -6,
+          -6
+        ],
+        [
+          -4,
+          -4
+        ],
+        [
+          -6,
+          -2
+        ],
+        [
+          -2,
+          -4
+        ],
+        [
+          -3,
+          -2
+        ],
+        [
+          -5,
+          -4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 6,
+          "prefixLength": 6
+        }
+      ]
+    },
+    {
+      "openingId": 22,
+      "canonicalId": "43296f175adc02142d08",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          0
+        ],
+        [
+          4,
+          -1
+        ],
+        [
+          -1,
+          4
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          -1,
+          -4
+        ],
+        [
+          -4,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 28,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 23,
+      "canonicalId": "d5c050728d3132bebf2e",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          4
+        ],
+        [
+          -1,
+          5
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 2,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 24,
+      "canonicalId": "36e468acdf98a0f3b227",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          -4
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          -4,
+          -4
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 35,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 25,
+      "canonicalId": "73a2d6ccc9896ca7930d",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          1,
+          3
+        ],
+        [
+          -2,
+          3
+        ],
+        [
+          3,
+          -1
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 31,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 26,
+      "canonicalId": "71fe2414ddb4cc08c1b8",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -3,
+          -2
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 2,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 27,
+      "canonicalId": "ea67440bf52f978049ae",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          4,
+          6
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 0,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 28,
+      "canonicalId": "b698450551f9e9d482e5",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          2,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 11,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 29,
+      "canonicalId": "8db7c8ff14cff96a326e",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          2
+        ],
+        [
+          -4,
+          2
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 11,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 30,
+      "canonicalId": "9cb6d53f321f636db264",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -6,
+          6
+        ],
+        [
+          -4,
+          4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 6,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 31,
+      "canonicalId": "586ae346c3379330c6b4",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          1,
+          -2
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          -2,
+          3
+        ],
+        [
+          3,
+          -1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 48,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 32,
+      "canonicalId": "5ed92c1834dc9876d0e0",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 2,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 33,
+      "canonicalId": "c34bb9b825532bf1ccbc",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          -5
+        ],
+        [
+          -4,
+          -6
+        ],
+        [
+          -3,
+          -7
+        ],
+        [
+          -2,
+          -7
+        ],
+        [
+          -1,
+          -6
+        ],
+        [
+          0,
+          -5
+        ],
+        [
+          -1,
+          -4
+        ],
+        [
+          -3,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 8,
+          "prefixLength": 8
+        }
+      ]
+    },
+    {
+      "openingId": 34,
+      "canonicalId": "263a8a86fd80aa8d5f28",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          3,
+          -3
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          -4,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 40,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 35,
+      "canonicalId": "3555e82d392115556c22",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          0,
+          -4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 41,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 36,
+      "canonicalId": "236fbb649c7e4093dc49",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          7,
+          -5
+        ],
+        [
+          5,
+          -7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 0,
+          "prefixLength": 2
+        },
+        {
+          "year": 2025,
+          "openingIndex": 4,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 37,
+      "canonicalId": "dd80ef1816020b36b1b1",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          -3,
+          3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 7,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 38,
+      "canonicalId": "c1009df8096a73f356a3",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -4,
+          2
+        ],
+        [
+          3,
+          -2
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 49,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 39,
+      "canonicalId": "418fdc60b67b3a1d6548",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -1,
+          -3
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          2,
+          -3
+        ],
+        [
+          -4,
+          3
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          -3,
+          3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 30,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 40,
+      "canonicalId": "62a7ab0082ed202d7922",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          2
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          -3,
+          4
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          0,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 38,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 41,
+      "canonicalId": "759a17ac41dedfaaebb2",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          4,
+          -3
+        ],
+        [
+          5,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 1,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 42,
+      "canonicalId": "27c52a06955df191dbd7",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          3,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 2,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 43,
+      "canonicalId": "3b27f76829d677b88a32",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          2,
+          -4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          -1
+        ],
+        [
+          1,
+          -4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 12,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 44,
+      "canonicalId": "39dc6c006215bd9e644e",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          5
+        ],
+        [
+          -6,
+          4
+        ],
+        [
+          -7,
+          3
+        ],
+        [
+          -7,
+          2
+        ],
+        [
+          -6,
+          1
+        ],
+        [
+          -5,
+          0
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          -3,
+          4
+        ],
+        [
+          -3,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 8,
+          "prefixLength": 10
+        }
+      ]
+    },
+    {
+      "openingId": 45,
+      "canonicalId": "1cdd118762d49a1b66d5",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          3,
+          -4
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          -4,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 34,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 46,
+      "canonicalId": "e5a5ae3495507469695b",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          2,
+          1
+        ],
+        [
+          4,
+          -3
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          1,
+          -4
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          3,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 19,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 47,
+      "canonicalId": "35a81df06fe6d7d6a03c",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          1,
+          3
+        ],
+        [
+          -4,
+          3
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -1,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 36,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 48,
+      "canonicalId": "31b46c7e4425c2981f11",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          5
+        ],
+        [
+          -4,
+          6
+        ],
+        [
+          -3,
+          7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 8,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 49,
+      "canonicalId": "caed802ee5ed1663cf05",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          4,
+          2
+        ],
+        [
+          3,
+          -2
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          -2,
+          4
+        ],
+        [
+          -1,
+          3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 10,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 50,
+      "canonicalId": "89d39b0b924d4efe8c99",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          4,
+          3
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          -3,
+          -2
+        ],
+        [
+          -2,
+          -4
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 23,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 51,
+      "canonicalId": "e9cd47ca7dbe0580f7c9",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -2,
+          -4
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          -2,
+          3
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          3,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 2,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 52,
+      "canonicalId": "245256e7a0faacd07852",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          -2
+        ],
+        [
+          -3,
+          -3
+        ],
+        [
+          -4,
+          -3
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 45,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 53,
+      "canonicalId": "03893878c268c567f796",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          -4,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          -1,
+          4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 16,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 54,
+      "canonicalId": "6ff5fb580606ee170659",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          2,
+          7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 9,
+          "prefixLength": 1
+        },
+        {
+          "year": 2025,
+          "openingIndex": 10,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 55,
+      "canonicalId": "61d641f0a9cedebb0999",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          3,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 5,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 56,
+      "canonicalId": "6ecbbc5a600821e4cca5",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 10,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 57,
+      "canonicalId": "5a3922a09fd8387ecf55",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 7,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 58,
+      "canonicalId": "b271caf6f7ae9d59da87",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          5,
+          -7
+        ],
+        [
+          4,
+          -7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 5,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 59,
+      "canonicalId": "069c5d98049084c538cb",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          5,
+          -5
+        ],
+        [
+          4,
+          -6
+        ],
+        [
+          3,
+          -7
+        ],
+        [
+          2,
+          -7
+        ],
+        [
+          1,
+          -6
+        ],
+        [
+          0,
+          -5
+        ],
+        [
+          1,
+          -4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 8,
+          "prefixLength": 7
+        }
+      ]
+    },
+    {
+      "openingId": 60,
+      "canonicalId": "2d1a72b0f5175e0594e0",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          3,
+          0
+        ],
+        [
+          -4,
+          2
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          3,
+          -1
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          2,
+          -4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 15,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 61,
+      "canonicalId": "057c6eaecfa00e60b2dc",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          2,
+          -3
+        ],
+        [
+          1,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 9,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 62,
+      "canonicalId": "45b797aaf188782d18f6",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          -1,
+          -3
+        ],
+        [
+          -1,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 10,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 63,
+      "canonicalId": "62010bd2f257a3c16f61",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -3,
+          -3
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          -2,
+          3
+        ],
+        [
+          -1,
+          3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 0,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 64,
+      "canonicalId": "0d2eed3c2e45b52724b0",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          0,
+          -3
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -3,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 6,
+          "prefixLength": 19
+        }
+      ]
+    },
+    {
+      "openingId": 65,
+      "canonicalId": "5756761ac4082be4492c",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          5
+        ],
+        [
+          -4,
+          6
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 8,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 66,
+      "canonicalId": "faead5fb5cf5168e4eee",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          4,
+          -4
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          -4
+        ],
+        [
+          -4,
+          3
+        ],
+        [
+          -3,
+          4
+        ],
+        [
+          -1,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 42,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 67,
+      "canonicalId": "31a10307e79037b9f4a0",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          -1
+        ],
+        [
+          4,
+          -1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -2,
+          -3
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          -2,
+          3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 25,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 68,
+      "canonicalId": "5a313d43dfa0a2f7cc68",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -2,
+          3
+        ],
+        [
+          -2,
+          -4
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 46,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 69,
+      "canonicalId": "b1019be9ec849e564372",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -6,
+          4
+        ],
+        [
+          -5,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 0,
+          "prefixLength": 2
+        }
+      ]
+    },
+    {
+      "openingId": 70,
+      "canonicalId": "960ce93ff64c89b937d9",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          0,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 11,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 71,
+      "canonicalId": "69d781d0cbba1d2ae1c5",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          -1,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 3,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 72,
+      "canonicalId": "971794d1e8c3817e33fd",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          5
+        ],
+        [
+          -6,
+          4
+        ],
+        [
+          -7,
+          3
+        ],
+        [
+          -7,
+          2
+        ],
+        [
+          -6,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 8,
+          "prefixLength": 5
+        }
+      ]
+    },
+    {
+      "openingId": 73,
+      "canonicalId": "7d9ee3252b3ed283ae20",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          5
+        ],
+        [
+          -4,
+          6
+        ],
+        [
+          -3,
+          7
+        ],
+        [
+          -2,
+          7
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 8,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 74,
+      "canonicalId": "3b9971ea24cb2727c741",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          1,
+          -1
+        ],
+        [
+          4,
+          -1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          -3,
+          4
+        ],
+        [
+          -2,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 26,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 75,
+      "canonicalId": "603aad4eed11fbd2f14f",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          1,
+          -3
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 21,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 76,
+      "canonicalId": "ea2917e1b2aba686e550",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          -3
+        ],
+        [
+          -1,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 4,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 77,
+      "canonicalId": "49d1e0808db58d0e164b",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          5
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 8,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 78,
+      "canonicalId": "84422684035d3cf3e0c7",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          1
+        ],
+        [
+          0,
+          -4
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          4,
+          -3
+        ],
+        [
+          -4,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 9,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 79,
+      "canonicalId": "a6f9a413389831c075c6",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -1,
+          -6
+        ],
+        [
+          -1,
+          -3
+        ],
+        [
+          -3,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 1,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 80,
+      "canonicalId": "b403579157976f2616ce",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          1,
+          -4
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -4
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          -4,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 4,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 81,
+      "canonicalId": "fd6fae9caa050fb4c2bf",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -5,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2025,
+          "openingIndex": 11,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 82,
+      "canonicalId": "586d664ab9c8f2d96b04",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          0,
+          -3
+        ],
+        [
+          2,
+          -3
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 14,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 83,
+      "canonicalId": "92151afb3b400585492c",
+      "scheduledTransform": 3,
+      "scheduledMovesRelative": [
+        [
+          1,
+          -4
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          2,
+          -4
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          -3
+        ],
+        [
+          -4,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 8,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 84,
+      "canonicalId": "f8d5d39b6de82c70757d",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2024,
+          "openingIndex": 5,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 85,
+      "canonicalId": "9c6de0e70321e1d8b07f",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -2,
+          3
+        ],
+        [
+          -3,
+          2
+        ],
+        [
+          -4,
+          3
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          -4,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 33,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 86,
+      "canonicalId": "5ca54332c0b30db686be",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -6,
+          6
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 6,
+          "prefixLength": 1
+        }
+      ]
+    },
+    {
+      "openingId": 87,
+      "canonicalId": "b12bd59b2563f5b54101",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -3,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 3,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 88,
+      "canonicalId": "b0d003730a489b9bbb0c",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          -1,
+          -4
+        ],
+        [
+          2,
+          -4
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          -4,
+          4
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 3,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 89,
+      "canonicalId": "2980fae519f1975fd407",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 7,
+          "prefixLength": 3
+        }
+      ]
+    },
+    {
+      "openingId": 90,
+      "canonicalId": "546ec05fc011a54462b1",
+      "scheduledTransform": 7,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 5,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 91,
+      "canonicalId": "0fe95f69408cd34c70a8",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          6,
+          6
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 6,
+          "prefixLength": 4
+        }
+      ]
+    },
+    {
+      "openingId": 92,
+      "canonicalId": "98c91dbbf45159060f66",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -2,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          3,
+          -4
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          2,
+          -3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 37,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 93,
+      "canonicalId": "97429eab5e6930391919",
+      "scheduledTransform": 5,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          -3
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          -1
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 17,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 94,
+      "canonicalId": "181563bd6bdb3adcd2e9",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          0,
+          0
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          1,
+          -3
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 5,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 95,
+      "canonicalId": "17bbe45ff002fd70177d",
+      "scheduledTransform": 6,
+      "scheduledMovesRelative": [
+        [
+          0,
+          -2
+        ],
+        [
+          -1,
+          -4
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          4,
+          -1
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 29,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 96,
+      "canonicalId": "2e26c7626f87a013ecc4",
+      "scheduledTransform": 1,
+      "scheduledMovesRelative": [
+        [
+          -3,
+          4
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          -3,
+          -2
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          3,
+          -2
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 39,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 97,
+      "canonicalId": "77f7af9594d47494caf4",
+      "scheduledTransform": 0,
+      "scheduledMovesRelative": [
+        [
+          -4,
+          -3
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          -3,
+          -3
+        ],
+        [
+          4,
+          0
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 43,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    },
+    {
+      "openingId": 98,
+      "canonicalId": "e4defe202a14308e024b",
+      "scheduledTransform": 4,
+      "scheduledMovesRelative": [
+        [
+          5,
+          -5
+        ],
+        [
+          6,
+          -4
+        ],
+        [
+          7,
+          -3
+        ],
+        [
+          7,
+          -2
+        ],
+        [
+          6,
+          -1
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          4,
+          -1
+        ],
+        [
+          3,
+          -3
+        ],
+        [
+          3,
+          -4
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 2026,
+          "openingIndex": 8,
+          "prefixLength": 9
+        }
+      ]
+    },
+    {
+      "openingId": 99,
+      "canonicalId": "e9ebc30aeb7c91c53769",
+      "scheduledTransform": 2,
+      "scheduledMovesRelative": [
+        [
+          4,
+          1
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          -3
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "provenance": [
+        {
+          "year": 0,
+          "openingIndex": 6,
+          "prefixLength": 6,
+          "source": "synthetic-held-out-neutral"
+        }
+      ]
+    }
+  ]
+}

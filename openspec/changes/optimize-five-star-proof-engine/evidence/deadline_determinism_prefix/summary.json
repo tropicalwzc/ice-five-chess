@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "profileVersion": "5.4.1-transactional-deadline-root-parallel-5s",
+  "scope": "five revision-6 held-out prefixes, both candidate colors, two repetitions per rule, play through ply 16",
+  "free": {
+    "gamesPerRun": 10,
+    "candidateStepsPerRun": 47,
+    "maximumCandidateMs": 3891.626,
+    "budgetExhaustedSamplesAcrossRuns": 44,
+    "rawNodeVariations": 15,
+    "completedMovesAndMetadataDeterministic": true,
+    "status": "pass"
+  },
+  "forbidden": {
+    "gamesPerRun": 10,
+    "candidateStepsPerRun": 47,
+    "maximumCandidateMs": 4500.369,
+    "budgetExhaustedSamplesAcrossRuns": 50,
+    "rawNodeVariations": 13,
+    "completedMovesAndMetadataDeterministic": true,
+    "status": "pass"
+  }
+}

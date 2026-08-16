@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "alias": "5.6",
+  "aliasTarget": "5.6.2-white-v541-black-v521-overlap-aware-parallel8-5s",
+  "freezeDate": "2026-08-15",
+  "status": "research-baseline-only",
+  "fiveSevenCandidate": {
+    "version": "5.7.0-white-v541-black-v521-independent-root-parallel8-5s",
+    "status": "research-candidate-only",
+    "rules": {
+      "free": {
+        "games": 100,
+        "raw": "reports/five_chess/five_star_v57_20260815/raw/free_vs_four.jsonl",
+        "sha256": "b01763c0261d8b8095ef60ed4d817bff370bd4cc634c1a9c5988f4a337220e49"
+      },
+      "forbiddenBlackNaturalPrefixNoSwap": {
+        "games": 100,
+        "raw": "reports/five_chess/five_star_v57_20260815/raw/forbidden_vs_four.jsonl",
+        "sha256": "74ec686e97f8936c9ce5aa00e487df47ab27ad28e8adeca77d12daebcf68b1e4"
+      }
+    },
+    "replay": "reports/five_chess/five_star_v57_20260815/replay/replay_summary.json",
+    "report": "reports/five_chess/five_star_v57_20260815/report/v57_vs_four_star_report.md",
+    "result": {
+      "free": {"candidateWhiteScoreRate": 0.43, "candidateBlackScoreRate": 0.58, "candidateOverallScoreRate": 0.505},
+      "forbiddenBlackNaturalPrefixNoSwap": {"candidateWhiteScoreRate": 0.54, "candidateBlackScoreRate": 0.54, "candidateOverallScoreRate": 0.54}
+    },
+    "interpretation": "Forbidden cell is natural-prefix/no-swap only; no formal RIF balance claim."
+  },
+  "components": {
+    "white": "5.4.1-transactional-deadline-root-parallel-5s",
+    "black": "5.2.3-overlap-aware-deeper-root-parallel-8w-5s"
+  },
+  "limits": {
+    "internalDecisionDeadlineMs": 4500,
+    "playerVisibleHardLimitMs": 5000,
+    "configuredProofWorkers": 8
+  },
+  "historicalProfiles": {
+    "5.6.0": "5.6.0-white-v541-black-v521-serial1-control-5s",
+    "5.6.1": "5.6.1-white-v541-black-v521-parallel8-5s"
+  },
+  "sourceSha256": {
+    "ice five chess/FiveChessAI.c": "4af361a204eae29a4d5c613a8684eab0f0f4c49e544e796b7a18fc54f632bf81",
+    "ice five chess/FiveChessAI.h": "e12c382433aab7c45fba2df190f9f174cbff538cd7313e2aa84e21666dfb75b1",
+    "tools/five_chess_benchmark.m": "fc31e5732edf0c83372ee1c5de4e35962884ec2de470f2d0e2a7dc8274532783"
+  },
+  "report": {
+    "workspace": "reports/five_chess/five_star_overlap_grouped_20260815/report/overlap_grouped_vs_four_star_report.md",
+    "downloads": "/Users/wangzicheng/Downloads/logs_five_chess/five_star_overlap_grouped_20260815/report/overlap_grouped_vs_four_star_report.md",
+    "reportSha256": "54f200181c088fea4aff210fa37c3cd37ce5d08031c825f69b1360adc2e824be",
+    "rules": ["freestyle", "forbiddenBlack-natural-prefix-no-swap"],
+    "gamesPerRule": 100
+  },
+  "forbiddenFindings": {
+    "candidateBlackScoreRate": 0.44,
+    "fourStarBlackScoreRate": 0.43,
+    "candidateWhiteScoreRate": 0.57,
+    "actualStoneColorWins": {"black": 43, "white": 56, "draw": 1},
+    "parallelBatches": 982,
+    "parallelWorkersLaunched": 982,
+    "parallelOverlapGroups": 982,
+    "parallelRootJobs": 7976,
+    "parallelRootJobsCompleted": 7216,
+    "blackDecisionCount": 843,
+    "escapeAlternativesExamined": 3669,
+    "escapeUnknownCount": 3605,
+    "escapeScopedDisproofCount": 1,
+    "legalityCalls": 10579818383,
+    "legalityBoardCopies": 2455979802
+  },
+  "interpretation": {
+    "strengthClaim": "not isolated from opening schedule; same-color candidate-minus-control is +1 percentage point",
+    "parallelClaim": "configured eight workers were not realized in overlap-grouped batches",
+    "promotion": "not authorized",
+    "productionUi": "unchanged"
+  },
+  "references": [
+    {"title": "Proof-number search", "doi": "10.1016/0004-3702(94)90004-3"},
+    {"title": "Parallel Depth-First Proof Number Search", "doi": "10.1609/aaai.v24i1.7551"},
+    {"title": "Randomized Parallel Proof-Number Search", "doi": "10.1007/978-3-642-12993-3_8"},
+    {"title": "Parallel Dovetailing and its Application to Depth-First Proof-Number Search", "doi": "10.3233/ICG-2013-36103"},
+    {"title": "Job-Level Proof Number Search for Connect6", "doi": "10.1109/TCIAIG.2012.2224659"},
+    {"title": "SOLVING RENJU", "doi": "10.3233/ICG-2001-24104"},
+    {"title": "RIF rules", "url": "https://www.renju.net/rules/"},
+    {"title": "RIF starting rules", "url": "https://www.renju.net/starting/"},
+    {"title": "RIF official rules", "url": "https://www.renju.net/rifrules/"}
+  ]
+}

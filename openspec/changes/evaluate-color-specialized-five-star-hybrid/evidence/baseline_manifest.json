@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "capturedAtLocalDate": "2026-08-15",
+  "change": "evaluate-color-specialized-five-star-hybrid",
+  "components": {
+    "black": {
+      "name": "production-five-star-v5.1",
+      "version": "5.1.0-elite-rule-partitioned-local-v2"
+    },
+    "white": {
+      "name": "revision-7-proof-engine-candidate",
+      "version": "5.4.1-transactional-deadline-root-parallel-5s",
+      "workers": 8,
+      "internalDeadlineMs": 4500,
+      "playerVisibleHardLimitMs": 5000
+    }
+  },
+  "controls": {
+    "productionFiveStar": "5.1.0-elite-rule-partitioned-local-v2",
+    "frozenFourStar": "4.0.0-frozen-vcf-vct-control",
+    "legacyThreeStar": "legacy-three-star@5224020",
+    "playerFacingFiveStarRemainsProduction": true
+  },
+  "files": {
+    "ice five chess/FiveChessAI.c": "9e2a1a5bf2e8652e57e2f21bdb0ee9c47e93fee7117f259516ae3460ce256759",
+    "ice five chess/FiveChessAI.h": "da0c423123a4a938fbb66262b31ba527a1f64d0d9015599969a9a2b0c63b8fc2",
+    "ice five chess/FiveChessEliteCorpus.inc": "dbe17be3159a37ffa769e841d15ce7aa68dab7e976789d1a2ad61c8e9dad4e45",
+    "ice five chess/doublethree.m": "0f6d5d090e0c2f8271ddc359934d9a307aa6620b4c95e1f15398d5447b8f0e38",
+    "ice five chess/ViewController.m": "7f324ce3647bd89ed662c8ed7c3317462a0c9242088358e9f6bbb689b7d41330",
+    "ice five chess/HDViewController.m": "761a0eb241b357ab6f9c4095450822ef2025eefc029819f75d6d5e97cb8607e0",
+    "ice five chess/Base.lproj/Main.storyboard": "6ca25da7753a90802a92265dface685c0d7e1af4fe59e8a4a37be4538ab2e5ce",
+    "ice five chess/Base.lproj/HDMain.storyboard": "6d03ba4ca1c05a10c22e0d414aa8eda451d46fb58fbc6c6da88c5a0b8ad499b8",
+    "tools/five_chess_benchmark.m": "adb1e030c113cf5fceda949f0927615042670ddccbadc6dfb2979dd562fd0e36",
+    "tools/five_chess_ai_tests.c": "4b1ef4ed2101b92b2cce4209dd63f6f37f701bfa966844cda8921f767c83dab7",
+    "tools/replay_five_chess_formal.py": "5944ad4494e0db87394ad9737b0b95eb097f2cfd2766a45596ca2f0388dab35f",
+    "tools/generate_five_star_rule_reports.py": "9951f25bf3b39628767caf1e46f1e1a6c80cdf28f104eec35b813c88f7d7e444",
+    "tools/generate_formal_opening_schedule.py": "737cbc82f4655986560faf3f634ff740112c7ade566f11b06299bdf9c4bf1a5e",
+    "tools/audit_formal_schedule_separation.py": "4da1d207243bd686f36cc57417eb8472782196b50033e5e46eecde882e7f0aec",
+    "tools/validate_formal_opening_schedule.c": "d3d43130ab74e86473d579bba9d8d38cd48910460bcc8e44ee62ae95a447b1c1",
+    "openspec/changes/optimize-five-star-proof-engine/evidence/candidate_freeze_manifest.json": "97c86a89c8538e37662c48168d2c86d9eefc4d86ccb83239be038fa22a025354",
+    "reports/five_chess/five_star_proof_engine_20260814/formal/revision7/release_decision.json": "23c7d9c90c4567bece40974a31ed6c38812fe77f540be6972dd328d7f94de577",
+    "reports/five_chess/five_star_proof_engine_20260814/formal/revision7/replay_failure_summary.json": "a9b3ec5f0b762fc03d31089dd21c3499511954b4bea5dfd53888d997b34f3de6",
+    "reports/five_chess/five_star_proof_engine_20260814/formal/revision7/five_star_revision7_final_test_report.md": "04ac0b16514ecc724052916be69f8afaa63f5f3cf485b7e6e9d19061c52a47f6"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 2,
+  "purpose": "non-final correctness, activity, profiling, and ablation diagnostics only",
+  "formalScheduleExclusion": true,
+  "symmetryPolicy": "Every synthetic tactical fixture and every elite diagnostic position is exercised under all eight D4 transforms where the assertion is symmetry-preserving.",
+  "sets": [
+    {
+      "id": "elite-natural-non-final",
+      "path": "tools/FiveChessEliteDiagnosticPositions.inc",
+      "sha256": "3a91d4c11ab7742f5f5541f84a12ae7875b2b5a8da98649666adbbe3dda4a2e4",
+      "positionCount": 98,
+      "derivedSymmetryPositions": 784,
+      "rules": ["freestyle", "forbidden-black"],
+      "classes": ["natural non-final positions", "corpus conflicts", "quiet initiative", "dependency combinations"]
+    },
+    {
+      "id": "historical-loss-structures",
+      "path": "openspec/changes/improve-five-star-black-forcing/evidence/loss_diagnostics.json",
+      "sha256": "1ace1d7d780c7c89f9e796409d10fcb3747d6bd8d04f7b7beb5fd95eda799854",
+      "primaryUniqueRuleOpenings": 17,
+      "recordsIncludingDualBaselines": 33,
+      "derivedSymmetryPositions": 264,
+      "rules": ["freestyle", "forbidden-black"],
+      "classes": ["prior loss structures", "corpus conflicts", "known verified opponent wins"]
+    },
+    {
+      "id": "synthetic-proof-and-relevance-fixtures",
+      "path": "tools/five_chess_ai_tests.c",
+      "sha256": "38a41fd5836a7d8291208f68bf693aae589843b927fa74f9947a5574886e0e12",
+      "rules": ["freestyle", "forbidden-black"],
+      "testFunctions": [
+        "test_table_driven_threat_patterns_all_symmetries",
+        "test_vcf_and_node_multi_defense_certificate",
+        "test_candidate_dfpn_proof_disproof_thresholds_and_collisions",
+        "test_relevance_and_dependency_adversarial_cases",
+        "test_dependency_dag_proposes_verified_search_order",
+        "test_candidate_stage_order_and_obligation_skips",
+        "test_crossing_duplicate_and_forbidden_symmetries",
+        "test_quiet_portfolio_is_active_but_does_not_heuristically_override",
+        "test_elite_corpus_lookup_and_fail_closed_five_star"
+      ],
+      "classes": [
+        "known VCF and VCT wins",
+        "completed scoped disproof in freestyle",
+        "completed scoped disproof with forbidden black",
+        "transpositions and collisions",
+        "remote defender counters",
+        "forbidden legality dependencies",
+        "dependency combinations",
+        "quiet initiative",
+        "corpus conflicts",
+        "certificate corruption and board restoration"
+      ]
+    }
+  ],
+  "coverage": {
+    "prior loss structures": ["historical-loss-structures"],
+    "eight symmetries": ["elite-natural-non-final", "historical-loss-structures", "synthetic-proof-and-relevance-fixtures"],
+    "known VCF and VCT wins": ["synthetic-proof-and-relevance-fixtures"],
+    "completed scoped disproof in freestyle": ["synthetic-proof-and-relevance-fixtures"],
+    "completed scoped disproof with forbidden black": ["synthetic-proof-and-relevance-fixtures"],
+    "transpositions": ["synthetic-proof-and-relevance-fixtures"],
+    "remote counters": ["synthetic-proof-and-relevance-fixtures"],
+    "forbidden dependencies": ["synthetic-proof-and-relevance-fixtures"],
+    "dependency combinations": ["elite-natural-non-final", "synthetic-proof-and-relevance-fixtures"],
+    "quiet initiative": ["elite-natural-non-final", "synthetic-proof-and-relevance-fixtures"],
+    "corpus conflicts": ["elite-natural-non-final", "historical-loss-structures", "synthetic-proof-and-relevance-fixtures"],
+    "natural non-final positions": ["elite-natural-non-final"]
+  },
+  "separationAudit": {
+    "path": "openspec/changes/improve-five-star-black-forcing/evidence/separation_audit.json",
+    "sha256": "40b3201895c79afbbce8ad760d984ecc043700d873fa9e971f7430978396247b"
+  },
+  "activityGateNote": "Coverage makes a fixture eligible; task 8.6 separately requires non-zero measured activity and replayable results before final schedule generation."
+}

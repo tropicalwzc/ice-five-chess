@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "change": "evaluate-color-specialized-five-star-hybrid",
+  "frozenAtLocalDate": "2026-08-15",
+  "freezeStatus": "frozen-before-formal-seed-generation",
+  "formalSeedsGenerated": false,
+  "candidate": {
+    "profileVersion": "5.5.0-white-proof-engine-black-v51-stochastic",
+    "whiteComponent": "5.4.1-transactional-deadline-root-parallel-5s",
+    "blackComponent": "5.1.0-elite-rule-partitioned-local-v2",
+    "whiteSide": -1,
+    "blackSide": 1,
+    "randomMode": "seeded-user",
+    "randomPolicy": "completed proof status, scope, distance, completed depth, tactical obligation, corpus support/tier/rule partition, acceptance/safety/loss status equal; score gap at most 10; unverified legacy random alternative vetoed to same component best-completed move",
+    "proofWorkerCount": 8,
+    "decisionTimeBudgetMs": 4500,
+    "playerVisibleHardLimitMs": 5000,
+    "executionPolicy": "one game process at a time; decision-local white root search may use eight workers"
+  },
+  "controls": {
+    "frozenFourStar": "4.0.0-frozen-vcf-vct-control",
+    "legacyThreeStar": "legacy-three-star@5224020",
+    "productionFiveStarUnchanged": "5.1.0-elite-rule-partitioned-local-v2",
+    "eliteCorpusVersion": "gomocup-elite-openings-2020-2026-rule-partitioned-v2"
+  },
+  "formalPlan": {
+    "cells": 4,
+    "gamesPerCell": 100,
+    "openingsPerRule": 50,
+    "colorExchange": true,
+    "randomMode": "user",
+    "suite": "five-star-hybrid-final",
+    "minimumPrefixPlies": 4,
+    "maximumPrefixPlies": 8,
+    "sourcePolicy": "official Gomocup top-division packages; prior formal, diagnostic, corpus-shaped, failure, and preflight identities excluded",
+    "crossRuleOverlapAllowed": false
+  },
+  "gates": {
+    "fourStarEachRule": "hybrid white score >= 50%; same-color black delta >= 0; overall score >= 50%",
+    "legacyEachRule": "same-color white delta >= 0; overall delta >= 0",
+    "correctness": "zero rule, routing, seed, certificate-record, random-equivalence, terminal, or board-integrity anomalies",
+    "latency": "every hybrid decision <= 5000ms",
+    "uncertainty": "Wilson and paired intervals reported; point-estimate pass with overlapping uncertainty is inconclusive",
+    "pooling": "no pooled rule or color result may override a failing cell",
+    "promotionAuthority": "none; production remains v5.1 pending a later explicit UI change"
+  },
+  "preflight": {
+    "strictC": "pass",
+    "oneTwoLegacyGolden": "pass",
+    "frozenFourStarAndV51Rollback": "pass",
+    "asanUbsan": "pass",
+    "tsan": "pass-zero-data-races",
+    "iOSSimulatorDebug": "pass",
+    "freestyleDiagnosticMaxMs": 2594.498,
+    "forbiddenDiagnosticMaxMs": 3316.328,
+    "diagnosticRandomEligibilityFailures": 0
+  },
+  "files": {
+    "ice five chess/FiveChessAI.c": "e8caa6324879939b3d53a7693baad646ec261bca5f3a22123d46855622e9259b",
+    "ice five chess/FiveChessAI.h": "8e01feb73c79a9c046db01888d9c7a9beb8f5678a9adeb78770f4a616934fe1c",
+    "ice five chess/doublethree.m": "0f6d5d090e0c2f8271ddc359934d9a307aa6620b4c95e1f15398d5447b8f0e38",
+    "ice five chess/FiveChessEliteCorpus.inc": "dbe17be3159a37ffa769e841d15ce7aa68dab7e976789d1a2ad61c8e9dad4e45",
+    "ice five chess/ViewController.m": "7f324ce3647bd89ed662c8ed7c3317462a0c9242088358e9f6bbb689b7d41330",
+    "ice five chess/HDViewController.m": "761a0eb241b357ab6f9c4095450822ef2025eefc029819f75d6d5e97cb8607e0",
+    "ice five chess/Base.lproj/Main.storyboard": "6ca25da7753a90802a92265dface685c0d7e1af4fe59e8a4a37be4538ab2e5ce",
+    "ice five chess/Base.lproj/HDMain.storyboard": "6d03ba4ca1c05a10c22e0d414aa8eda451d46fb58fbc6c6da88c5a0b8ad499b8",
+    "tools/five_chess_ai_tests.c": "c180af21e0861efecc0a2089abfb89cac0ea0ba63d6d326c7a0af514a1be70bd",
+    "tools/legacy_three_star_golden.m": "bdb58cb2cb023fde16633c757057c7fa4de9c9966a0b02a87a8088717183c392",
+    "tools/five_chess_benchmark.m": "2afd6c8c9ec524973cfd9ad2ab61a3ac4e913bb9a991dd47a9be0b75a2c47274",
+    "tools/generate_formal_opening_schedule.py": "737cbc82f4655986560faf3f634ff740112c7ade566f11b06299bdf9c4bf1a5e",
+    "tools/audit_formal_schedule_separation.py": "4da1d207243bd686f36cc57417eb8472782196b50033e5e46eecde882e7f0aec",
+    "tools/validate_formal_opening_schedule.c": "d3d43130ab74e86473d579bba9d8d38cd48910460bcc8e44ee62ae95a447b1c1",
+    "tools/replay_five_chess_stochastic.py": "6c17f690cd94c05b75110d00573d0d583d1c04ba4d4d5507cee8b8cdc432d632",
+    "tools/generate_hybrid_five_star_report.py": "9fc4a275bd014a85b837753f61828c9934c4d67341f14f8f2ea6b1c6e9055d98",
+    "openspec/changes/evaluate-color-specialized-five-star-hybrid/evidence/stochastic_evaluation_contract.md": "d6435364cab9cd4b33b03ca3c3bd7e4aa119c188edcd5f3472adb0feb3d7cc66",
+    "openspec/changes/evaluate-color-specialized-five-star-hybrid/proposal.md": "10136d04397e25d2b88a2d8575c43011c56c7eb68cfee6b5d45d10bd1e695386",
+    "openspec/changes/evaluate-color-specialized-five-star-hybrid/design.md": "2432bb4063cc90e7a30666a451dc54437749d413f33e9f39af2fa0caf6210698",
+    "openspec/changes/evaluate-color-specialized-five-star-hybrid/specs/color-specialized-five-star-hybrid/spec.md": "b912092673c362a41eea1222b92dfe77892f43911d6e1764a634a4551c1fa9da",
+    "openspec/changes/evaluate-color-specialized-five-star-hybrid/specs/seeded-stochastic-five-star-benchmark/spec.md": "5705d15c3eb50d66f63bb2030482ae357680cf3b2093258d7da5a433bc47ba96"
+  }
+}

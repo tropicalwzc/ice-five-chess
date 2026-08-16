@@ -1,0 +1,60 @@
+{
+  "change": "optimize-five-star-proof-engine",
+  "captured_at": "2026-08-14T00:00:00+08:00",
+  "status": "apply-start-with-isolated-candidate-api",
+  "production_five_star": {
+    "factory": "fc_profile_five_star",
+    "name": "five-star-curated-opening-advisor",
+    "version": "5.1.0-elite-rule-partitioned-local-v2",
+    "proof_max_depth": 12,
+    "proof_node_budget": 36000,
+    "proof_time_budget_ms": 320,
+    "proof_tt_capacity": 65536,
+    "player_entry_unchanged": true
+  },
+  "frozen_four_star": {
+    "factory": "fc_profile_frozen_four_star_control",
+    "behavior_source": "fc_profile_proof_guided(false)",
+    "name": "four-star-frozen-control",
+    "version": "4.0.0-frozen-vcf-vct-control",
+    "proof_max_depth": 10,
+    "proof_node_budget": 18000,
+    "proof_time_budget_ms": 160,
+    "proof_tt_capacity": 32768,
+    "opening_book": false,
+    "ui_level": 4
+  },
+  "frozen_legacy_three_star": {
+    "factory": "fc_profile_production",
+    "name": "three-star-production",
+    "version": "2.2.0-legacy-hint-safe-gate",
+    "golden_script": "tools/run_legacy_three_star_golden.sh",
+    "ui_level": 3
+  },
+  "lower_levels": {
+    "ui_levels": [1, 2],
+    "policy": "no source, persistence, randomness, or mapping changes"
+  },
+  "rejected_candidate": {
+    "factory": "fc_profile_five_star_loss_aware_candidate",
+    "version": "5.2.1-certificate-dependency-widening",
+    "promoted": false,
+    "evidence": "reports/five_chess/five_star_loss_aware_20260814"
+  },
+  "candidate": {
+    "factory": "fc_profile_five_star_proof_engine_candidate",
+    "version": "5.3.0-incremental-session-dfpn-rz",
+    "benchmark_only_until_promotion": true
+  },
+  "rule_semantics": {
+    "board_size": 15,
+    "freestyle": "five or more wins; no black forbidden moves",
+    "forbidden_black": "black overline and double winning-direction prohibition through frozen reference legality",
+    "formal_cells_separate": true
+  },
+  "corpus": {
+    "version": "gomocup-elite-openings-2020-2026-rule-partitioned-v2",
+    "source": "ice five chess/FiveChessEliteCorpus.inc"
+  },
+  "formal_gate": "No formal 400-game schedule may start before correctness, activity, performance, and parameter-freeze gates pass."
+}

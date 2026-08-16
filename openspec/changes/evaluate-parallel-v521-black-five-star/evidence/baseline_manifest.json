@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "change": "evaluate-parallel-v521-black-five-star",
+  "capturedAtLocalDate": "2026-08-15",
+  "profiles": {
+    "productionFiveStar": "5.1.0-elite-rule-partitioned-local-v2",
+    "lossAwareBlackSource": "5.2.1-certificate-dependency-widening",
+    "latestWhite": "5.4.1-transactional-deadline-root-parallel-5s",
+    "frozenFourStar": "4.0.0-frozen-vcf-vct-control",
+    "legacyThreeStar": "legacy-three-star@5224020"
+  },
+  "files": {
+    "ice five chess/FiveChessAI.c": "7169af3296cf620b39c3703edf9919c01f7f862fbd954cf766c0920404e18622",
+    "ice five chess/FiveChessAI.h": "8e01feb73c79a9c046db01888d9c7a9beb8f5678a9adeb78770f4a616934fe1c",
+    "ice five chess/doublethree.m": "0f6d5d090e0c2f8271ddc359934d9a307aa6620b4c95e1f15398d5447b8f0e38",
+    "ice five chess/FiveChessEliteCorpus.inc": "dbe17be3159a37ffa769e841d15ce7aa68dab7e976789d1a2ad61c8e9dad4e45",
+    "ice five chess/ViewController.m": "7f324ce3647bd89ed662c8ed7c3317462a0c9242088358e9f6bbb689b7d41330",
+    "ice five chess/HDViewController.m": "761a0eb241b357ab6f9c4095450822ef2025eefc029819f75d6d5e97cb8607e0",
+    "ice five chess/Base.lproj/Main.storyboard": "6ca25da7753a90802a92265dface685c0d7e1af4fe59e8a4a37be4538ab2e5ce",
+    "ice five chess/Base.lproj/HDMain.storyboard": "6d03ba4ca1c05a10c22e0d414aa8eda451d46fb58fbc6c6da88c5a0b8ad499b8",
+    "tools/five_chess_ai_tests.c": "1ef848852397d066a19cd3fb8d0be44cc42f22fdf53b5e4153345805fc6d1554",
+    "tools/five_chess_benchmark.m": "2afd6c8c9ec524973cfd9ad2ab61a3ac4e913bb9a991dd47a9be0b75a2c47274",
+    "tools/replay_five_chess_stochastic.py": "a22d008c225d73571393f727f2149e7720f91d5a19dd2e8390dff3c56539d863",
+    "tools/generate_hybrid_five_star_report.py": "9fc4a275bd014a85b837753f61828c9934c4d67341f14f8f2ea6b1c6e9055d98",
+    "tools/generate_formal_opening_schedule.py": "737cbc82f4655986560faf3f634ff740112c7ade566f11b06299bdf9c4bf1a5e",
+    "tools/audit_formal_schedule_separation.py": "4da1d207243bd686f36cc57417eb8472782196b50033e5e46eecde882e7f0aec",
+    "tools/validate_formal_opening_schedule.c": "d3d43130ab74e86473d579bba9d8d38cd48910460bcc8e44ee62ae95a447b1c1"
+  },
+  "predecessorBundles": {
+    "reports/five_chess/five_star_loss_aware_20260814/complete_bundle_checksums.sha256": "d5c14f88d08b14a5af8af1ec8bcef115d0af1d3447305656d3a1f4da1527fae6",
+    "reports/five_chess/five_star_color_hybrid_20260815/complete_bundle_checksums.sha256": "08a9c6b01a077ff5481e620ab6f4a709b577d67a75eceac8bed67b6e078d57ad"
+  },
+  "uiBaseline": "player-facing five-star uses fc_profile_five_star()/v5.1; hybrid selectors are benchmark-only"
+}

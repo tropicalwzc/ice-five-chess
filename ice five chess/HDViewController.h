@@ -19,9 +19,8 @@
     doublethree* ice_fiver;
     filer* file_controller;
     HDsmallwindow* window_controller;
-    NSThread* threader[2];
-    int thread_num;
     long focus_x,focus_y;
+    bool focus_has_been_selected;
     bool position_changed;
     bool is_darkmode;
     int model_use;

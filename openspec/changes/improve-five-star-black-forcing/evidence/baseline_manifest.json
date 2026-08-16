@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "profile": "five-star-curated-opening-advisor@5.1.0-elite-rule-partitioned-local-v2",
+  "fourStar": "four-star-proof-guided-no-book@3.0.0-vcf-dfpn-no-book",
+  "legacyThreeStar": "legacy-three-star@5224020",
+  "files": {
+    "ice five chess/FiveChessAI.c": "8149687b39533bd0c55d8357307de799864c27074281110c5c89650460e90665",
+    "ice five chess/FiveChessAI.h": "f7211aab48f71155abca0e279288a4478c8102bc1bad073661bfef52411e3f35",
+    "ice five chess/doublethree.m": "0f6d5d090e0c2f8271ddc359934d9a307aa6620b4c95e1f15398d5447b8f0e38",
+    "ice five chess/FiveChessEliteCorpus.inc": "dbe17be3159a37ffa769e841d15ce7aa68dab7e976789d1a2ad61c8e9dad4e45",
+    "tools/elite_corpus_manifest.json": "2dde515db6197a108dceeb006030803a339e56b687fe2565abd0b17e4cb9c119",
+    "reports/five_chess/five_star_rule_partitioned_20260814/README.md": "1507f6f90e15dbcae962460bd8ce6ae9f72ff40edf45a8c08d3bc4ef352e396c",
+    "reports/five_chess/five_star_rule_partitioned_20260814/five_star_rule_comparison.json": "db22b6fb309a86336578d7c484a7317a16fc403d848964befcdf18b1386e5c2b",
+    "openspec/changes/add-curated-five-star-opening-advisor/final-opening-schedule.json": "ae450aba131c3e6ffaccf7e87037778a642e9062bb59adee5b48c678d3523fe6"
+  },
+  "priorFormalSources": {
+    "free_vs_four": {
+      "path": "reports/five_chess/five_star_rule_partitioned_20260814/free_vs_four.jsonl",
+      "sha256": "ae1c77e183b75a8f596207a4a3492ce188e75284a38e8291dd51ed0999a038ae",
+      "masterSeed": "0x5a7f4e4154461001",
+      "seedDomain": "five-star-natural-final-five-star-natural-free-v3"
+    },
+    "free_vs_legacy": {
+      "path": "reports/five_chess/five_star_rule_partitioned_20260814/free_vs_legacy.jsonl",
+      "sha256": "71f3530d6f4e005075fa7789c8f3058fee6eb58b4d7a28d8668cd6aa09df6dc7",
+      "masterSeed": "0x5a7f4e4154461001",
+      "seedDomain": "five-star-natural-final-five-star-natural-free-v3"
+    },
+    "forbidden_vs_four": {
+      "path": "reports/five_chess/five_star_rule_partitioned_20260814/forbidden_vs_four.jsonl",
+      "sha256": "e6d6c90bed42607500d05775ef1ff84532071d25e9950e917606399e2e90a717",
+      "masterSeed": "0x5a7f4e4154461002",
+      "seedDomain": "five-star-natural-final-five-star-natural-forbidden-v3"
+    },
+    "forbidden_vs_legacy": {
+      "path": "reports/five_chess/five_star_rule_partitioned_20260814/forbidden_vs_legacy.jsonl",
+      "sha256": "f5e042c32391ea4ff1779fb0b585ce67829c983d5772263a62d07992d495fa50",
+      "masterSeed": "0x5a7f4e4154461002",
+      "seedDomain": "five-star-natural-final-five-star-natural-forbidden-v3"
+    }
+  },
+  "lossDiagnosticsSha256": "1ace1d7d780c7c89f9e796409d10fcb3747d6bd8d04f7b7beb5fd95eda799854"
+}

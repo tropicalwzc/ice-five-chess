@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "status": "pass",
+  "schedules": [
+    {
+      "path": "openspec/changes/optimize-five-star-proof-engine/evidence/formal_schedule/freestyle_schedule.json",
+      "sha256": "cf8995728cb093d157f5fa5b5742eca9b5ef6f7b155015f13fdff7985d64dbd8",
+      "rule": "freestyle",
+      "masterSeed": "0x9ee4d91480ac5889",
+      "identityCount": 50,
+      "uniqueCanonicalIdentityCount": 50,
+      "uniqueCanonicalPositionCount": 50,
+      "minimumPrefixPlies": 5,
+      "maximumPrefixPlies": 8
+    },
+    {
+      "path": "openspec/changes/optimize-five-star-proof-engine/evidence/formal_schedule/forbidden_schedule.json",
+      "sha256": "ff9476d3a270052540a92dd427365381dde7c28cf61db626d0b9c89abfe1d1ab",
+      "rule": "forbidden",
+      "masterSeed": "0x834da1df0ff1d340",
+      "identityCount": 50,
+      "uniqueCanonicalIdentityCount": 50,
+      "uniqueCanonicalPositionCount": 50,
+      "minimumPrefixPlies": 4,
+      "maximumPrefixPlies": 8
+    }
+  ],
+  "priorSeedCatalog": {
+    "path": "openspec/changes/optimize-five-star-proof-engine/evidence/formal_prior_seed_catalog.json",
+    "sha256": "9bb81531bc50e76fa5129bb34e8c1f787f0bccbbd94b5c6723429c9cacc9110b",
+    "count": 24
+  },
+  "sourcePackageManifest": {
+    "path": "openspec/changes/optimize-five-star-proof-engine/evidence/formal_source_packages.json",
+    "sha256": "527c6260763922ddc8e62aa040b5779d190233d13b84ad1773c3c4a58cdecc6a",
+    "count": 13
+  },
+  "excludedOrderedIdentityCount": 1401,
+  "excludedCanonicalPositionCount": 1496,
+  "crossRuleOrderedIdentityOverlap": [],
+  "crossRuleCanonicalPositionOverlap": [],
+  "failures": []
+}

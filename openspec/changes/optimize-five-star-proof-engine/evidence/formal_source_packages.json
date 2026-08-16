@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "retrievedAtLocalDate": "2026-08-14",
+  "sourceOrganization": "Gomocup",
+  "sourcePolicy": "Official annual tournament result archives only; raw archives remain external research inputs and are not bundled with the app.",
+  "localStagingDirectory": "/private/tmp",
+  "integrityCheck": "unzip -tq: pass for every archive",
+  "packages": [
+    {"year": 2014, "url": "https://gomocup.org/static/tournaments/2014/results/gomocup2014results.zip", "bytes": 2240909, "sha256": "00264fb2649ef6c68d1eb8f315cfcd3460e19c7f46c3186e0826f5d6f23d4bd4"},
+    {"year": 2015, "url": "https://gomocup.org/static/tournaments/2015/results/gomocup2015results.zip", "bytes": 3823060, "sha256": "1ec37551b4bb48a9a8e608c9c35dfef6db915621da2bbb8362b337e76c7a99a6"},
+    {"year": 2016, "url": "https://gomocup.org/static/tournaments/2016/results/gomocup2016results.zip", "bytes": 6348152, "sha256": "361b658d422f44490b40e743d9c912927e5f7a6d4daf646e9929ed4eed0ecfd7"},
+    {"year": 2017, "url": "https://gomocup.org/static/tournaments/2017/results/gomocup2017results.zip", "bytes": 17384350, "sha256": "10230c7396a3e84942efa5e21be753491155edd73b3798b1b34635c1eb4018b6"},
+    {"year": 2018, "url": "https://gomocup.org/static/tournaments/2018/results/gomocup2018results.zip", "bytes": 30051181, "sha256": "a62217bdfaaae15c8d92d35f1eb6d258dc8b446397647016e08ac84a1550fb51"},
+    {"year": 2019, "url": "https://gomocup.org/static/tournaments/2019/results/gomocup2019results.zip", "bytes": 36272612, "sha256": "b802724063628f3289270206dca65b2c8d23a955aeaa45040b16fb56179caf78"},
+    {"year": 2020, "url": "https://gomocup.org/static/tournaments/2020/results/gomocup2020results.zip", "bytes": 37523185, "sha256": "5b32328f688831b0e889683a862277478e4ae5fad82955991068d4e6fc703e49"},
+    {"year": 2021, "url": "https://gomocup.org/static/tournaments/2021/results/gomocup2021results.zip", "bytes": 34853745, "sha256": "75647a9024c9dce50129cc4d9bb9464b342dd64d9359d3f86220ba92abd92b7d"},
+    {"year": 2022, "url": "https://gomocup.org/static/tournaments/2022/results/gomocup2022results.zip", "bytes": 38502731, "sha256": "1367336fa707245ffe1897bb90b6847093c8b75d80f00c5678855533bc0535c5"},
+    {"year": 2023, "url": "https://gomocup.org/static/tournaments/2023/results/gomocup2023results.zip", "bytes": 36029214, "sha256": "ebb01a6f27fbdf3c189f203500b2c7d34e417fd446980bf48d6aceeca3eba411"},
+    {"year": 2024, "url": "https://gomocup.org/static/tournaments/2024/results/gomocup2024results.zip", "bytes": 46809429, "sha256": "f6b45f816fd9fe3f94ea751a48b1c3a7db0a52ea3f806b4def1f12464a43eab6"},
+    {"year": 2025, "url": "https://gomocup.org/static/tournaments/2025/results/gomocup2025results.zip", "bytes": 61490563, "sha256": "91fc8cbefee5918994e028dd3f17143c5a46b948ed09b21c10ac0c1f1d4a8f09"},
+    {"year": 2026, "url": "https://gomocup.org/static/tournaments/2026/results/gomocup2026results.zip", "bytes": 76001590, "sha256": "d14c1acc0daae22a2f7589ca262abb6f1622c27f1f88ec811814cef4c948bf25"}
+  ]
+}

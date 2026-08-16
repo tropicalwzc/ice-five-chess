@@ -14,6 +14,29 @@
 @end
 
 @implementation HDsmallwindow
+
+- (void)present_alert_controller:(UIAlertController *)alert
+{
+    if (![NSThread isMainThread]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self present_alert_controller:alert];
+        });
+        return;
+    }
+
+    UIViewController *presenter = father_window;
+    if (presenter == nil || !presenter.isViewLoaded || presenter.view.window == nil) {
+        return;
+    }
+    while (presenter.presentedViewController != nil && !presenter.presentedViewController.isBeingDismissed) {
+        presenter = presenter.presentedViewController;
+    }
+    if ([presenter isKindOfClass:[UIAlertController class]]) {
+        return;
+    }
+    [presenter presentViewController:alert animated:YES completion:nil];
+}
+
 -(HDsmallwindow*)init_with_fatherwindow:(UIViewController*)aim;
 {
     father_window=aim;
@@ -24,14 +47,14 @@
     
     UIAlertAction * action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil];
     [alert addAction:action];
-    [self->father_window presentViewController: alert animated: YES completion:nil];
+    [self present_alert_controller:alert];
 }
 -(void)Simple_alertMessage_With_Title:(NSString*)title andMessage:(NSString*)message{
     UIAlertController * alert = [UIAlertController alertControllerWithTitle:title message: message preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction * action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil];
     [alert addAction:action];
-    [self->father_window presentViewController: alert animated: YES completion:nil];
+    [self present_alert_controller:alert];
 }
 
 -(void)set_father_view:(UIViewController*) aim;
@@ -56,7 +79,7 @@
                                                    }];
     [alert addAction:submit];
     [alert addAction:action_cancle];
-    [father_window presentViewController:alert animated:YES completion:nil];
+    [self present_alert_controller:alert];
 }
 -(void)Sure_or_not_window_with_title:(NSString*)title andMessage:(NSString*)message process_func:(SEL)func sure_button_title: (NSString*)sure_text cancle_button_title:(NSString*)cancle_text
 {
@@ -69,7 +92,7 @@
     [alert addAction:okAction];
     [alert addAction:cancelAction];
     // 弹出对话框
-    [father_window presentViewController:alert animated:YES completion:nil];
+    [self present_alert_controller:alert];
 }
 -(void)Rich_NewsMessage_with_two_button:(NSString*)title message:(NSString*)message button_nameset:(NSArray*)button_names funct1:(SEL)funct_one funct2:(SEL)funct_two;
 {
@@ -88,7 +111,7 @@
     }];
     [alert addAction:second_action];
     
-    [self->father_window presentViewController: alert animated: YES completion:nil];
+    [self present_alert_controller:alert];
 }
 -(void)Rich_NewsMessage_with_three_button:(NSString*)title message:(NSString*)message button_nameset:(NSArray*)button_names funct1:(SEL)funct_one funct2:(SEL)funct_two funct3:(SEL)funct_three
 {
@@ -112,7 +135,7 @@
     }];
     [alert addAction:third_action];
     
-    [self->father_window presentViewController: alert animated: YES completion:nil];
+    [self present_alert_controller:alert];
 }
 -(void)Rich_NewsMessage_with_four_button:(NSString*)title message:(NSString*)message button_nameset:(NSArray*)button_names funct1:(SEL)funct_one funct2:(SEL)funct_two funct3:(SEL)funct_three funct4:(SEL)funct_four
 {
@@ -142,6 +165,6 @@
     }];
     [alert addAction:fourth_action];
     
-    [self->father_window presentViewController: alert animated: YES completion:nil];
+    [self present_alert_controller:alert];
 }
 @end

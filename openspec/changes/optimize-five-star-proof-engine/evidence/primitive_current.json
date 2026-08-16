@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "iterationsPerRule": 3,
+  "incrementalPositionBytes": 97424,
+  "hashesPerIteration": 16,
+  "lineScansPerIteration": 1,
+  "threatBatchesPerIteration": 1,
+  "legalityPointsPerIteration": 225,
+  "semanticEquality": true,
+  "referenceMs": 82.584,
+  "incrementalMs": 0.082,
+  "speedup": 1007.118808,
+  "sink": "0x0000000000000b04"
+}

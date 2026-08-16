@@ -94,6 +94,9 @@
             process[i][j]=0;
     updater=0;
     now_tech=[[NSString alloc]init];
+    last_pos[0]=0;
+    last_pos[1]=0;
+    last_color=0;
     maxchessline=15;
     border=15;
     banned_mode=0;
@@ -1588,12 +1591,33 @@
     [legacy_advisor get_last_pos_return_color:legacy_hint];
     int analysis_board[FC_BOARD_SIZE][FC_BOARD_SIZE];
     memcpy(analysis_board,chessboard,sizeof(analysis_board));
-    bool found=fc_analyze_with_hint(
-                          (const int (*)[FC_BOARD_SIZE])analysis_board,
-                          mode, banned_mode==1, &production_ai_profile,
-                          decision_seed, FC_RANDOM_USER_GAME,
-                          legacy_hint[0], legacy_hint[1], &last_ai_analysis);
-    if(!found||last_ai_analysis.x<0||last_ai_analysis.y<0)
+    bool found=production_ai_profile.proofEngineCandidate
+        ? fc_analyze_five_star_profile_with_hint(
+              (const int (*)[FC_BOARD_SIZE])analysis_board,
+              mode, banned_mode==1, &production_ai_profile,
+              decision_seed, FC_RANDOM_USER_GAME,
+              legacy_hint[0], legacy_hint[1], &last_ai_analysis)
+        : production_ai_profile.eliteCorpusEnabled
+        ? fc_analyze_five_star_with_hint(
+              (const int (*)[FC_BOARD_SIZE])analysis_board,
+              mode, banned_mode==1, decision_seed, FC_RANDOM_USER_GAME,
+              legacy_hint[0], legacy_hint[1], &last_ai_analysis)
+        : fc_analyze_with_hint(
+              (const int (*)[FC_BOARD_SIZE])analysis_board,
+              mode, banned_mode==1, &production_ai_profile,
+              decision_seed, FC_RANDOM_USER_GAME,
+              legacy_hint[0], legacy_hint[1], &last_ai_analysis);
+    bool legalFallback = last_ai_analysis.x >= 0 &&
+        last_ai_analysis.y >= 0 &&
+        fc_is_legal_move((const int (*)[FC_BOARD_SIZE])analysis_board,
+                         last_ai_analysis.x, last_ai_analysis.y, mode,
+                         banned_mode==1);
+    bool terminalNoMove = last_ai_analysis.decisionStatus ==
+        FC_DECISION_NO_LEGAL_MOVE;
+    bool verifiedTerminalLoss = last_ai_analysis.decisionStatus ==
+        FC_DECISION_VERIFIED_LOSS && last_ai_analysis.provenLoss;
+    if((!found && !legalFallback) || !legalFallback || terminalNoMove ||
+       verifiedTerminalLoss)
     {
         game_end=-mode;
         now_tech=@"😵‍💫😵‍💫";
@@ -1624,6 +1648,12 @@
     // opening book. Keep this binding explicit so the weaker book-on profile
     // cannot be enabled accidentally from the player difficulty UI.
     production_ai_profile=fc_profile_proof_guided(false);
+    [self optimized_analysisboard:mode];
+}
+-(void) five_star_analysisboard:(int) mode
+{
+    // The measured final five-star selection is the 5.4.1 proof engine.
+    production_ai_profile=fc_profile_five_star_proof_engine_candidate();
     [self optimized_analysisboard:mode];
 }
 -(void) easy_analysisboard:(int) mode
@@ -3050,6 +3080,9 @@
         for(int j=0;j<2;j++)
             process[i][j]=0;
     updater=0;
+    last_pos[0]=0;
+    last_pos[1]=0;
+    last_color=0;
     
     maxchessline=15;
     border=15;
@@ -3388,6 +3421,15 @@
 }
 -(void)import_stack:(int[225][2])stacker height:(int)stack_height
 {
+    if (stack_height <= 0) {
+        chessid=0;
+        last_pos[0]=0;
+        last_pos[1]=0;
+        last_color=0;
+        return;
+    }
+    if (stack_height > 225)
+        stack_height = 225;
     chessid=stack_height;
     for(int i=0;i<chessid;i++)
         for(int j=0;j<2;++j)
