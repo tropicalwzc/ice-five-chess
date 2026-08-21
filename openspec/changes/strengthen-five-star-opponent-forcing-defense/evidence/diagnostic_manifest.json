@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "classification": "diagnostic-only-not-runtime-policy-or-smoke-input",
+  "canonicalBoardEncoding": "sha256 of x-major 15x15 bytes where empty=1, black=2, white=0",
+  "symmetryTransforms": [0, 1, 2, 3, 4, 5, 6, 7],
+  "ruleModes": ["freestyle", "forbidden-black"],
+  "sourceEvidence": {
+    "controlJsonl": "reports/five_chess/five_star_proof_engine_20260814/formal/revision7/regenerated/free_vs_four.jsonl",
+    "controlProfile": "five-star-incremental-dfpn-candidate@5.4.1-transactional-deadline-root-parallel-5s",
+    "diagnosticTool": "tools/five_star_opponent_guard_fixture_scan.c"
+  },
+  "fixtures": [
+    {
+      "id": "separating-opening13-ply18",
+      "covers": ["separating-control-loss", "no-corpus", "frozen-four-star-unknown", "certificate-directed-alternative"],
+      "sourceOpeningId": 13,
+      "sideToMove": 1,
+      "rule": "freestyle",
+      "movesBefore": [[10,2,1],[9,2,-1],[9,5,1],[10,4,-1],[12,3,1],[11,5,-1],[12,6,1],[8,3,-1],[12,4,1],[12,5,-1],[11,3,1],[9,1,-1],[11,7,1],[13,5,-1],[10,3,1],[9,3,-1],[13,3,1],[14,3,-1]],
+      "boardSha256": "9a8a5725d68daa10c07c93627f0dac1e99e8bf407975d64ac32f9093152670fd",
+      "controlSelected": [10,6],
+      "opponentVcfDistance": 9,
+      "opponentCertificateId": "0x1ba4297550164b81",
+      "comparableVcfDisproofMove": [7,2],
+      "completedDisproofDepth": 9
+    },
+    {
+      "id": "vcf-distance9-opening20-ply16",
+      "covers": ["vcf-distance-9"],
+      "sourceOpeningId": 20,
+      "prefixLength": 16,
+      "boardSha256": "b0da3af3371359dcaed56f51afd90fceb4c49be0c595523a4dc6680474d359d1",
+      "selected": [10,7],
+      "certificateId": "0x800e43bfbbd801f9"
+    },
+    {
+      "id": "vcf-distance7-opening20-ply18",
+      "covers": ["vcf-distance-7"],
+      "sourceOpeningId": 20,
+      "prefixLength": 18,
+      "boardSha256": "5b9ba507edcebd5b4056623dd9295e9a34e4b4b4ad1d9d35b4897efab7f4c580",
+      "selected": [6,5],
+      "certificateId": "0x6d1f3d53cfef01dd"
+    },
+    {
+      "id": "vcf-distance5-opening20-ply20",
+      "covers": ["vcf-distance-5"],
+      "sourceOpeningId": 20,
+      "prefixLength": 20,
+      "boardSha256": "6e66f7c2e730248129093730bf2ca6de35d74c9513fcfbdbe0e68e22dbd9a220",
+      "selected": [7,10],
+      "certificateId": "0x282fcd20b7f04343"
+    },
+    {
+      "id": "vcf-distance3-opening20-ply22",
+      "covers": ["vcf-distance-3"],
+      "sourceOpeningId": 20,
+      "prefixLength": 22,
+      "boardSha256": "bf1f3a7046c821c8ab52772ffbff428883318bd8ca258b9bbae2598143cf3c98",
+      "selected": [10,8],
+      "certificateId": "0x6b91f49f927a8a2c"
+    },
+    {
+      "id": "mandatory-continuation-synthetic",
+      "covers": ["mandatory-defense-continuation", "both-rules", "all-eight-symmetries"],
+      "stones": [[7,4,1],[7,5,-1],[7,6,-1],[7,7,-1],[7,8,-1]],
+      "sideToMove": 1
+    },
+    {
+      "id": "corpus-conflict-synthetic",
+      "covers": ["corpus-conflict", "all-eight-symmetries"],
+      "stones": [[4,8,1],[5,7,-1],[6,6,-1],[6,8,-1],[7,5,-1],[7,6,1],[7,8,1],[8,7,-1],[8,8,1],[9,6,1]],
+      "sideToMove": 1,
+      "frozenCorpusMove": [6,7]
+    }
+  ],
+  "losingOpeningIds": [13, 20],
+  "resultSelectedCoordinatesAreDiagnosticOnly": [[10,6],[7,2],[10,7],[6,5],[7,10],[10,8]]
+}

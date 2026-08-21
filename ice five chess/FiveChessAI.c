@@ -13,6 +13,12 @@
 #define FC_PARALLEL_MAX_WORKERS 8
 #define FC_PARALLEL_TOKEN_BLOCK_DEFAULT 16U
 
+#if defined(__clang__) || defined(__GNUC__)
+#define FC_NOINLINE __attribute__((noinline))
+#else
+#define FC_NOINLINE
+#endif
+
 typedef struct {
     uint64_t key;
     int score;
@@ -129,7 +135,27 @@ typedef struct {
     bool memoryReservationHeld;
 } FCProofSession;
 
+enum { FC_EARLY_VCF_CACHE_CAPACITY = 4 };
+
+typedef struct {
+    bool valid;
+    uint64_t positionKey;
+    int side;
+    bool forbiddenBlack;
+    int searchClass;
+    int completedDepth;
+    const char *engineVersion;
+    FCProofResult proof;
+} FCEarlyVCFCacheEntry;
+
+typedef struct {
+    FCEarlyVCFCacheEntry entries[FC_EARLY_VCF_CACHE_CAPACITY];
+    int count;
+    uint64_t hits;
+} FCEarlyVCFDecisionCache;
+
 static _Thread_local FCProofSession *fcActiveProofSession;
+static _Thread_local FCEarlyVCFDecisionCache *fcActiveEarlyVCFCache;
 static _Thread_local uint32_t fcProofGeneration;
 static _Thread_local double fcActiveDecisionDeadlineMilliseconds;
 static _Thread_local const FCAIProfile *fcActiveBranchFirstProfile;
@@ -512,6 +538,9 @@ bool fc_decision_ledger_begin(FCDecisionLedger *ledger,
     atomic_init(&ledger->nodesReserved, 0);
     atomic_init(&ledger->memoryReserved, 0);
     atomic_init(&ledger->queriesReserved, 0);
+    atomic_init(&ledger->guardNodesConsumed, 0);
+    atomic_init(&ledger->guardReservationActive, false);
+    atomic_init(&ledger->guardPhaseActive, false);
     atomic_init(&ledger->exhausted, false);
     ledger->startedMilliseconds = fc_now_milliseconds();
     uint32_t internal = profile->decisionTimeBudgetMs;
@@ -523,6 +552,14 @@ bool fc_decision_ledger_begin(FCDecisionLedger *ledger,
     if (hard < internal) hard = internal;
     ledger->internalDeadlineMilliseconds =
         ledger->startedMilliseconds + (double)internal;
+    ledger->ordinaryDeadlineMilliseconds =
+        ledger->internalDeadlineMilliseconds;
+    if (profile->opponentGuardEnabled &&
+        profile->opponentGuardReservedTimeMs > 0 &&
+        profile->opponentGuardReservedTimeMs < internal) {
+        ledger->ordinaryDeadlineMilliseconds -=
+            (double)profile->opponentGuardReservedTimeMs;
+    }
     ledger->hardDeadlineMilliseconds =
         ledger->startedMilliseconds + (double)hard;
     ledger->nodeBudget = profile->decisionNodeBudget > 0
@@ -544,10 +581,65 @@ bool fc_decision_ledger_deadline_reached(FCDecisionLedger *ledger)
 {
     if (ledger == NULL) return false;
     double now = fc_now_milliseconds();
-    if (now < ledger->internalDeadlineMilliseconds) return false;
-    atomic_store_explicit(&ledger->exhausted, true, memory_order_release);
+    bool guardPhase = atomic_load_explicit(
+        &ledger->guardPhaseActive, memory_order_acquire);
+    double deadline = guardPhase ? ledger->internalDeadlineMilliseconds
+                                 : ledger->ordinaryDeadlineMilliseconds;
+    if (now < deadline) return false;
+    bool guardReserved = atomic_load_explicit(
+        &ledger->guardReservationActive, memory_order_acquire);
+    if (guardPhase || !guardReserved)
+        atomic_store_explicit(&ledger->exhausted, true,
+                              memory_order_release);
     fcProofDiagnostics.decisionLedgerExhaustions++;
     return true;
+}
+
+bool fc_decision_ledger_reserve_guard(FCDecisionLedger *ledger,
+                                      uint64_t requestedNodes)
+{
+    if (ledger == NULL || requestedNodes == 0) return false;
+    fcProofDiagnostics.decisionStageRequests++;
+    if (requestedNodes > ledger->nodeBudget ||
+        atomic_load_explicit(&ledger->guardReservationActive,
+                             memory_order_acquire)) {
+        fcProofDiagnostics.decisionStageAbandons++;
+        return false;
+    }
+    ledger->guardNodeReservation = requestedNodes;
+    atomic_store_explicit(&ledger->guardNodesConsumed, 0,
+                          memory_order_release);
+    atomic_store_explicit(&ledger->guardReservationActive, true,
+                          memory_order_release);
+    fcProofDiagnostics.decisionStageReservations += requestedNodes;
+    return true;
+}
+
+bool fc_decision_ledger_enter_guard(FCDecisionLedger *ledger)
+{
+    if (ledger == NULL ||
+        !atomic_load_explicit(&ledger->guardReservationActive,
+                              memory_order_acquire) ||
+        fc_now_milliseconds() >= ledger->internalDeadlineMilliseconds)
+        return false;
+    atomic_store_explicit(&ledger->guardPhaseActive, true,
+                          memory_order_release);
+    return true;
+}
+
+void fc_decision_ledger_leave_guard(FCDecisionLedger *ledger)
+{
+    if (ledger == NULL) return;
+    atomic_store_explicit(&ledger->guardPhaseActive, false,
+                          memory_order_release);
+}
+
+void fc_decision_ledger_release_guard(FCDecisionLedger *ledger)
+{
+    if (ledger == NULL) return;
+    fc_decision_ledger_leave_guard(ledger);
+    atomic_store_explicit(&ledger->guardReservationActive, false,
+                          memory_order_release);
 }
 
 bool fc_decision_ledger_reserve_nodes(FCDecisionLedger *ledger,
@@ -555,14 +647,34 @@ bool fc_decision_ledger_reserve_nodes(FCDecisionLedger *ledger,
 {
     if (ledger == NULL || requested == 0) return true;
     fcProofDiagnostics.decisionStageRequests++;
+    bool guardPhase = atomic_load_explicit(
+        &ledger->guardPhaseActive, memory_order_acquire);
+    bool guardReserved = atomic_load_explicit(
+        &ledger->guardReservationActive, memory_order_acquire);
+    if (guardPhase) {
+        uint64_t consumed = atomic_load_explicit(
+            &ledger->guardNodesConsumed, memory_order_relaxed);
+        if (!guardReserved || consumed > ledger->guardNodeReservation ||
+            requested > ledger->guardNodeReservation - consumed) {
+            fcProofDiagnostics.decisionStageAbandons++;
+            return false;
+        }
+        fcProofDiagnostics.decisionStageReservations += requested;
+        return true;
+    }
     uint64_t prior = atomic_fetch_add_explicit(
         &ledger->nodesReserved, requested, memory_order_relaxed);
     uint64_t next = 0;
     bool overflow = fc_ledger_add_overflow_u64(prior, requested, &next);
-    if (overflow || next > ledger->nodeBudget) {
+    uint64_t limit = guardReserved
+        ? ledger->nodeBudget - ledger->guardNodeReservation
+        : ledger->nodeBudget;
+    if (overflow || next > limit) {
         atomic_fetch_sub_explicit(
             &ledger->nodesReserved, requested, memory_order_relaxed);
-        atomic_store_explicit(&ledger->exhausted, true, memory_order_release);
+        if (!guardReserved)
+            atomic_store_explicit(&ledger->exhausted, true,
+                                  memory_order_release);
         fcProofDiagnostics.decisionLedgerExhaustions++;
         fcProofDiagnostics.decisionStageAbandons++;
         return false;
@@ -654,14 +766,34 @@ bool fc_decision_ledger_consume_node(FCDecisionLedger *ledger)
 {
     if (ledger == NULL) return true;
     if (fc_decision_ledger_deadline_reached(ledger)) return false;
-    if (fcActiveParallelTokenBlocksEnabled &&
-        fcActiveDecisionLedger == ledger) {
-        if (fcDecisionLedgerNodeTokensRemaining == 0 &&
-            !fc_claim_token_block(&ledger->nodesConsumed,
-                                  ledger->nodeBudget,
-                                  &fcDecisionLedgerNodeTokensRemaining)) {
+    bool guardPhase = atomic_load_explicit(
+        &ledger->guardPhaseActive, memory_order_acquire);
+    bool guardReserved = atomic_load_explicit(
+        &ledger->guardReservationActive, memory_order_acquire);
+    if (guardPhase) {
+        uint64_t guardPrior = atomic_fetch_add_explicit(
+            &ledger->guardNodesConsumed, 1, memory_order_relaxed);
+        if (guardPrior >= ledger->guardNodeReservation) {
+            atomic_fetch_sub_explicit(&ledger->guardNodesConsumed, 1,
+                                      memory_order_relaxed);
             atomic_store_explicit(&ledger->exhausted, true,
                                   memory_order_release);
+            fcProofDiagnostics.decisionLedgerExhaustions++;
+            return false;
+        }
+    }
+    if (!guardPhase && fcActiveParallelTokenBlocksEnabled &&
+        fcActiveDecisionLedger == ledger) {
+        uint64_t ordinaryBudget = guardReserved
+            ? ledger->nodeBudget - ledger->guardNodeReservation
+            : ledger->nodeBudget;
+        if (fcDecisionLedgerNodeTokensRemaining == 0 &&
+            !fc_claim_token_block(&ledger->nodesConsumed,
+                                  ordinaryBudget,
+                                  &fcDecisionLedgerNodeTokensRemaining)) {
+            if (!guardReserved)
+                atomic_store_explicit(&ledger->exhausted, true,
+                                      memory_order_release);
             fcProofDiagnostics.decisionLedgerExhaustions++;
             return false;
         }
@@ -670,10 +802,18 @@ bool fc_decision_ledger_consume_node(FCDecisionLedger *ledger)
     }
     uint64_t prior = atomic_fetch_add_explicit(
         &ledger->nodesConsumed, 1, memory_order_relaxed);
-    if (prior >= ledger->nodeBudget) {
+    uint64_t limit = !guardPhase && guardReserved
+        ? ledger->nodeBudget - ledger->guardNodeReservation
+        : ledger->nodeBudget;
+    if (prior >= limit) {
         atomic_fetch_sub_explicit(
             &ledger->nodesConsumed, 1, memory_order_relaxed);
-        atomic_store_explicit(&ledger->exhausted, true, memory_order_release);
+        if (guardPhase)
+            atomic_fetch_sub_explicit(&ledger->guardNodesConsumed, 1,
+                                      memory_order_relaxed);
+        if (guardPhase || !guardReserved)
+            atomic_store_explicit(&ledger->exhausted, true,
+                                  memory_order_release);
         fcProofDiagnostics.decisionLedgerExhaustions++;
         return false;
     }
@@ -1002,6 +1142,45 @@ FCAIProfile fc_profile_five_star_proof_engine_candidate(void)
     /* Stop search with a small result-finalization reserve so the complete
      * player-visible decision remains below the five-second hard limit. */
     profile.decisionTimeBudgetMs = 4500;
+    return profile;
+}
+
+FCAIProfile fc_profile_five_star_opponent_guard_candidate(void)
+{
+    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
+    profile.name = "five-star-opponent-forcing-guard-candidate";
+    profile.version = "5.8.0-vcf-first-opponent-guard-4w";
+    profile.opponentGuardEnabled = true;
+    profile.opponentGuardVCFMaxDepth = 9;
+    profile.opponentGuardVCFNodeBudget = 48000;
+    profile.opponentGuardVCFTimeBudgetMs = 500;
+    profile.opponentGuardVCTMaxDepth = 10;
+    profile.opponentGuardVCTNodeBudget = 48000;
+    profile.opponentGuardVCTTimeBudgetMs = 700;
+    profile.opponentGuardReservedNodes = 96000;
+    profile.opponentGuardReservedTimeMs = 1400;
+    profile.opponentGuardStructuralVCTEnabled = true;
+    profile.opponentGuardMaxAlternatives = 8;
+    profile.proofWorkerCount = 4;
+    profile.proofParallelNodeBudget = 192000;
+    profile.decisionHardLimitMs = 5000;
+    profile.decisionLedgerVersion = 2;
+    profile.decisionNodeBudget = 288000;
+    return profile;
+}
+
+FCAIProfile fc_profile_five_star_early_micro_vcf_candidate(void)
+{
+    FCAIProfile profile = fc_profile_five_star_opponent_guard_candidate();
+    profile.name = "five-star-early-micro-vcf-sentinel-candidate";
+    profile.version = "5.8.1-early-micro-vcf-adaptive-16k-80ms-2a";
+    profile.earlyVCFSentinelEnabled = true;
+    profile.earlyVCFSentinelPolicy = FC_EARLY_VCF_POLICY_ADAPTIVE;
+    profile.earlyVCFBaseDepth = 5;
+    profile.earlyVCFMaxDepth = 7;
+    profile.earlyVCFNodeBudget = 16000;
+    profile.earlyVCFTimeBudgetMs = 80;
+    profile.earlyVCFMaxAlternatives = 2;
     return profile;
 }
 
@@ -5862,6 +6041,20 @@ bool fc_verify_scoped_disproof(
            memcmp(before, board, sizeof(before)) == 0;
 }
 
+static bool fc_verify_scoped_disproof_isolated(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    int attacker,
+    bool forbiddenBlack,
+    const FCProofResult *result)
+{
+    FCProofSession *previous = fcActiveProofSession;
+    fcActiveProofSession = NULL;
+    bool verified = fc_verify_scoped_disproof(
+        board, attacker, forbiddenBlack, result);
+    fcActiveProofSession = previous;
+    return verified;
+}
+
 bool fc_prove_forced_win_candidate_session(
     const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     int attacker,
@@ -8767,6 +8960,915 @@ static int fc_opponent_proof_after_move(
     return proof->status;
 }
 
+static bool fc_opponent_guard_vct_signal(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    int opponent,
+    bool forbiddenBlack)
+{
+    FCThreat threats[FC_MAX_THREATS];
+    bool overflow = false;
+    int count = fc_enumerate_threats(
+        board, opponent, forbiddenBlack, FC_PROOF_SEARCH_VCT,
+        threats, FC_MAX_THREATS, &overflow);
+    if (overflow) return true;
+    for (int i = 0; i < count; i++) {
+        if (threats[i].severity >= FC_THREAT_OPEN_THREE)
+            return true;
+        for (int word = 0; word < FC_POSITION_BITSET_WORDS; word++) {
+            if (threats[i].dependencyMask[word] != 0 ||
+                threats[i].certificateZoneMask[word] != 0)
+                return true;
+        }
+    }
+    return false;
+}
+
+static bool fc_early_vcf_forcing_signal(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    int opponent,
+    bool forbiddenBlack)
+{
+    FCThreat threats[FC_MAX_THREATS];
+    bool overflow = false;
+    int count = fc_enumerate_threats(
+        board, opponent, forbiddenBlack, FC_PROOF_SEARCH_VCF,
+        threats, FC_MAX_THREATS, &overflow);
+    if (overflow) return true;
+    for (int i = 0; i < count; i++) {
+        if (threats[i].severity >= FC_THREAT_FOUR)
+            return true;
+        for (int word = 0; word < FC_POSITION_BITSET_WORDS; word++) {
+            if (threats[i].dependencyMask[word] != 0 ||
+                threats[i].certificateZoneMask[word] != 0)
+                return true;
+        }
+    }
+    return false;
+}
+
+static uint64_t fc_early_vcf_position_key(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    int attacker,
+    bool forbiddenBlack,
+    const FCAIProfile *profile)
+{
+    return fc_board_hash(board, attacker, forbiddenBlack,
+                         0, 0, true, profile);
+}
+
+static void fc_early_vcf_cache_store(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    int attacker,
+    bool forbiddenBlack,
+    const FCAIProfile *profile,
+    const FCProofResult *proof)
+{
+    if (fcActiveEarlyVCFCache == NULL || profile == NULL || proof == NULL ||
+        proof->status != FC_PROOF_PROVEN_WIN ||
+        !proof->certificateVerified) return;
+    uint64_t key = fc_early_vcf_position_key(
+        board, attacker, forbiddenBlack, profile);
+    int index = fcActiveEarlyVCFCache->count;
+    if (index >= FC_EARLY_VCF_CACHE_CAPACITY)
+        index = FC_EARLY_VCF_CACHE_CAPACITY - 1;
+    else
+        fcActiveEarlyVCFCache->count++;
+    FCEarlyVCFCacheEntry *entry = &fcActiveEarlyVCFCache->entries[index];
+    *entry = (FCEarlyVCFCacheEntry){
+        .valid = true,
+        .positionKey = key,
+        .side = attacker,
+        .forbiddenBlack = forbiddenBlack,
+        .searchClass = FC_PROOF_SEARCH_VCF,
+        .completedDepth = proof->completedDepth,
+        .engineVersion = profile->version,
+        .proof = *proof
+    };
+}
+
+static bool fc_early_vcf_cache_lookup_verified_win(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    int attacker,
+    bool forbiddenBlack,
+    const FCAIProfile *profile,
+    FCProofResult *proof)
+{
+    if (fcActiveEarlyVCFCache == NULL || profile == NULL || proof == NULL)
+        return false;
+    uint64_t key = fc_early_vcf_position_key(
+        board, attacker, forbiddenBlack, profile);
+    for (int i = 0; i < fcActiveEarlyVCFCache->count; i++) {
+        FCEarlyVCFCacheEntry *entry =
+            &fcActiveEarlyVCFCache->entries[i];
+        if (!entry->valid || entry->positionKey != key ||
+            entry->side != attacker ||
+            entry->forbiddenBlack != forbiddenBlack ||
+            entry->searchClass != FC_PROOF_SEARCH_VCF ||
+            entry->engineVersion == NULL || profile->version == NULL ||
+            strcmp(entry->engineVersion, profile->version) != 0)
+            continue;
+        *proof = entry->proof;
+        proof->elapsedMilliseconds = 0.0;
+        if (!fc_verify_proof(board, attacker, forbiddenBlack, proof))
+            continue;
+        fcActiveEarlyVCFCache->hits++;
+        fcProofDiagnostics.earlyVCFCacheHits++;
+        return true;
+    }
+    return false;
+}
+
+bool fc_audit_opponent_micro_vcf_after_move(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    int side,
+    bool forbiddenBlack,
+    const FCAIProfile *profile,
+    int x,
+    int y,
+    FCOpponentGuardAudit *audit,
+    int *effectiveDepth,
+    bool *adaptiveEscalated)
+{
+    if (board == NULL || profile == NULL || audit == NULL) return false;
+    memset(audit, 0, sizeof(*audit));
+    audit->status = FC_PROOF_UNKNOWN;
+    audit->completedClass = FC_GUARD_CLASS_UNKNOWN;
+    audit->vcf.x = audit->vcf.y = -1;
+    audit->vct.x = audit->vct.y = -1;
+    if (effectiveDepth != NULL) *effectiveDepth = 0;
+    if (adaptiveEscalated != NULL) *adaptiveEscalated = false;
+    int after[FC_BOARD_SIZE][FC_BOARD_SIZE];
+    memcpy(after, board, sizeof(after));
+    if (!fc_make_move(after, x, y, side, forbiddenBlack)) {
+        audit->boardRestored = memcmp(after, board, sizeof(after)) == 0;
+        return false;
+    }
+    audit->placementLegal = true;
+    audit->ownImmediateWin = fc_has_five(
+        (const int (*)[FC_BOARD_SIZE])after, x, y, side);
+    audit->immediatelySafe = audit->ownImmediateWin ||
+        fc_count_immediate_wins(after, -side, forbiddenBlack, NULL, 0) == 0;
+    if (audit->ownImmediateWin) {
+        audit->status = FC_PROOF_NO_FORCED_WIN_IN_SCOPE;
+        audit->completedClass = FC_GUARD_CLASS_OWN_VERIFIED_WIN;
+        after[x][y] = 0;
+        audit->boardRestored = memcmp(after, board, sizeof(after)) == 0;
+        return audit->boardRestored;
+    }
+
+    int depth = profile->earlyVCFBaseDepth;
+    bool escalated = false;
+    if (depth <= 0) depth = 5;
+    if (profile->earlyVCFSentinelPolicy == FC_EARLY_VCF_POLICY_ADAPTIVE &&
+        profile->earlyVCFMaxDepth > depth &&
+        fc_early_vcf_forcing_signal(
+            (const int (*)[FC_BOARD_SIZE])after, -side,
+            forbiddenBlack)) {
+        depth = profile->earlyVCFMaxDepth;
+        escalated = true;
+        fcProofDiagnostics.earlyVCFAdaptiveEscalations++;
+    } else if (profile->earlyVCFSentinelPolicy ==
+                   FC_EARLY_VCF_POLICY_FIXED &&
+               profile->earlyVCFMaxDepth > 0) {
+        depth = profile->earlyVCFMaxDepth;
+    }
+    if (effectiveDepth != NULL) *effectiveDepth = depth;
+    if (adaptiveEscalated != NULL) *adaptiveEscalated = escalated;
+
+    FCAIProfile queryProfile = *profile;
+    queryProfile.parallelProofEnabled = false;
+    queryProfile.proofWorkerCount = 1;
+    queryProfile.workerCountOverride = 1;
+    queryProfile.branchFirstSearchEnabled = false;
+    queryProfile.persistentWorkerPoolEnabled = false;
+    uint64_t nodeBudget = profile->earlyVCFNodeBudget;
+    uint32_t timeBudget = profile->earlyVCFTimeBudgetMs;
+    if (nodeBudget == 0 || timeBudget == 0) {
+        audit->vcf.status = FC_PROOF_UNKNOWN;
+        audit->vcf.searchClass = FC_PROOF_SEARCH_VCF;
+        audit->vcf.completedDepth = depth;
+        audit->vcf.budgetExhausted = true;
+    } else {
+        fcProofDiagnostics.earlyVCFQueries++;
+        (void)fc_parallel_prove_forced_win(
+            (const int (*)[FC_BOARD_SIZE])after, -side,
+            forbiddenBlack, FC_PROOF_SEARCH_VCF, depth,
+            nodeBudget, timeBudget, &queryProfile, &audit->vcf);
+    }
+    if (audit->vcf.status == FC_PROOF_PROVEN_WIN) {
+        if (!audit->vcf.certificateVerified ||
+            !fc_verify_proof((const int (*)[FC_BOARD_SIZE])after,
+                             -side, forbiddenBlack, &audit->vcf)) {
+            audit->vcf.status = FC_PROOF_UNKNOWN;
+            audit->vcf.certificateVerified = false;
+        }
+    }
+    audit->status = audit->vcf.status;
+    audit->completedSearchClass = FC_PROOF_SEARCH_VCF;
+    if (audit->vcf.status == FC_PROOF_PROVEN_WIN) {
+        audit->completedClass = FC_GUARD_CLASS_VERIFIED_LOSS;
+        fcProofDiagnostics.earlyVCFCompletedProofs++;
+        fcProofDiagnostics.earlyVCFVerifiedLosses++;
+        fc_early_vcf_cache_store(
+            (const int (*)[FC_BOARD_SIZE])after, -side,
+            forbiddenBlack, profile, &audit->vcf);
+    } else if (audit->vcf.status == FC_PROOF_NO_FORCED_WIN_IN_SCOPE) {
+        audit->completedClass = FC_GUARD_CLASS_SCOPED_DISPROOF;
+        fcProofDiagnostics.earlyVCFCompletedDisproofs++;
+    } else {
+        audit->completedClass = audit->immediatelySafe
+            ? FC_GUARD_CLASS_IMMEDIATELY_SAFE_UNKNOWN
+            : FC_GUARD_CLASS_UNKNOWN;
+        fcProofDiagnostics.earlyVCFUnknowns++;
+        if (audit->vcf.budgetExhausted)
+            fcProofDiagnostics.earlyVCFDeadlineExhaustions++;
+    }
+    fcProofDiagnostics.earlyVCFFreshNodes += audit->vcf.nodes;
+    after[x][y] = 0;
+    audit->boardRestored = memcmp(after, board, sizeof(after)) == 0;
+    if (!audit->boardRestored) {
+        audit->status = FC_PROOF_UNKNOWN;
+        audit->completedClass = FC_GUARD_CLASS_UNKNOWN;
+        fcProofDiagnostics.earlyVCFRollbacks++;
+    }
+    return audit->placementLegal && audit->boardRestored;
+}
+
+bool fc_audit_opponent_after_move(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    int side,
+    bool forbiddenBlack,
+    const FCAIProfile *profile,
+    int x,
+    int y,
+    FCOpponentGuardAudit *audit)
+{
+    if (board == NULL || profile == NULL || audit == NULL) return false;
+    memset(audit, 0, sizeof(*audit));
+    audit->status = FC_PROOF_UNKNOWN;
+    audit->completedClass = FC_GUARD_CLASS_UNKNOWN;
+    audit->vcf.x = audit->vcf.y = -1;
+    audit->vct.x = audit->vct.y = -1;
+    int after[FC_BOARD_SIZE][FC_BOARD_SIZE];
+    memcpy(after, board, sizeof(after));
+    if (!fc_make_move(after, x, y, side, forbiddenBlack)) {
+        audit->boardRestored = memcmp(after, board, sizeof(after)) == 0;
+        return false;
+    }
+    audit->placementLegal = true;
+    audit->ownImmediateWin = fc_has_five(
+        (const int (*)[FC_BOARD_SIZE])after, x, y, side);
+    audit->immediatelySafe = audit->ownImmediateWin ||
+        fc_count_immediate_wins(after, -side, forbiddenBlack, NULL, 0) == 0;
+    if (audit->ownImmediateWin) {
+        audit->status = FC_PROOF_NO_FORCED_WIN_IN_SCOPE;
+        audit->completedClass = FC_GUARD_CLASS_OWN_VERIFIED_WIN;
+        after[x][y] = 0;
+        audit->boardRestored = memcmp(after, board, sizeof(after)) == 0;
+        return audit->boardRestored;
+    }
+
+    bool reusedEarlyProof = fc_early_vcf_cache_lookup_verified_win(
+        (const int (*)[FC_BOARD_SIZE])after, -side, forbiddenBlack,
+        profile, &audit->vcf);
+    double started = fc_now_milliseconds();
+    if (!reusedEarlyProof) {
+        fcProofDiagnostics.opponentGuardVCFQueries++;
+        (void)fc_parallel_prove_forced_win(
+            (const int (*)[FC_BOARD_SIZE])after, -side, forbiddenBlack,
+            FC_PROOF_SEARCH_VCF, profile->opponentGuardVCFMaxDepth,
+            profile->opponentGuardVCFNodeBudget,
+            profile->opponentGuardVCFTimeBudgetMs, profile, &audit->vcf);
+        audit->vcf.elapsedMilliseconds =
+            fc_now_milliseconds() - started;
+    }
+    if (audit->vcf.status == FC_PROOF_PROVEN_WIN) {
+        if (!audit->vcf.certificateVerified ||
+            !fc_verify_proof((const int (*)[FC_BOARD_SIZE])after,
+                             -side, forbiddenBlack, &audit->vcf)) {
+            audit->vcf.status = FC_PROOF_UNKNOWN;
+            audit->vcf.certificateVerified = false;
+        }
+    } else if (audit->vcf.status == FC_PROOF_NO_FORCED_WIN_IN_SCOPE &&
+               !fc_verify_scoped_disproof_isolated(
+                   (const int (*)[FC_BOARD_SIZE])after, -side,
+                   forbiddenBlack, &audit->vcf)) {
+        audit->vcf.status = FC_PROOF_UNKNOWN;
+    }
+    audit->status = audit->vcf.status;
+    if (audit->vcf.status == FC_PROOF_PROVEN_WIN) {
+        audit->completedClass = FC_GUARD_CLASS_VERIFIED_LOSS;
+        audit->completedSearchClass = FC_PROOF_SEARCH_VCF;
+    } else if (audit->vcf.status == FC_PROOF_NO_FORCED_WIN_IN_SCOPE) {
+        audit->completedClass = FC_GUARD_CLASS_SCOPED_DISPROOF;
+        audit->completedSearchClass = FC_PROOF_SEARCH_VCF;
+        audit->vctEligible = !profile->opponentGuardStructuralVCTEnabled ||
+            fc_opponent_guard_vct_signal(
+                (const int (*)[FC_BOARD_SIZE])after, -side,
+                forbiddenBlack);
+        if (!audit->vctEligible) {
+            fcProofDiagnostics.opponentGuardVCTStructuralSkips++;
+        } else if (!fc_decision_deadline_reached()) {
+            fcProofDiagnostics.opponentGuardVCTQueries++;
+            started = fc_now_milliseconds();
+            (void)fc_parallel_prove_forced_win(
+                (const int (*)[FC_BOARD_SIZE])after, -side,
+                forbiddenBlack, FC_PROOF_SEARCH_VCT,
+                profile->opponentGuardVCTMaxDepth,
+                profile->opponentGuardVCTNodeBudget,
+                profile->opponentGuardVCTTimeBudgetMs, profile,
+                &audit->vct);
+            audit->vct.elapsedMilliseconds =
+                fc_now_milliseconds() - started;
+            if (audit->vct.status == FC_PROOF_PROVEN_WIN) {
+                if (!audit->vct.certificateVerified ||
+                    !fc_verify_proof(
+                        (const int (*)[FC_BOARD_SIZE])after, -side,
+                        forbiddenBlack, &audit->vct)) {
+                    audit->vct.status = FC_PROOF_UNKNOWN;
+                    audit->vct.certificateVerified = false;
+                }
+            } else if (audit->vct.status ==
+                           FC_PROOF_NO_FORCED_WIN_IN_SCOPE &&
+                       !fc_verify_scoped_disproof_isolated(
+                           (const int (*)[FC_BOARD_SIZE])after, -side,
+                           forbiddenBlack, &audit->vct)) {
+                audit->vct.status = FC_PROOF_UNKNOWN;
+            }
+            if (audit->vct.status == FC_PROOF_PROVEN_WIN) {
+                audit->status = FC_PROOF_PROVEN_WIN;
+                audit->completedClass = FC_GUARD_CLASS_VERIFIED_LOSS;
+                audit->completedSearchClass = FC_PROOF_SEARCH_VCT;
+            } else if (audit->vct.status ==
+                       FC_PROOF_NO_FORCED_WIN_IN_SCOPE) {
+                audit->status = FC_PROOF_NO_FORCED_WIN_IN_SCOPE;
+                audit->completedClass = FC_GUARD_CLASS_SCOPED_DISPROOF;
+                audit->completedSearchClass = FC_PROOF_SEARCH_VCT;
+            } else {
+                audit->status = FC_PROOF_UNKNOWN;
+                audit->completedClass = audit->immediatelySafe
+                    ? FC_GUARD_CLASS_IMMEDIATELY_SAFE_UNKNOWN
+                    : FC_GUARD_CLASS_UNKNOWN;
+                audit->completedSearchClass = FC_PROOF_SEARCH_VCF;
+            }
+        }
+    } else {
+        audit->completedClass = audit->immediatelySafe
+            ? FC_GUARD_CLASS_IMMEDIATELY_SAFE_UNKNOWN
+            : FC_GUARD_CLASS_UNKNOWN;
+    }
+    after[x][y] = 0;
+    audit->boardRestored = memcmp(after, board, sizeof(after)) == 0;
+    if (!audit->boardRestored) {
+        audit->status = FC_PROOF_UNKNOWN;
+        audit->completedClass = FC_GUARD_CLASS_UNKNOWN;
+    }
+    return audit->placementLegal && audit->boardRestored;
+}
+
+static const FCProofResult *fc_guard_completed_proof(
+    const FCOpponentGuardAudit *audit)
+{
+    if (audit->completedSearchClass == FC_PROOF_SEARCH_VCT)
+        return &audit->vct;
+    return &audit->vcf;
+}
+
+static bool fc_guard_audit_better(const FCOpponentGuardAudit *candidate,
+                                  const FCOpponentGuardAudit *current)
+{
+    if (candidate->completedClass != current->completedClass)
+        return candidate->completedClass > current->completedClass;
+    if (candidate->completedClass == FC_GUARD_CLASS_SCOPED_DISPROOF &&
+        candidate->completedSearchClass != current->completedSearchClass)
+        return candidate->completedSearchClass > current->completedSearchClass;
+    if (candidate->completedClass == FC_GUARD_CLASS_VERIFIED_LOSS) {
+        const FCProofResult *candidateProof =
+            fc_guard_completed_proof(candidate);
+        const FCProofResult *currentProof = fc_guard_completed_proof(current);
+        return candidateProof->distance > currentProof->distance;
+    }
+    return false;
+}
+
+bool fc_test_opponent_guard_audit_better(
+    const FCOpponentGuardAudit *candidate,
+    const FCOpponentGuardAudit *current)
+{
+    if (candidate == NULL || current == NULL) return false;
+    return fc_guard_audit_better(candidate, current);
+}
+
+static bool fc_guard_audit_matches_or_exceeds(
+    const FCOpponentGuardAudit *candidate,
+    int completedClass,
+    int completedSearchClass,
+    int completedDistance)
+{
+    if (candidate->completedClass != completedClass)
+        return candidate->completedClass > completedClass;
+    if (completedClass == FC_GUARD_CLASS_SCOPED_DISPROOF)
+        return candidate->completedSearchClass >= completedSearchClass;
+    if (completedClass == FC_GUARD_CLASS_VERIFIED_LOSS)
+        return fc_guard_completed_proof(candidate)->distance >=
+               completedDistance;
+    return true;
+}
+
+static void fc_guard_count_audit(FCAnalysisResult *result,
+                                 const FCOpponentGuardAudit *audit,
+                                 uint32_t stage)
+{
+    result->opponentGuardAuditedStages |= stage;
+    result->opponentGuardAuditedCount++;
+    fcProofDiagnostics.opponentGuardCandidatesAudited++;
+    if (audit->completedClass == FC_GUARD_CLASS_SCOPED_DISPROOF) {
+        result->opponentGuardCompletedDisproofs++;
+        fcProofDiagnostics.opponentGuardCompletedDisproofs++;
+    } else if (audit->completedClass == FC_GUARD_CLASS_VERIFIED_LOSS) {
+        result->opponentGuardVerifiedLosses++;
+        fcProofDiagnostics.opponentGuardVerifiedLosses++;
+    } else {
+        result->opponentGuardUnknowns++;
+        fcProofDiagnostics.opponentGuardUnknowns++;
+    }
+}
+
+static uint32_t fc_guard_stage_for_escape(int stage)
+{
+    switch (stage) {
+        case FC_ESCAPE_CERTIFICATE: return FC_GUARD_STAGE_CERTIFICATE;
+        case FC_ESCAPE_TACTICAL: return FC_GUARD_STAGE_TACTICAL;
+        case FC_ESCAPE_ORDINARY: return FC_GUARD_STAGE_ORDINARY;
+        case FC_ESCAPE_ALL_LEGAL: return FC_GUARD_STAGE_ALL_LEGAL;
+        default: return FC_GUARD_STAGE_NONE;
+    }
+}
+
+static void fc_guard_publish_selected(FCAnalysisResult *result,
+                                      const FCOpponentGuardAudit *audit)
+{
+    const FCProofResult *proof = fc_guard_completed_proof(audit);
+    result->opponentGuardSelectedClass = audit->completedClass;
+    result->opponentGuardVCFStatus = audit->vcf.status;
+    result->opponentGuardVCFDistance = audit->vcf.distance;
+    result->opponentGuardVCFNodes = audit->vcf.nodes;
+    result->opponentGuardVCFMilliseconds =
+        audit->vcf.elapsedMilliseconds;
+    result->opponentGuardVCFCertificateVerified =
+        audit->vcf.certificateVerified;
+    result->opponentGuardVCTEligible = audit->vctEligible;
+    result->opponentGuardVCTStatus = audit->vct.status;
+    result->opponentGuardVCTDistance = audit->vct.distance;
+    result->opponentGuardVCTNodes = audit->vct.nodes;
+    result->opponentGuardVCTMilliseconds =
+        audit->vct.elapsedMilliseconds;
+    result->opponentGuardVCTCertificateVerified =
+        audit->vct.certificateVerified;
+    result->opponentAfterSelectedStatus = audit->status;
+    result->opponentAfterSelectedDistance = proof->distance;
+    result->proofStatus = audit->status;
+    result->proofSearchClass = audit->completedSearchClass;
+    result->proofDistance = proof->distance;
+    result->proofCertificateId = proof->certificateId;
+    result->proofCertificateVerified = proof->certificateVerified;
+    result->proofNodes = proof->nodes;
+    result->proofNumber = proof->proofNumber;
+    result->disproofNumber = proof->disproofNumber;
+}
+
+static int fc_early_vcf_audit_rank(const FCOpponentGuardAudit *audit)
+{
+    if (audit == NULL) return 0;
+    switch (audit->completedClass) {
+        case FC_GUARD_CLASS_OWN_VERIFIED_WIN: return 5;
+        case FC_GUARD_CLASS_SCOPED_DISPROOF: return 4;
+        case FC_GUARD_CLASS_IMMEDIATELY_SAFE_UNKNOWN: return 3;
+        case FC_GUARD_CLASS_UNKNOWN: return 2;
+        case FC_GUARD_CLASS_VERIFIED_LOSS: return 1;
+        default: return 0;
+    }
+}
+
+static bool fc_early_vcf_audit_better(
+    const FCOpponentGuardAudit *candidate,
+    const FCOpponentGuardAudit *current)
+{
+    int candidateRank = fc_early_vcf_audit_rank(candidate);
+    int currentRank = fc_early_vcf_audit_rank(current);
+    if (candidateRank != currentRank) return candidateRank > currentRank;
+    if (candidate != NULL && current != NULL &&
+        candidate->completedClass == FC_GUARD_CLASS_VERIFIED_LOSS)
+        return candidate->vcf.distance > current->vcf.distance;
+    return false;
+}
+
+static void fc_early_vcf_adopt_candidate(
+    FCAnalysisResult *baseline,
+    const FCCandidate *baseMoves,
+    int baseCount,
+    int x,
+    int y,
+    const FCOpponentGuardAudit *audit)
+{
+    baseline->x = x;
+    baseline->y = y;
+    baseline->provenLoss = false;
+    baseline->decisionStatus = FC_DECISION_UNKNOWN_OR_DEADLINE;
+    baseline->proofStatus = FC_PROOF_UNKNOWN;
+    baseline->proofSearchClass = FC_PROOF_SEARCH_NONE;
+    baseline->proofDistance = 0;
+    baseline->proofCertificateId = 0;
+    baseline->proofNodes = 0;
+    baseline->proofNumber = 0;
+    baseline->disproofNumber = 0;
+    baseline->proofCertificateVerified = false;
+    baseline->opponentAfterSelectedStatus = FC_PROOF_UNKNOWN;
+    baseline->opponentAfterSelectedDistance = 0;
+    baseline->lossReason = FC_LOSS_BUDGET_UNKNOWN;
+    baseline->tacticalClass = audit != NULL && audit->ownImmediateWin
+        ? FC_TACTICAL_IMMEDIATE_WIN : FC_TACTICAL_NORMAL;
+    for (int i = 0; i < baseCount; i++) {
+        if (baseMoves[i].x != x || baseMoves[i].y != y) continue;
+        baseline->score = baseMoves[i].score;
+        if (audit == NULL || !audit->ownImmediateWin)
+            baseline->tacticalClass = baseMoves[i].tacticalClass;
+        break;
+    }
+}
+
+static FC_NOINLINE bool fc_apply_early_vcf_sentinel(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    int side,
+    bool forbiddenBlack,
+    const FCAIProfile *profile,
+    const FCCandidate *baseMoves,
+    int baseCount,
+    FCAnalysisResult *baseline)
+{
+    baseline->earlyVCFPolicy = profile->earlyVCFSentinelPolicy;
+    baseline->earlyVCFProvisionalX = baseline->x;
+    baseline->earlyVCFProvisionalY = baseline->y;
+    baseline->earlyVCFSelectedX = baseline->x;
+    baseline->earlyVCFSelectedY = baseline->y;
+    if (!profile->earlyVCFSentinelEnabled) {
+        baseline->earlyVCFSkipReason = FC_GUARD_SKIP_DISABLED;
+        fcProofDiagnostics.earlyVCFSkippedDisabled++;
+        return true;
+    }
+    bool immediateWin = baseline->tacticalClass ==
+        FC_TACTICAL_IMMEDIATE_WIN &&
+        fc_is_legal_move(board, baseline->x, baseline->y, side,
+                         forbiddenBlack);
+    if (immediateWin) {
+        baseline->earlyVCFSkipReason = FC_GUARD_SKIP_IMMEDIATE_WIN;
+        fcProofDiagnostics.earlyVCFSkippedImmediateWins++;
+        return true;
+    }
+    if (fcActiveDecisionLedger == NULL ||
+        !fc_decision_ledger_enter_guard(fcActiveDecisionLedger)) {
+        baseline->earlyVCFSkipReason = FC_GUARD_SKIP_NO_RESERVED_RESOURCE;
+        fcProofDiagnostics.earlyVCFSkippedNoResource++;
+        return true;
+    }
+
+    baseline->earlyVCFEligible = true;
+    fcProofDiagnostics.earlyVCFEligibleDecisions++;
+    double previousDeadline = fcActiveDecisionDeadlineMilliseconds;
+    fcActiveDecisionDeadlineMilliseconds =
+        fcActiveDecisionLedger->internalDeadlineMilliseconds;
+    double started = fc_now_milliseconds();
+    uint64_t guardNodesBefore = atomic_load_explicit(
+        &fcActiveDecisionLedger->guardNodesConsumed,
+        memory_order_relaxed);
+
+    FCAIProfile queryProfile = *profile;
+    FCOpponentGuardAudit provisional;
+    int provisionalDepth = 0;
+    bool provisionalEscalated = false;
+    bool audited = fc_audit_opponent_micro_vcf_after_move(
+        board, side, forbiddenBlack, &queryProfile,
+        baseline->x, baseline->y, &provisional,
+        &provisionalDepth, &provisionalEscalated);
+    if (!audited) {
+        baseline->earlyVCFSkipReason = FC_GUARD_SKIP_ILLEGAL_PROVISIONAL;
+        baseline->earlyVCFRollback = true;
+        fcProofDiagnostics.earlyVCFRollbacks++;
+        fc_decision_ledger_leave_guard(fcActiveDecisionLedger);
+        fcActiveDecisionDeadlineMilliseconds = previousDeadline;
+        return false;
+    }
+
+    baseline->earlyVCFEffectiveDepth = provisionalDepth;
+    baseline->earlyVCFAdaptiveEscalated = provisionalEscalated;
+    baseline->earlyVCFStatus = provisional.vcf.status;
+    baseline->earlyVCFDistance = provisional.vcf.distance;
+    baseline->earlyVCFCertificateVerified =
+        provisional.vcf.certificateVerified;
+    baseline->earlyVCFAuditedCount = 1;
+    baseline->earlyVCFVerifiedLosses =
+        provisional.completedClass == FC_GUARD_CLASS_VERIFIED_LOSS ? 1 : 0;
+    baseline->earlyVCFNodes = provisional.vcf.nodes;
+    baseline->earlyVCFCacheHits = provisional.vcf.transpositionHits;
+
+    FCOpponentGuardAudit selectedAudit = provisional;
+    int selectedX = baseline->x;
+    int selectedY = baseline->y;
+    int selectedSource = FC_ESCAPE_NONE;
+    int alternatives = 0;
+    int maxAlternatives = profile->earlyVCFMaxAlternatives;
+    if (maxAlternatives < 0) maxAlternatives = 0;
+    if (provisional.completedClass == FC_GUARD_CLASS_VERIFIED_LOSS &&
+        maxAlternatives > 0) {
+        int mutableBoard[FC_BOARD_SIZE][FC_BOARD_SIZE];
+        memcpy(mutableBoard, board, sizeof(mutableBoard));
+        FCEscapeCandidate options[FC_BOARD_SIZE * FC_BOARD_SIZE];
+        int optionCount = fc_build_escape_candidates(
+            mutableBoard, side, forbiddenBlack, profile,
+            &provisional.vcf, baseMoves, baseCount,
+            baseline->x, baseline->y,
+            options, FC_BOARD_SIZE * FC_BOARD_SIZE);
+        bool examined[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{false}};
+        examined[baseline->x][baseline->y] = true;
+        for (int i = 0; i < optionCount && alternatives < maxAlternatives;
+             i++) {
+            double elapsed = fc_now_milliseconds() - started;
+            uint64_t consumed = baseline->earlyVCFNodes;
+            if (elapsed >= (double)profile->earlyVCFTimeBudgetMs ||
+                consumed >= profile->earlyVCFNodeBudget ||
+                fc_decision_deadline_reached()) break;
+            int x = options[i].x;
+            int y = options[i].y;
+            if (examined[x][y]) continue;
+            examined[x][y] = true;
+            queryProfile.earlyVCFNodeBudget =
+                profile->earlyVCFNodeBudget - consumed;
+            double remainingMs =
+                (double)profile->earlyVCFTimeBudgetMs - elapsed;
+            queryProfile.earlyVCFTimeBudgetMs =
+                remainingMs > 1.0 ? (uint32_t)remainingMs : 1;
+            FCOpponentGuardAudit candidateAudit;
+            int candidateDepth = 0;
+            bool candidateEscalated = false;
+            if (!fc_audit_opponent_micro_vcf_after_move(
+                    board, side, forbiddenBlack, &queryProfile,
+                    x, y, &candidateAudit,
+                    &candidateDepth, &candidateEscalated))
+                continue;
+            alternatives++;
+            baseline->earlyVCFAuditedCount++;
+            baseline->earlyVCFNodes += candidateAudit.vcf.nodes;
+            baseline->earlyVCFCacheHits +=
+                candidateAudit.vcf.transpositionHits;
+            baseline->earlyVCFAdaptiveEscalated =
+                baseline->earlyVCFAdaptiveEscalated ||
+                candidateEscalated;
+            if (candidateAudit.completedClass ==
+                FC_GUARD_CLASS_VERIFIED_LOSS)
+                baseline->earlyVCFVerifiedLosses++;
+            if (fc_early_vcf_audit_better(
+                    &candidateAudit, &selectedAudit)) {
+                selectedAudit = candidateAudit;
+                selectedX = x;
+                selectedY = y;
+                selectedSource = options[i].stage;
+            }
+            if (selectedAudit.completedClass !=
+                FC_GUARD_CLASS_VERIFIED_LOSS) break;
+        }
+    }
+
+    baseline->earlyVCFSelectedX = selectedX;
+    baseline->earlyVCFSelectedY = selectedY;
+    baseline->earlyVCFReplacementSource = selectedSource;
+    if (selectedX != baseline->earlyVCFProvisionalX ||
+        selectedY != baseline->earlyVCFProvisionalY) {
+        baseline->earlyVCFAvoidedVerifiedLoss =
+            provisional.completedClass == FC_GUARD_CLASS_VERIFIED_LOSS;
+        if (baseline->earlyVCFAvoidedVerifiedLoss) {
+            fcProofDiagnostics.earlyVCFAvoidedVerifiedLosses++;
+            fc_early_vcf_adopt_candidate(
+                baseline, baseMoves, baseCount,
+                selectedX, selectedY, &selectedAudit);
+            baseline->overrideReason =
+                selectedAudit.completedClass ==
+                    FC_GUARD_CLASS_SCOPED_DISPROOF
+                ? FC_OVERRIDE_PROVEN_DEFENSE
+                : selectedAudit.completedClass ==
+                      FC_GUARD_CLASS_VERIFIED_LOSS
+                ? FC_OVERRIDE_LONGEST_SURVIVAL
+                : FC_OVERRIDE_UNPROVEN_ESCAPE;
+            baseline->escapeStage = selectedSource;
+            baseline->escapeAlternativesExamined += alternatives;
+        }
+    }
+    baseline->earlyVCFMilliseconds = fc_now_milliseconds() - started;
+    baseline->earlyVCFConsumedNodes = atomic_load_explicit(
+        &fcActiveDecisionLedger->guardNodesConsumed,
+        memory_order_relaxed) - guardNodesBefore;
+    double remaining = fcActiveDecisionLedger->ordinaryDeadlineMilliseconds -
+        fc_now_milliseconds();
+    baseline->earlyVCFDownstreamBudgetRemainingMs =
+        remaining > 0.0 ? remaining : 0.0;
+    fc_decision_ledger_leave_guard(fcActiveDecisionLedger);
+    fcActiveDecisionDeadlineMilliseconds = previousDeadline;
+    return true;
+}
+
+static FC_NOINLINE bool fc_apply_opponent_guard(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    int side,
+    bool forbiddenBlack,
+    const FCAIProfile *profile,
+    const FCCandidate *baseMoves,
+    int baseCount,
+    FCAnalysisResult *baseline)
+{
+    if (!profile->opponentGuardEnabled) {
+        baseline->opponentGuardSkipReason = FC_GUARD_SKIP_DISABLED;
+        fcProofDiagnostics.opponentGuardSkippedDisabled++;
+        return true;
+    }
+    baseline->opponentGuardProvisionalX = baseline->x;
+    baseline->opponentGuardProvisionalY = baseline->y;
+    baseline->opponentGuardSelectedX = baseline->x;
+    baseline->opponentGuardSelectedY = baseline->y;
+    bool immediateWin = baseline->tacticalClass ==
+        FC_TACTICAL_IMMEDIATE_WIN &&
+        fc_is_legal_move(board, baseline->x, baseline->y, side,
+                         forbiddenBlack);
+    if (immediateWin) {
+        baseline->opponentGuardSkipReason =
+            FC_GUARD_SKIP_IMMEDIATE_WIN;
+        baseline->opponentGuardSelectedClass =
+            FC_GUARD_CLASS_OWN_VERIFIED_WIN;
+        fcProofDiagnostics.opponentGuardSkippedImmediateWins++;
+        if (fcActiveDecisionLedger != NULL)
+            fc_decision_ledger_release_guard(fcActiveDecisionLedger);
+        return true;
+    }
+    bool verifiedOwnWin =
+        baseline->tacticalClass == FC_TACTICAL_FORCED_ATTACK &&
+        baseline->proofStatus == FC_PROOF_PROVEN_WIN &&
+        baseline->proofCertificateVerified;
+    if (verifiedOwnWin) {
+        baseline->opponentGuardSkipReason =
+            FC_GUARD_SKIP_VERIFIED_OWN_WIN;
+        baseline->opponentGuardSelectedClass =
+            FC_GUARD_CLASS_OWN_VERIFIED_WIN;
+        fcProofDiagnostics.opponentGuardSkippedVerifiedOwnWins++;
+        if (fcActiveDecisionLedger != NULL)
+            fc_decision_ledger_release_guard(fcActiveDecisionLedger);
+        return true;
+    }
+    if (fcActiveDecisionLedger == NULL ||
+        !fc_decision_ledger_enter_guard(fcActiveDecisionLedger)) {
+        baseline->opponentGuardSkipReason =
+            FC_GUARD_SKIP_NO_RESERVED_RESOURCE;
+        fcProofDiagnostics.opponentGuardSkippedNoResource++;
+        return true;
+    }
+    baseline->opponentGuardEligible = true;
+    fcProofDiagnostics.opponentGuardEligibleDecisions++;
+    double previousDeadline = fcActiveDecisionDeadlineMilliseconds;
+    fcActiveDecisionDeadlineMilliseconds =
+        fcActiveDecisionLedger->internalDeadlineMilliseconds;
+    uint64_t guardNodesBefore = atomic_load_explicit(
+        &fcActiveDecisionLedger->guardNodesConsumed,
+        memory_order_relaxed);
+
+    FCOpponentGuardAudit provisional;
+    bool audited = fc_audit_opponent_after_move(
+        board, side, forbiddenBlack, profile,
+        baseline->x, baseline->y, &provisional);
+    if (!audited) {
+        baseline->opponentGuardSkipReason =
+            FC_GUARD_SKIP_ILLEGAL_PROVISIONAL;
+        baseline->opponentGuardRollback = true;
+        fcProofDiagnostics.opponentGuardRollbacks++;
+        fc_decision_ledger_leave_guard(fcActiveDecisionLedger);
+        fcActiveDecisionDeadlineMilliseconds = previousDeadline;
+        return false;
+    }
+    fc_guard_count_audit(baseline, &provisional,
+                         FC_GUARD_STAGE_PROVISIONAL);
+    baseline->opponentGuardProvisionalClass = provisional.completedClass;
+    FCOpponentGuardAudit selectedAudit = provisional;
+    int selectedX = baseline->x;
+    int selectedY = baseline->y;
+    int selectedStage = FC_ESCAPE_NONE;
+    bool mandatory = baseline->tacticalClass == FC_TACTICAL_MUST_DEFEND;
+    bool examined[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{false}};
+    examined[selectedX][selectedY] = true;
+    int maxAlternatives = profile->opponentGuardMaxAlternatives;
+    if (maxAlternatives < 0) maxAlternatives = 0;
+    int alternatives = 0;
+
+    /* Mandatory blocks are a continuation portfolio, not a one-ply safety
+     * assertion. Preserve their generated deterministic tactical order. */
+    if (mandatory) {
+        for (int i = 0; i < baseCount && alternatives < maxAlternatives; i++) {
+            if (baseMoves[i].tacticalClass != FC_TACTICAL_MUST_DEFEND ||
+                examined[baseMoves[i].x][baseMoves[i].y]) continue;
+            FCOpponentGuardAudit candidateAudit;
+            if (!fc_audit_opponent_after_move(
+                    board, side, forbiddenBlack, profile,
+                    baseMoves[i].x, baseMoves[i].y, &candidateAudit))
+                continue;
+            examined[baseMoves[i].x][baseMoves[i].y] = true;
+            alternatives++;
+            fc_guard_count_audit(baseline, &candidateAudit,
+                                 FC_GUARD_STAGE_MANDATORY);
+            if (fc_guard_audit_better(&candidateAudit, &selectedAudit)) {
+                selectedAudit = candidateAudit;
+                selectedX = baseMoves[i].x;
+                selectedY = baseMoves[i].y;
+                selectedStage = FC_ESCAPE_TACTICAL;
+            }
+        }
+    }
+
+    if ((provisional.completedClass == FC_GUARD_CLASS_VERIFIED_LOSS ||
+         selectedAudit.completedClass == FC_GUARD_CLASS_VERIFIED_LOSS) &&
+        alternatives < maxAlternatives &&
+        !fc_decision_deadline_reached()) {
+        int mutableBoard[FC_BOARD_SIZE][FC_BOARD_SIZE];
+        memcpy(mutableBoard, board, sizeof(mutableBoard));
+        const FCProofResult *lossProof =
+            fc_guard_completed_proof(&provisional);
+        FCEscapeCandidate options[FC_BOARD_SIZE * FC_BOARD_SIZE];
+        int optionCount = fc_build_escape_candidates(
+            mutableBoard, side, forbiddenBlack, profile, lossProof,
+            baseMoves, baseCount, baseline->x, baseline->y,
+            options, FC_BOARD_SIZE * FC_BOARD_SIZE);
+        for (int i = 0; i < optionCount && alternatives < maxAlternatives;
+             i++) {
+            int x = options[i].x;
+            int y = options[i].y;
+            if (examined[x][y]) continue;
+            FCOpponentGuardAudit candidateAudit;
+            if (!fc_audit_opponent_after_move(
+                    board, side, forbiddenBlack, profile,
+                    x, y, &candidateAudit)) continue;
+            examined[x][y] = true;
+            alternatives++;
+            fc_guard_count_audit(
+                baseline, &candidateAudit,
+                fc_guard_stage_for_escape(options[i].stage));
+            if (fc_guard_audit_better(&candidateAudit, &selectedAudit)) {
+                selectedAudit = candidateAudit;
+                selectedX = x;
+                selectedY = y;
+                selectedStage = options[i].stage;
+            }
+            if (selectedAudit.completedClass ==
+                    FC_GUARD_CLASS_SCOPED_DISPROOF &&
+                !mandatory) break;
+        }
+    }
+
+    baseline->x = selectedX;
+    baseline->y = selectedY;
+    baseline->opponentGuardSelectedX = selectedX;
+    baseline->opponentGuardSelectedY = selectedY;
+    baseline->escapeAlternativesExamined += alternatives;
+    if (selectedStage != FC_ESCAPE_NONE) baseline->escapeStage = selectedStage;
+    if (selectedX != baseline->opponentGuardProvisionalX ||
+        selectedY != baseline->opponentGuardProvisionalY) {
+        baseline->opponentGuardAvoidedVerifiedLoss =
+            provisional.completedClass == FC_GUARD_CLASS_VERIFIED_LOSS;
+        if (baseline->opponentGuardAvoidedVerifiedLoss)
+            fcProofDiagnostics.opponentGuardAvoidedVerifiedLosses++;
+        baseline->overrideReason =
+            selectedAudit.completedClass == FC_GUARD_CLASS_SCOPED_DISPROOF
+                ? FC_OVERRIDE_PROVEN_DEFENSE
+                : selectedAudit.completedClass ==
+                      FC_GUARD_CLASS_VERIFIED_LOSS
+                ? FC_OVERRIDE_LONGEST_SURVIVAL
+                : FC_OVERRIDE_UNPROVEN_ESCAPE;
+        if (!mandatory)
+            baseline->tacticalClass = FC_TACTICAL_FORCED_DEFENSE;
+    }
+    if (selectedAudit.completedClass == FC_GUARD_CLASS_VERIFIED_LOSS) {
+        baseline->lossReason = FC_LOSS_SELECTED_VERIFIED;
+    } else if (selectedAudit.completedClass ==
+               FC_GUARD_CLASS_IMMEDIATELY_SAFE_UNKNOWN) {
+        baseline->lossReason = FC_LOSS_BUDGET_UNKNOWN;
+    } else {
+        baseline->lossReason = FC_LOSS_NONE;
+    }
+    fc_guard_publish_selected(baseline, &selectedAudit);
+    baseline->opponentGuardConsumedNodes =
+        atomic_load_explicit(
+            &fcActiveDecisionLedger->guardNodesConsumed,
+            memory_order_relaxed) - guardNodesBefore;
+    baseline->opponentGuardReservedNodes =
+        fcActiveDecisionLedger->guardNodeReservation;
+    fc_decision_ledger_leave_guard(fcActiveDecisionLedger);
+    fcActiveDecisionDeadlineMilliseconds = previousDeadline;
+    return true;
+}
+
 static void fc_refine_frozen_verified_loss(
     const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     int side,
@@ -9066,6 +10168,9 @@ static void fc_record_decision_ledger(const FCDecisionLedger *ledger,
         &ledger->memoryPeakReserved, memory_order_relaxed);
     result->decisionMemoryReleased = atomic_load_explicit(
         &ledger->memoryReleased, memory_order_relaxed);
+    result->opponentGuardReservedNodes = ledger->guardNodeReservation;
+    result->opponentGuardConsumedNodes = atomic_load_explicit(
+        &ledger->guardNodesConsumed, memory_order_relaxed);
     fcProofDiagnostics.decisionMemoryLiveReserved =
         result->decisionMemoryReserved;
     fcProofDiagnostics.decisionMemoryPeakReserved =
@@ -9209,6 +10314,45 @@ static bool fc_analyze_five_star_profile_with_hint_internal(
     FCProofSession proofSession;
     FCProofSession *previousProofSession = fcActiveProofSession;
     bool proofSessionStarted = false;
+    bool preliminaryOwnCandidateEligible =
+        fc_profile_proof_path_enabled(profile) &&
+        fc_candidate_own_win_eligible(
+            board, side, forbiddenBlack, &baseline);
+    if ((profile->earlyVCFSentinelEnabled ||
+         preliminaryOwnCandidateEligible) &&
+        fcActiveProofSession == NULL) {
+        proofSessionStarted = fc_proof_session_begin(
+            &proofSession, profile, board, forbiddenBlack);
+    }
+    if (profile->earlyVCFSentinelEnabled) {
+        /* FCAnalysisResult contains the complete candidate/corpus telemetry
+         * arrays.  Use the caller-owned result as the transactional scratch
+         * snapshot so enabling the sentinel does not add another very large
+         * object to this already deep analysis stack frame (notably under
+         * ASan redzones).  The public result is published from baseline below
+         * on every completed path. */
+        *result = baseline;
+        if (!fc_apply_early_vcf_sentinel(
+                board, side, forbiddenBlack, profile,
+                handoffCandidates, handoffCount, &baseline)) {
+            baseline = *result;
+            baseline.earlyVCFEligible = true;
+            baseline.earlyVCFRollback = true;
+            baseline.earlyVCFSkipReason =
+                FC_GUARD_SKIP_ILLEGAL_PROVISIONAL;
+            baseline.stats.budgetExhausted = true;
+        }
+        /* A shallow scoped disproof cannot satisfy a later, broader query.
+         * Keep the allocation, but retire the sentinel generation before
+         * own-proof and final-guard work. Verified wins are reused only via
+         * the separately keyed and independently replayed result cache. */
+        if (proofSessionStarted && !fc_proof_session_reset_for_query(
+                &proofSession, profile, board, forbiddenBlack)) {
+            fc_proof_session_end(&proofSession, previousProofSession);
+            proofSessionStarted = fc_proof_session_begin(
+                &proofSession, profile, board, forbiddenBlack);
+        }
+    }
     if (baseline.tacticalClass == FC_TACTICAL_IMMEDIATE_WIN)
         fcProofDiagnostics.stageImmediateDecisions++;
     else if (baseline.tacticalClass == FC_TACTICAL_MUST_DEFEND)
@@ -9216,7 +10360,8 @@ static bool fc_analyze_five_star_profile_with_hint_internal(
     bool ownCandidateEligible = fc_profile_proof_path_enabled(profile) &&
         fc_candidate_own_win_eligible(
             board, side, forbiddenBlack, &baseline);
-    if (ownCandidateEligible && fcActiveProofSession == NULL) {
+    if (ownCandidateEligible && !proofSessionStarted &&
+        fcActiveProofSession == NULL) {
         proofSessionStarted = fc_proof_session_begin(
             &proofSession, profile, board, forbiddenBlack);
     }
@@ -9281,6 +10426,42 @@ static bool fc_analyze_five_star_profile_with_hint_internal(
         if (fc_decision_deadline_reached()) {
             baseline = completedBeforeQuietDefense;
             baseline.stats.budgetExhausted = true;
+        }
+    }
+    if (profile->opponentGuardEnabled) {
+        if (profile->earlyVCFSentinelEnabled && proofSessionStarted &&
+            !fc_proof_session_reset_for_query(
+                &proofSession, profile, board, forbiddenBlack)) {
+            fc_proof_session_end(&proofSession, previousProofSession);
+            proofSessionStarted = fc_proof_session_begin(
+                &proofSession, profile, board, forbiddenBlack);
+        }
+        FCAnalysisResult completedBeforeGuard = baseline;
+        if (!fc_apply_opponent_guard(
+                board, side, forbiddenBlack, profile,
+                generatedCandidates, generatedCount, &baseline)) {
+            baseline = completedBeforeGuard;
+            baseline.opponentGuardEligible = true;
+            baseline.opponentGuardRollback = true;
+            baseline.opponentGuardSkipReason =
+                FC_GUARD_SKIP_ILLEGAL_PROVISIONAL;
+            baseline.stats.budgetExhausted = true;
+        }
+        baseline.earlyVCFCacheReused =
+            fcActiveEarlyVCFCache != NULL &&
+            fcActiveEarlyVCFCache->hits > 0;
+        if (baseline.earlyVCFEligible &&
+            !baseline.earlyVCFAvoidedVerifiedLoss &&
+            baseline.opponentGuardProvisionalClass ==
+                FC_GUARD_CLASS_VERIFIED_LOSS) {
+            baseline.earlyVCFFinalGuardOnlyLoss = true;
+            fcProofDiagnostics.earlyVCFFinalGuardOnlyLosses++;
+        }
+        if (baseline.earlyVCFCacheReused &&
+            baseline.opponentGuardProvisionalClass !=
+                FC_GUARD_CLASS_VERIFIED_LOSS) {
+            baseline.earlyVCFEvidenceMismatch = true;
+            fcProofDiagnostics.earlyVCFEvidenceMismatches++;
         }
     }
     *result = baseline;
@@ -9638,6 +10819,49 @@ static bool fc_analyze_five_star_profile_with_hint_internal(
     }
     int selectedIndex = accepted[selected].index;
     FCEliteCorpusMove chosen = corpus[selectedIndex];
+    if (profile->opponentGuardEnabled &&
+        (chosen.x != result->x || chosen.y != result->y)) {
+        bool guardReady = fcActiveDecisionLedger != NULL &&
+            fc_decision_ledger_enter_guard(fcActiveDecisionLedger);
+        double previousDeadline = fcActiveDecisionDeadlineMilliseconds;
+        FCOpponentGuardAudit corpusAudit;
+        bool guardAccepted = false;
+        if (guardReady) {
+            fcActiveDecisionDeadlineMilliseconds =
+                fcActiveDecisionLedger->internalDeadlineMilliseconds;
+            bool audited = fc_audit_opponent_after_move(
+                board, side, forbiddenBlack, profile,
+                chosen.x, chosen.y, &corpusAudit);
+            if (audited) {
+                fc_guard_count_audit(
+                    result, &corpusAudit, FC_GUARD_STAGE_CORPUS);
+                guardAccepted = fc_guard_audit_matches_or_exceeds(
+                    &corpusAudit, result->opponentGuardSelectedClass,
+                    result->proofSearchClass, result->proofDistance);
+            }
+            fc_decision_ledger_leave_guard(fcActiveDecisionLedger);
+            fcActiveDecisionDeadlineMilliseconds = previousDeadline;
+        }
+        if (!guardAccepted) {
+            result->corpusCandidates[selectedIndex].accepted = false;
+            result->corpusCandidates[selectedIndex].reason =
+                guardReady &&
+                corpusAudit.completedClass == FC_GUARD_CLASS_VERIFIED_LOSS
+                    ? FC_CORPUS_CANDIDATE_PROVEN_UNSAFE
+                    : FC_CORPUS_SEARCH_INCOMPARABLE;
+            result->corpusReason =
+                result->corpusCandidates[selectedIndex].reason;
+            result->corpusAccepted = false;
+            result->stats.elapsedMilliseconds =
+                fc_now_milliseconds() - started;
+            if (proofSessionStarted)
+                fc_proof_session_end(&proofSession, previousProofSession);
+            return true;
+        }
+        result->opponentGuardSelectedX = chosen.x;
+        result->opponentGuardSelectedY = chosen.y;
+        fc_guard_publish_selected(result, &corpusAudit);
+    }
     result->x = chosen.x;
     result->y = chosen.y;
     result->score = accepted[selected].score;
@@ -9691,20 +10915,60 @@ bool fc_analyze_five_star_profile_with_hint(
          profile->decisionLedgerVersion > 0 ||
          profile->decisionHardLimitMs > 0)) {
         ledgerStarted = fc_decision_ledger_begin(&ledger, profile);
-        if (ledgerStarted) fcActiveDecisionLedger = &ledger;
+        if (ledgerStarted) {
+            fcActiveDecisionLedger = &ledger;
+            if (profile->opponentGuardEnabled)
+                (void)fc_decision_ledger_reserve_guard(
+                    &ledger, profile->opponentGuardReservedNodes);
+        }
     }
     if (ledgerStarted) {
         fcActiveDecisionDeadlineMilliseconds =
-            ledger.internalDeadlineMilliseconds;
+            profile->opponentGuardEnabled
+                ? ledger.ordinaryDeadlineMilliseconds
+                : ledger.internalDeadlineMilliseconds;
     } else if (profile->decisionTimeBudgetMs > 0) {
         double requestedDeadline = fc_now_milliseconds() +
                                    profile->decisionTimeBudgetMs;
         if (previousDeadline <= 0.0 || requestedDeadline < previousDeadline)
             fcActiveDecisionDeadlineMilliseconds = requestedDeadline;
     }
+    FCEarlyVCFDecisionCache *earlyCache = NULL;
+    FCEarlyVCFDecisionCache *previousEarlyCache = fcActiveEarlyVCFCache;
+    bool earlyCacheStarted = profile->earlyVCFSentinelEnabled &&
+        previousEarlyCache == NULL;
+    bool earlyCacheMemoryReserved = false;
+    if (earlyCacheStarted) {
+        uint64_t cacheBytes = (uint64_t)sizeof(*earlyCache);
+        if (fcActiveDecisionLedger == NULL ||
+            fc_decision_ledger_reserve_memory(
+                fcActiveDecisionLedger, cacheBytes)) {
+            earlyCacheMemoryReserved = fcActiveDecisionLedger != NULL;
+            earlyCache = calloc(1, sizeof(*earlyCache));
+            fcProofDiagnostics.allocations++;
+            fcProofDiagnostics.allocatedBytes += cacheBytes;
+            if (earlyCache != NULL) {
+                fcProofDiagnostics.clearedBytes += cacheBytes;
+                fcActiveEarlyVCFCache = earlyCache;
+            } else if (earlyCacheMemoryReserved) {
+                fc_decision_ledger_release_memory(
+                    fcActiveDecisionLedger, cacheBytes);
+                earlyCacheMemoryReserved = false;
+            }
+        }
+    }
     bool found = fc_analyze_five_star_profile_with_hint_internal(
         board, side, forbiddenBlack, profile, seed, randomMode,
         hintX, hintY, result);
+    if (earlyCacheStarted) {
+        fcActiveEarlyVCFCache = previousEarlyCache;
+        free(earlyCache);
+        if (earlyCacheMemoryReserved) {
+            fc_decision_ledger_release_memory(
+                fcActiveDecisionLedger,
+                (uint64_t)sizeof(*earlyCache));
+        }
+    }
     if (result != NULL) {
         result->proofParallelNodes = fcDecisionParallelNodes;
         result->proofWorkerCap = (profile->parallelProofEnabled ||
@@ -9721,6 +10985,8 @@ bool fc_analyze_five_star_profile_with_hint(
         if (ledgerStarted) fc_record_decision_ledger(&ledger, result);
         fc_finalize_random_telemetry(result);
     }
+    if (ledgerStarted)
+        fc_decision_ledger_release_guard(&ledger);
     fcDecisionParallelNodes = previousParallelNodes;
     fcDecisionWorkersLaunched = previousWorkers;
     fcDecisionParallelJobs = previousJobs;
@@ -10129,6 +11395,24 @@ size_t fc_profile_snapshot(const FCAIProfile *profile, char *buffer, size_t capa
         "\"branchFirstAdvancedFourDepthBonus\":%d,"
         "\"branchFirstAdvancedThreeDepthBonus\":%d,"
         "\"branchFirstTacticalDepthCap\":%d,"
+        "\"opponentGuardEnabled\":%s,"
+        "\"opponentGuardVCFMaxDepth\":%d,"
+        "\"opponentGuardVCFNodeBudget\":%llu,"
+        "\"opponentGuardVCFTimeBudgetMs\":%u,"
+        "\"opponentGuardVCTMaxDepth\":%d,"
+        "\"opponentGuardVCTNodeBudget\":%llu,"
+        "\"opponentGuardVCTTimeBudgetMs\":%u,"
+        "\"opponentGuardReservedNodes\":%llu,"
+        "\"opponentGuardReservedTimeMs\":%u,"
+        "\"opponentGuardStructuralVCTEnabled\":%s,"
+        "\"opponentGuardMaxAlternatives\":%d,"
+        "\"earlyVCFSentinelEnabled\":%s,"
+        "\"earlyVCFSentinelPolicy\":%d,"
+        "\"earlyVCFBaseDepth\":%d,"
+        "\"earlyVCFMaxDepth\":%d,"
+        "\"earlyVCFNodeBudget\":%llu,"
+        "\"earlyVCFTimeBudgetMs\":%u,"
+        "\"earlyVCFMaxAlternatives\":%d,"
         "\"eliteCorpusEnabled\":%s,\"corpusVersion\":\"%s\","
         "\"corpusScoreMargin\":%d,\"corpusMinGames\":%d,"
         "\"corpusMinEvents\":%d}",
@@ -10178,6 +11462,24 @@ size_t fc_profile_snapshot(const FCAIProfile *profile, char *buffer, size_t capa
         profile->branchFirstAdvancedFourDepthBonus,
         profile->branchFirstAdvancedThreeDepthBonus,
         profile->branchFirstTacticalDepthCap,
+        profile->opponentGuardEnabled ? "true" : "false",
+        profile->opponentGuardVCFMaxDepth,
+        (unsigned long long)profile->opponentGuardVCFNodeBudget,
+        profile->opponentGuardVCFTimeBudgetMs,
+        profile->opponentGuardVCTMaxDepth,
+        (unsigned long long)profile->opponentGuardVCTNodeBudget,
+        profile->opponentGuardVCTTimeBudgetMs,
+        (unsigned long long)profile->opponentGuardReservedNodes,
+        profile->opponentGuardReservedTimeMs,
+        profile->opponentGuardStructuralVCTEnabled ? "true" : "false",
+        profile->opponentGuardMaxAlternatives,
+        profile->earlyVCFSentinelEnabled ? "true" : "false",
+        profile->earlyVCFSentinelPolicy,
+        profile->earlyVCFBaseDepth,
+        profile->earlyVCFMaxDepth,
+        (unsigned long long)profile->earlyVCFNodeBudget,
+        profile->earlyVCFTimeBudgetMs,
+        profile->earlyVCFMaxAlternatives,
         profile->eliteCorpusEnabled ? "true" : "false",
         profile->eliteCorpusEnabled ? fc_elite_corpus_version() : "none",
         profile->corpusScoreMargin, profile->corpusMinGames,

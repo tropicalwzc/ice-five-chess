@@ -1,0 +1,492 @@
+{
+  "schemaVersion": 1,
+  "classification": "fresh-natural-freestyle-directional-smoke",
+  "masterSeed": "0x4755415244534d4b",
+  "sourceOpeningIds": [
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71
+  ],
+  "positionHashes": [
+    "a1fc95bf99726d2c94a015df3237c3a76dcd1b6e7bfb23e2157f3efcd6d3708a",
+    "04a29a1fa9ecd7a9c9ae85951fb287fc35ee9e9faf4dc0be72bfb2c5a8726c06",
+    "a66abdf2d97217b0808472b0a347fd7b02323e20a24987c66c3a1a6b7a102718",
+    "6aca7ca224a2cb02505bd9086b104a9e86e2aa1130ac901ebf1dc589b136bb7f",
+    "eb96c07aa48afeecfde28e56e64d973507395ff78fd2b9e0948879781d1a70a1",
+    "b0ecffd0cdac56f0795acfcc808533bb52cc9d1c477c673cfa07194e588b37c9",
+    "d1e7aea0e40eff590eb086d9c13cfd767e26682f949ae0577b0f9b1ca0739f07",
+    "cb67c42101f92f36a3e5b32216ec69cd6e5eddc6149b3956ab30dbd8b70c0b7f",
+    "767ac560460d4a36d4db707c391c644c49dd1000555340977cb977c04b8f7d0b",
+    "b5d17f9b9d9fb8207350a1e0479f91107e332bb973e2b8afc2e04adc8b14a6e9",
+    "b2419e4999a5155a5ed899694356f23a03cfacf013e8d6c0501a16b39729b128",
+    "954879f1a391540b93fae9b75beb0f3f5c96ca700303910e2106d82ca1f71891"
+  ],
+  "openings": [
+    {
+      "identity": "guard-smoke-4755415244534d4b-60",
+      "sourceOpeningId": 60,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          7,
+          9,
+          -1
+        ],
+        [
+          5,
+          10,
+          1
+        ],
+        [
+          10,
+          7,
+          -1
+        ],
+        [
+          7,
+          8,
+          1
+        ],
+        [
+          6,
+          10,
+          -1
+        ]
+      ],
+      "positionHash": "a1fc95bf99726d2c94a015df3237c3a76dcd1b6e7bfb23e2157f3efcd6d3708a"
+    },
+    {
+      "identity": "guard-smoke-4755415244534d4b-61",
+      "sourceOpeningId": 61,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          8,
+          8,
+          -1
+        ],
+        [
+          4,
+          7,
+          1
+        ],
+        [
+          6,
+          10,
+          -1
+        ],
+        [
+          6,
+          6,
+          1
+        ],
+        [
+          10,
+          5,
+          -1
+        ]
+      ],
+      "positionHash": "04a29a1fa9ecd7a9c9ae85951fb287fc35ee9e9faf4dc0be72bfb2c5a8726c06"
+    },
+    {
+      "identity": "guard-smoke-4755415244534d4b-62",
+      "sourceOpeningId": 62,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          8,
+          10,
+          -1
+        ],
+        [
+          9,
+          5,
+          1
+        ],
+        [
+          6,
+          10,
+          -1
+        ],
+        [
+          5,
+          6,
+          1
+        ],
+        [
+          5,
+          10,
+          -1
+        ]
+      ],
+      "positionHash": "a66abdf2d97217b0808472b0a347fd7b02323e20a24987c66c3a1a6b7a102718"
+    },
+    {
+      "identity": "guard-smoke-4755415244534d4b-63",
+      "sourceOpeningId": 63,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          6,
+          7,
+          -1
+        ],
+        [
+          5,
+          9,
+          1
+        ],
+        [
+          9,
+          6,
+          -1
+        ],
+        [
+          5,
+          4,
+          1
+        ],
+        [
+          5,
+          7,
+          -1
+        ]
+      ],
+      "positionHash": "6aca7ca224a2cb02505bd9086b104a9e86e2aa1130ac901ebf1dc589b136bb7f"
+    },
+    {
+      "identity": "guard-smoke-4755415244534d4b-64",
+      "sourceOpeningId": 64,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          10,
+          7,
+          -1
+        ],
+        [
+          10,
+          9,
+          1
+        ],
+        [
+          4,
+          6,
+          -1
+        ],
+        [
+          10,
+          5,
+          1
+        ],
+        [
+          6,
+          6,
+          -1
+        ]
+      ],
+      "positionHash": "eb96c07aa48afeecfde28e56e64d973507395ff78fd2b9e0948879781d1a70a1"
+    },
+    {
+      "identity": "guard-smoke-4755415244534d4b-65",
+      "sourceOpeningId": 65,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          5,
+          8,
+          -1
+        ],
+        [
+          8,
+          6,
+          1
+        ],
+        [
+          8,
+          5,
+          -1
+        ],
+        [
+          9,
+          5,
+          1
+        ],
+        [
+          6,
+          9,
+          -1
+        ]
+      ],
+      "positionHash": "b0ecffd0cdac56f0795acfcc808533bb52cc9d1c477c673cfa07194e588b37c9"
+    },
+    {
+      "identity": "guard-smoke-4755415244534d4b-66",
+      "sourceOpeningId": 66,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          5,
+          6,
+          -1
+        ],
+        [
+          8,
+          6,
+          1
+        ],
+        [
+          6,
+          4,
+          -1
+        ],
+        [
+          5,
+          7,
+          1
+        ],
+        [
+          5,
+          5,
+          -1
+        ]
+      ],
+      "positionHash": "d1e7aea0e40eff590eb086d9c13cfd767e26682f949ae0577b0f9b1ca0739f07"
+    },
+    {
+      "identity": "guard-smoke-4755415244534d4b-67",
+      "sourceOpeningId": 67,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          8,
+          6,
+          -1
+        ],
+        [
+          7,
+          8,
+          1
+        ],
+        [
+          5,
+          4,
+          -1
+        ],
+        [
+          6,
+          8,
+          1
+        ],
+        [
+          6,
+          9,
+          -1
+        ]
+      ],
+      "positionHash": "cb67c42101f92f36a3e5b32216ec69cd6e5eddc6149b3956ab30dbd8b70c0b7f"
+    },
+    {
+      "identity": "guard-smoke-4755415244534d4b-68",
+      "sourceOpeningId": 68,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          4,
+          9,
+          -1
+        ],
+        [
+          8,
+          7,
+          1
+        ],
+        [
+          4,
+          7,
+          -1
+        ],
+        [
+          8,
+          6,
+          1
+        ],
+        [
+          9,
+          6,
+          -1
+        ]
+      ],
+      "positionHash": "767ac560460d4a36d4db707c391c644c49dd1000555340977cb977c04b8f7d0b"
+    },
+    {
+      "identity": "guard-smoke-4755415244534d4b-69",
+      "sourceOpeningId": 69,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          10,
+          7,
+          -1
+        ],
+        [
+          10,
+          5,
+          1
+        ],
+        [
+          7,
+          6,
+          -1
+        ],
+        [
+          4,
+          7,
+          1
+        ],
+        [
+          5,
+          9,
+          -1
+        ]
+      ],
+      "positionHash": "b5d17f9b9d9fb8207350a1e0479f91107e332bb973e2b8afc2e04adc8b14a6e9"
+    },
+    {
+      "identity": "guard-smoke-4755415244534d4b-70",
+      "sourceOpeningId": 70,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          6,
+          6,
+          -1
+        ],
+        [
+          4,
+          5,
+          1
+        ],
+        [
+          7,
+          8,
+          -1
+        ],
+        [
+          8,
+          4,
+          1
+        ],
+        [
+          10,
+          9,
+          -1
+        ]
+      ],
+      "positionHash": "b2419e4999a5155a5ed899694356f23a03cfacf013e8d6c0501a16b39729b128"
+    },
+    {
+      "identity": "guard-smoke-4755415244534d4b-71",
+      "sourceOpeningId": 71,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          9,
+          4,
+          -1
+        ],
+        [
+          4,
+          8,
+          1
+        ],
+        [
+          6,
+          7,
+          -1
+        ],
+        [
+          10,
+          7,
+          1
+        ],
+        [
+          4,
+          5,
+          -1
+        ]
+      ],
+      "positionHash": "954879f1a391540b93fae9b75beb0f3f5c96ca700303910e2106d82ca1f71891"
+    }
+  ],
+  "profiles": [
+    "ui-bound-five-star-5.4.1-control",
+    "five-star-opponent-forcing-guard-candidate"
+  ],
+  "opponent": "four-star-frozen-control@4.0.0-frozen-vcf-vct-control",
+  "colors": [
+    1,
+    -1
+  ],
+  "expectedGames": 48,
+  "randomMode": "deterministic-best",
+  "rule": "freestyle",
+  "maxDecisionMilliseconds": 5000
+}

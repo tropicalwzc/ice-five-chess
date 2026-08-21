@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "classification": "fresh-natural-freestyle-directional-quick-test",
+  "masterSeed": "0x4755415244534d4b",
+  "sourceOpeningIds": [
+    66,
+    67,
+    68,
+    69,
+    70,
+    71
+  ],
+  "excludedOpeningIds": [
+    60,
+    61,
+    62,
+    63,
+    64,
+    65
+  ],
+  "excludedClasses": [
+    "targeted-vcf-fixtures",
+    "late-correction-diagnostics",
+    "corpus-derived-diagnostics",
+    "prior-result-selected-schedules"
+  ],
+  "positionHashes": [
+    "d1e7aea0e40eff590eb086d9c13cfd767e26682f949ae0577b0f9b1ca0739f07",
+    "cb67c42101f92f36a3e5b32216ec69cd6e5eddc6149b3956ab30dbd8b70c0b7f",
+    "767ac560460d4a36d4db707c391c644c49dd1000555340977cb977c04b8f7d0b",
+    "b5d17f9b9d9fb8207350a1e0479f91107e332bb973e2b8afc2e04adc8b14a6e9",
+    "b2419e4999a5155a5ed899694356f23a03cfacf013e8d6c0501a16b39729b128",
+    "954879f1a391540b93fae9b75beb0f3f5c96ca700303910e2106d82ca1f71891"
+  ],
+  "openings": [
+    {
+      "identity": "early-vcf-quick-4755415244534d4b-66",
+      "sourceOpeningId": 66,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          5,
+          6,
+          -1
+        ],
+        [
+          8,
+          6,
+          1
+        ],
+        [
+          6,
+          4,
+          -1
+        ],
+        [
+          5,
+          7,
+          1
+        ],
+        [
+          5,
+          5,
+          -1
+        ]
+      ],
+      "positionHash": "d1e7aea0e40eff590eb086d9c13cfd767e26682f949ae0577b0f9b1ca0739f07"
+    },
+    {
+      "identity": "early-vcf-quick-4755415244534d4b-67",
+      "sourceOpeningId": 67,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          8,
+          6,
+          -1
+        ],
+        [
+          7,
+          8,
+          1
+        ],
+        [
+          5,
+          4,
+          -1
+        ],
+        [
+          6,
+          8,
+          1
+        ],
+        [
+          6,
+          9,
+          -1
+        ]
+      ],
+      "positionHash": "cb67c42101f92f36a3e5b32216ec69cd6e5eddc6149b3956ab30dbd8b70c0b7f"
+    },
+    {
+      "identity": "early-vcf-quick-4755415244534d4b-68",
+      "sourceOpeningId": 68,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          4,
+          9,
+          -1
+        ],
+        [
+          8,
+          7,
+          1
+        ],
+        [
+          4,
+          7,
+          -1
+        ],
+        [
+          8,
+          6,
+          1
+        ],
+        [
+          9,
+          6,
+          -1
+        ]
+      ],
+      "positionHash": "767ac560460d4a36d4db707c391c644c49dd1000555340977cb977c04b8f7d0b"
+    },
+    {
+      "identity": "early-vcf-quick-4755415244534d4b-69",
+      "sourceOpeningId": 69,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          10,
+          7,
+          -1
+        ],
+        [
+          10,
+          5,
+          1
+        ],
+        [
+          7,
+          6,
+          -1
+        ],
+        [
+          4,
+          7,
+          1
+        ],
+        [
+          5,
+          9,
+          -1
+        ]
+      ],
+      "positionHash": "b5d17f9b9d9fb8207350a1e0479f91107e332bb973e2b8afc2e04adc8b14a6e9"
+    },
+    {
+      "identity": "early-vcf-quick-4755415244534d4b-70",
+      "sourceOpeningId": 70,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          6,
+          6,
+          -1
+        ],
+        [
+          4,
+          5,
+          1
+        ],
+        [
+          7,
+          8,
+          -1
+        ],
+        [
+          8,
+          4,
+          1
+        ],
+        [
+          10,
+          9,
+          -1
+        ]
+      ],
+      "positionHash": "b2419e4999a5155a5ed899694356f23a03cfacf013e8d6c0501a16b39729b128"
+    },
+    {
+      "identity": "early-vcf-quick-4755415244534d4b-71",
+      "sourceOpeningId": 71,
+      "moves": [
+        [
+          7,
+          7,
+          1
+        ],
+        [
+          9,
+          4,
+          -1
+        ],
+        [
+          4,
+          8,
+          1
+        ],
+        [
+          6,
+          7,
+          -1
+        ],
+        [
+          10,
+          7,
+          1
+        ],
+        [
+          4,
+          5,
+          -1
+        ]
+      ],
+      "positionHash": "954879f1a391540b93fae9b75beb0f3f5c96ca700303910e2106d82ca1f71891"
+    }
+  ],
+  "candidateProfile": "five-star-early-micro-vcf-candidate@5.8.1-early-micro-vcf-adaptive-16k-80ms-2a",
+  "controlProfile": "five-star-incremental-dfpn-candidate@5.4.1-transactional-deadline-root-parallel-5s",
+  "colors": [
+    1,
+    -1
+  ],
+  "expectedGames": 12,
+  "randomMode": "deterministic-best",
+  "rule": "freestyle",
+  "maxDecisionMilliseconds": 5000
+}

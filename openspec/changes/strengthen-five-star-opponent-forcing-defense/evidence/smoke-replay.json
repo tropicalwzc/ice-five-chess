@@ -1,0 +1,1614 @@
+{
+  "schemaVersion": 1,
+  "status": "pass",
+  "gamesReplayed": 48,
+  "scheduleSha256": "ca08f0b75f9f6c6022eb5b375c9b4b516eaa4b5bd92680674ce7e31973fcb0f4",
+  "referenceLibrarySha256": "519828322d068839435da29cf4d0ed331985bc348602fd7b6d9455f0f900f492",
+  "cells": [
+    {
+      "profile": "control",
+      "games": 24,
+      "movesReplayed": 630,
+      "acceptedGuardEvidenceReplayed": 0,
+      "deterministicDiscreteResults": true,
+      "determinismMismatches": [],
+      "lostBlackForcingIncidents": [
+        {
+          "openingId": 62,
+          "ply": 24,
+          "boardMovesBefore": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              8,
+              10,
+              -1
+            ],
+            [
+              9,
+              5,
+              1
+            ],
+            [
+              6,
+              10,
+              -1
+            ],
+            [
+              5,
+              6,
+              1
+            ],
+            [
+              5,
+              10,
+              -1
+            ],
+            [
+              7,
+              10,
+              1
+            ],
+            [
+              7,
+              8,
+              -1
+            ],
+            [
+              10,
+              4,
+              1
+            ],
+            [
+              8,
+              6,
+              -1
+            ],
+            [
+              6,
+              9,
+              1
+            ],
+            [
+              8,
+              8,
+              -1
+            ],
+            [
+              5,
+              8,
+              1
+            ],
+            [
+              8,
+              11,
+              -1
+            ],
+            [
+              8,
+              9,
+              1
+            ],
+            [
+              7,
+              9,
+              -1
+            ],
+            [
+              9,
+              7,
+              1
+            ],
+            [
+              9,
+              8,
+              -1
+            ],
+            [
+              6,
+              8,
+              1
+            ],
+            [
+              10,
+              8,
+              -1
+            ],
+            [
+              11,
+              8,
+              1
+            ],
+            [
+              7,
+              11,
+              -1
+            ],
+            [
+              4,
+              7,
+              1
+            ],
+            [
+              3,
+              6,
+              -1
+            ]
+          ],
+          "selectedMove": [
+            9,
+            9
+          ],
+          "selectedAudit": {
+            "class": 1,
+            "searchClass": 1,
+            "vcfStatus": 1,
+            "vcfDistance": 5,
+            "vcfVerified": true,
+            "vctStatus": 0,
+            "vctDistance": 0,
+            "vctVerified": false
+          },
+          "completedDefensiveAlternative": null,
+          "runtimeGuard": {
+            "eligible": false,
+            "skipReason": 0,
+            "provisionalX": 0,
+            "provisionalY": 0,
+            "provisionalClass": 0,
+            "selectedX": 0,
+            "selectedY": 0,
+            "selectedClass": 0,
+            "vcfStatus": 0,
+            "vcfDistance": 0,
+            "vcfNodes": 0,
+            "vcfMs": 0.0,
+            "vcfCertificateVerified": false,
+            "vctStatus": 0,
+            "vctDistance": 0,
+            "vctNodes": 0,
+            "vctMs": 0.0,
+            "vctEligible": false,
+            "vctCertificateVerified": false,
+            "auditedStages": 0,
+            "auditedCount": 0,
+            "completedDisproofs": 0,
+            "unknowns": 0,
+            "verifiedLosses": 0,
+            "reservedNodes": 0,
+            "consumedNodes": 0,
+            "avoidedVerifiedLoss": false,
+            "rollback": false
+          }
+        },
+        {
+          "openingId": 63,
+          "ply": 10,
+          "boardMovesBefore": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              6,
+              7,
+              -1
+            ],
+            [
+              5,
+              9,
+              1
+            ],
+            [
+              9,
+              6,
+              -1
+            ],
+            [
+              5,
+              4,
+              1
+            ],
+            [
+              5,
+              7,
+              -1
+            ],
+            [
+              8,
+              6,
+              1
+            ],
+            [
+              6,
+              8,
+              -1
+            ],
+            [
+              7,
+              9,
+              1
+            ],
+            [
+              6,
+              9,
+              -1
+            ]
+          ],
+          "selectedMove": [
+            6,
+            10
+          ],
+          "selectedAudit": {
+            "class": 1,
+            "searchClass": 2,
+            "vcfStatus": 2,
+            "vcfDistance": 0,
+            "vcfVerified": false,
+            "vctStatus": 1,
+            "vctDistance": 9,
+            "vctVerified": true
+          },
+          "completedDefensiveAlternative": {
+            "move": [
+              6,
+              6
+            ],
+            "audit": {
+              "class": 3,
+              "searchClass": 2,
+              "vcfStatus": 2,
+              "vcfDistance": 0,
+              "vcfVerified": false,
+              "vctStatus": 2,
+              "vctDistance": 0,
+              "vctVerified": false
+            }
+          },
+          "runtimeGuard": {
+            "eligible": false,
+            "skipReason": 0,
+            "provisionalX": 0,
+            "provisionalY": 0,
+            "provisionalClass": 0,
+            "selectedX": 0,
+            "selectedY": 0,
+            "selectedClass": 0,
+            "vcfStatus": 0,
+            "vcfDistance": 0,
+            "vcfNodes": 0,
+            "vcfMs": 0.0,
+            "vcfCertificateVerified": false,
+            "vctStatus": 0,
+            "vctDistance": 0,
+            "vctNodes": 0,
+            "vctMs": 0.0,
+            "vctEligible": false,
+            "vctCertificateVerified": false,
+            "auditedStages": 0,
+            "auditedCount": 0,
+            "completedDisproofs": 0,
+            "unknowns": 0,
+            "verifiedLosses": 0,
+            "reservedNodes": 0,
+            "consumedNodes": 0,
+            "avoidedVerifiedLoss": false,
+            "rollback": false
+          }
+        },
+        {
+          "openingId": 64,
+          "ply": 22,
+          "boardMovesBefore": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              10,
+              7,
+              -1
+            ],
+            [
+              10,
+              9,
+              1
+            ],
+            [
+              4,
+              6,
+              -1
+            ],
+            [
+              10,
+              5,
+              1
+            ],
+            [
+              6,
+              6,
+              -1
+            ],
+            [
+              8,
+              7,
+              1
+            ],
+            [
+              7,
+              6,
+              -1
+            ],
+            [
+              5,
+              6,
+              1
+            ],
+            [
+              6,
+              7,
+              -1
+            ],
+            [
+              11,
+              4,
+              1
+            ],
+            [
+              9,
+              6,
+              -1
+            ],
+            [
+              8,
+              5,
+              1
+            ],
+            [
+              6,
+              4,
+              -1
+            ],
+            [
+              6,
+              5,
+              1
+            ],
+            [
+              8,
+              6,
+              -1
+            ],
+            [
+              10,
+              6,
+              1
+            ],
+            [
+              7,
+              5,
+              -1
+            ],
+            [
+              9,
+              7,
+              1
+            ],
+            [
+              4,
+              8,
+              -1
+            ],
+            [
+              5,
+              7,
+              1
+            ],
+            [
+              4,
+              7,
+              -1
+            ]
+          ],
+          "selectedMove": [
+            4,
+            9
+          ],
+          "selectedAudit": {
+            "class": 1,
+            "searchClass": 2,
+            "vcfStatus": 2,
+            "vcfDistance": 0,
+            "vcfVerified": false,
+            "vctStatus": 1,
+            "vctDistance": 9,
+            "vctVerified": true
+          },
+          "completedDefensiveAlternative": null,
+          "runtimeGuard": {
+            "eligible": false,
+            "skipReason": 0,
+            "provisionalX": 0,
+            "provisionalY": 0,
+            "provisionalClass": 0,
+            "selectedX": 0,
+            "selectedY": 0,
+            "selectedClass": 0,
+            "vcfStatus": 0,
+            "vcfDistance": 0,
+            "vcfNodes": 0,
+            "vcfMs": 0.0,
+            "vcfCertificateVerified": false,
+            "vctStatus": 0,
+            "vctDistance": 0,
+            "vctNodes": 0,
+            "vctMs": 0.0,
+            "vctEligible": false,
+            "vctCertificateVerified": false,
+            "auditedStages": 0,
+            "auditedCount": 0,
+            "completedDisproofs": 0,
+            "unknowns": 0,
+            "verifiedLosses": 0,
+            "reservedNodes": 0,
+            "consumedNodes": 0,
+            "avoidedVerifiedLoss": false,
+            "rollback": false
+          }
+        },
+        {
+          "openingId": 69,
+          "ply": 24,
+          "boardMovesBefore": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              10,
+              7,
+              -1
+            ],
+            [
+              10,
+              5,
+              1
+            ],
+            [
+              7,
+              6,
+              -1
+            ],
+            [
+              4,
+              7,
+              1
+            ],
+            [
+              5,
+              9,
+              -1
+            ],
+            [
+              5,
+              7,
+              1
+            ],
+            [
+              6,
+              7,
+              -1
+            ],
+            [
+              8,
+              5,
+              1
+            ],
+            [
+              7,
+              5,
+              -1
+            ],
+            [
+              5,
+              6,
+              1
+            ],
+            [
+              6,
+              5,
+              -1
+            ],
+            [
+              5,
+              5,
+              1
+            ],
+            [
+              5,
+              4,
+              -1
+            ],
+            [
+              8,
+              7,
+              1
+            ],
+            [
+              6,
+              4,
+              -1
+            ],
+            [
+              6,
+              6,
+              1
+            ],
+            [
+              8,
+              8,
+              -1
+            ],
+            [
+              4,
+              6,
+              1
+            ],
+            [
+              4,
+              4,
+              -1
+            ],
+            [
+              7,
+              4,
+              1
+            ],
+            [
+              4,
+              2,
+              -1
+            ],
+            [
+              3,
+              6,
+              1
+            ],
+            [
+              2,
+              6,
+              -1
+            ]
+          ],
+          "selectedMove": [
+            5,
+            3
+          ],
+          "selectedAudit": {
+            "class": 1,
+            "searchClass": 1,
+            "vcfStatus": 1,
+            "vcfDistance": 7,
+            "vcfVerified": true,
+            "vctStatus": 0,
+            "vctDistance": 0,
+            "vctVerified": false
+          },
+          "completedDefensiveAlternative": null,
+          "runtimeGuard": {
+            "eligible": false,
+            "skipReason": 0,
+            "provisionalX": 0,
+            "provisionalY": 0,
+            "provisionalClass": 0,
+            "selectedX": 0,
+            "selectedY": 0,
+            "selectedClass": 0,
+            "vcfStatus": 0,
+            "vcfDistance": 0,
+            "vcfNodes": 0,
+            "vcfMs": 0.0,
+            "vcfCertificateVerified": false,
+            "vctStatus": 0,
+            "vctDistance": 0,
+            "vctNodes": 0,
+            "vctMs": 0.0,
+            "vctEligible": false,
+            "vctCertificateVerified": false,
+            "auditedStages": 0,
+            "auditedCount": 0,
+            "completedDisproofs": 0,
+            "unknowns": 0,
+            "verifiedLosses": 0,
+            "reservedNodes": 0,
+            "consumedNodes": 0,
+            "avoidedVerifiedLoss": false,
+            "rollback": false
+          }
+        }
+      ],
+      "avoidableLostBlackForcingIncidents": 1,
+      "originalSha256": "5e1f81144e9cdd249b8560eaed2142c5bc1d66e75f90da80bae92ea567d078ed",
+      "regeneratedSha256": "3231084e88002dccca0bbdea6886b5f367afceb165966ce54f3221a7def1610d"
+    },
+    {
+      "profile": "candidate",
+      "games": 24,
+      "movesReplayed": 651,
+      "acceptedGuardEvidenceReplayed": 128,
+      "deterministicDiscreteResults": false,
+      "determinismMismatches": [
+        {
+          "openingId": 67,
+          "newColor": 1,
+          "step": 4,
+          "move": [
+            8,
+            10
+          ],
+          "field": "proofStatus",
+          "original": 2,
+          "regenerated": 0,
+          "originalMs": 4416.146,
+          "regeneratedMs": 4546.364
+        },
+        {
+          "openingId": 67,
+          "newColor": 1,
+          "step": 4,
+          "move": [
+            8,
+            10
+          ],
+          "field": "proofSearchClass",
+          "original": 2,
+          "regenerated": 1,
+          "originalMs": 4416.146,
+          "regeneratedMs": 4546.364
+        },
+        {
+          "openingId": 67,
+          "newColor": 1,
+          "step": 4,
+          "move": [
+            8,
+            10
+          ],
+          "field": "opponentAfterSelectedStatus",
+          "original": 2,
+          "regenerated": 0,
+          "originalMs": 4416.146,
+          "regeneratedMs": 4546.364
+        },
+        {
+          "openingId": 67,
+          "newColor": 1,
+          "step": 4,
+          "move": [
+            8,
+            10
+          ],
+          "field": "guard.provisionalClass",
+          "original": 3,
+          "regenerated": 2,
+          "originalMs": 4416.146,
+          "regeneratedMs": 4546.364
+        },
+        {
+          "openingId": 67,
+          "newColor": 1,
+          "step": 4,
+          "move": [
+            8,
+            10
+          ],
+          "field": "guard.selectedClass",
+          "original": 3,
+          "regenerated": 2,
+          "originalMs": 4416.146,
+          "regeneratedMs": 4546.364
+        },
+        {
+          "openingId": 67,
+          "newColor": 1,
+          "step": 4,
+          "move": [
+            8,
+            10
+          ],
+          "field": "guard.vctStatus",
+          "original": 2,
+          "regenerated": 0,
+          "originalMs": 4416.146,
+          "regeneratedMs": 4546.364
+        },
+        {
+          "openingId": 67,
+          "newColor": 1,
+          "step": 4,
+          "move": [
+            8,
+            10
+          ],
+          "field": "guard.completedDisproofs",
+          "original": 1,
+          "regenerated": 0,
+          "originalMs": 4416.146,
+          "regeneratedMs": 4546.364
+        },
+        {
+          "openingId": 67,
+          "newColor": 1,
+          "step": 4,
+          "move": [
+            8,
+            10
+          ],
+          "field": "guard.unknowns",
+          "original": 0,
+          "regenerated": 1,
+          "originalMs": 4416.146,
+          "regeneratedMs": 4546.364
+        },
+        {
+          "openingId": 70,
+          "newColor": -1,
+          "step": 1,
+          "move": [
+            8,
+            7
+          ],
+          "field": "proofStatus",
+          "original": 0,
+          "regenerated": 2,
+          "originalMs": 979.926,
+          "regeneratedMs": 2480.394
+        },
+        {
+          "openingId": 70,
+          "newColor": -1,
+          "step": 1,
+          "move": [
+            8,
+            7
+          ],
+          "field": "proofSearchClass",
+          "original": 1,
+          "regenerated": 2,
+          "originalMs": 979.926,
+          "regeneratedMs": 2480.394
+        },
+        {
+          "openingId": 70,
+          "newColor": -1,
+          "step": 1,
+          "move": [
+            8,
+            7
+          ],
+          "field": "opponentAfterSelectedStatus",
+          "original": 0,
+          "regenerated": 2,
+          "originalMs": 979.926,
+          "regeneratedMs": 2480.394
+        },
+        {
+          "openingId": 70,
+          "newColor": -1,
+          "step": 1,
+          "move": [
+            8,
+            7
+          ],
+          "field": "guard.provisionalClass",
+          "original": 2,
+          "regenerated": 3,
+          "originalMs": 979.926,
+          "regeneratedMs": 2480.394
+        },
+        {
+          "openingId": 70,
+          "newColor": -1,
+          "step": 1,
+          "move": [
+            8,
+            7
+          ],
+          "field": "guard.selectedClass",
+          "original": 2,
+          "regenerated": 3,
+          "originalMs": 979.926,
+          "regeneratedMs": 2480.394
+        },
+        {
+          "openingId": 70,
+          "newColor": -1,
+          "step": 1,
+          "move": [
+            8,
+            7
+          ],
+          "field": "guard.vctStatus",
+          "original": 0,
+          "regenerated": 2,
+          "originalMs": 979.926,
+          "regeneratedMs": 2480.394
+        },
+        {
+          "openingId": 70,
+          "newColor": -1,
+          "step": 1,
+          "move": [
+            8,
+            7
+          ],
+          "field": "guard.completedDisproofs",
+          "original": 0,
+          "regenerated": 1,
+          "originalMs": 979.926,
+          "regeneratedMs": 2480.394
+        },
+        {
+          "openingId": 70,
+          "newColor": -1,
+          "step": 1,
+          "move": [
+            8,
+            7
+          ],
+          "field": "guard.unknowns",
+          "original": 1,
+          "regenerated": 0,
+          "originalMs": 979.926,
+          "regeneratedMs": 2480.394
+        }
+      ],
+      "lostBlackForcingIncidents": [
+        {
+          "openingId": 62,
+          "ply": 24,
+          "boardMovesBefore": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              8,
+              10,
+              -1
+            ],
+            [
+              9,
+              5,
+              1
+            ],
+            [
+              6,
+              10,
+              -1
+            ],
+            [
+              5,
+              6,
+              1
+            ],
+            [
+              5,
+              10,
+              -1
+            ],
+            [
+              7,
+              10,
+              1
+            ],
+            [
+              7,
+              8,
+              -1
+            ],
+            [
+              10,
+              4,
+              1
+            ],
+            [
+              8,
+              6,
+              -1
+            ],
+            [
+              6,
+              9,
+              1
+            ],
+            [
+              8,
+              8,
+              -1
+            ],
+            [
+              5,
+              8,
+              1
+            ],
+            [
+              8,
+              11,
+              -1
+            ],
+            [
+              8,
+              9,
+              1
+            ],
+            [
+              7,
+              9,
+              -1
+            ],
+            [
+              9,
+              7,
+              1
+            ],
+            [
+              9,
+              8,
+              -1
+            ],
+            [
+              6,
+              8,
+              1
+            ],
+            [
+              10,
+              8,
+              -1
+            ],
+            [
+              11,
+              8,
+              1
+            ],
+            [
+              7,
+              11,
+              -1
+            ],
+            [
+              4,
+              7,
+              1
+            ],
+            [
+              3,
+              6,
+              -1
+            ]
+          ],
+          "selectedMove": [
+            9,
+            9
+          ],
+          "selectedAudit": {
+            "class": 1,
+            "searchClass": 1,
+            "vcfStatus": 1,
+            "vcfDistance": 5,
+            "vcfVerified": true,
+            "vctStatus": 0,
+            "vctDistance": 0,
+            "vctVerified": false
+          },
+          "completedDefensiveAlternative": null,
+          "runtimeGuard": {
+            "eligible": true,
+            "skipReason": 0,
+            "provisionalX": 9,
+            "provisionalY": 9,
+            "provisionalClass": 2,
+            "selectedX": 9,
+            "selectedY": 9,
+            "selectedClass": 2,
+            "vcfStatus": 0,
+            "vcfDistance": 0,
+            "vcfNodes": 0,
+            "vcfMs": 0.004,
+            "vcfCertificateVerified": false,
+            "vctStatus": 0,
+            "vctDistance": 0,
+            "vctNodes": 0,
+            "vctMs": 0.0,
+            "vctEligible": false,
+            "vctCertificateVerified": false,
+            "auditedStages": 1,
+            "auditedCount": 1,
+            "completedDisproofs": 0,
+            "unknowns": 1,
+            "verifiedLosses": 0,
+            "reservedNodes": 96000,
+            "consumedNodes": 0,
+            "avoidedVerifiedLoss": false,
+            "rollback": false
+          }
+        },
+        {
+          "openingId": 63,
+          "ply": 36,
+          "boardMovesBefore": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              6,
+              7,
+              -1
+            ],
+            [
+              5,
+              9,
+              1
+            ],
+            [
+              9,
+              6,
+              -1
+            ],
+            [
+              5,
+              4,
+              1
+            ],
+            [
+              5,
+              7,
+              -1
+            ],
+            [
+              8,
+              6,
+              1
+            ],
+            [
+              6,
+              8,
+              -1
+            ],
+            [
+              7,
+              9,
+              1
+            ],
+            [
+              6,
+              9,
+              -1
+            ],
+            [
+              6,
+              6,
+              1
+            ],
+            [
+              7,
+              8,
+              -1
+            ],
+            [
+              8,
+              7,
+              1
+            ],
+            [
+              8,
+              8,
+              -1
+            ],
+            [
+              9,
+              8,
+              1
+            ],
+            [
+              5,
+              8,
+              -1
+            ],
+            [
+              4,
+              8,
+              1
+            ],
+            [
+              7,
+              10,
+              -1
+            ],
+            [
+              4,
+              7,
+              1
+            ],
+            [
+              9,
+              10,
+              -1
+            ],
+            [
+              7,
+              6,
+              1
+            ],
+            [
+              6,
+              5,
+              -1
+            ],
+            [
+              5,
+              6,
+              1
+            ],
+            [
+              4,
+              6,
+              -1
+            ],
+            [
+              6,
+              10,
+              1
+            ],
+            [
+              3,
+              7,
+              -1
+            ],
+            [
+              5,
+              5,
+              1
+            ],
+            [
+              11,
+              8,
+              -1
+            ],
+            [
+              10,
+              9,
+              1
+            ],
+            [
+              11,
+              10,
+              -1
+            ],
+            [
+              4,
+              4,
+              1
+            ],
+            [
+              3,
+              3,
+              -1
+            ],
+            [
+              5,
+              3,
+              1
+            ],
+            [
+              5,
+              2,
+              -1
+            ],
+            [
+              7,
+              11,
+              1
+            ],
+            [
+              8,
+              12,
+              -1
+            ]
+          ],
+          "selectedMove": [
+            8,
+            9
+          ],
+          "selectedAudit": {
+            "class": 1,
+            "searchClass": 2,
+            "vcfStatus": 2,
+            "vcfDistance": 0,
+            "vcfVerified": false,
+            "vctStatus": 1,
+            "vctDistance": 9,
+            "vctVerified": true
+          },
+          "completedDefensiveAlternative": null,
+          "runtimeGuard": {
+            "eligible": true,
+            "skipReason": 0,
+            "provisionalX": 8,
+            "provisionalY": 9,
+            "provisionalClass": 2,
+            "selectedX": 8,
+            "selectedY": 9,
+            "selectedClass": 2,
+            "vcfStatus": 0,
+            "vcfDistance": 0,
+            "vcfNodes": 872,
+            "vcfMs": 584.228,
+            "vcfCertificateVerified": false,
+            "vctStatus": 0,
+            "vctDistance": 0,
+            "vctNodes": 0,
+            "vctMs": 0.0,
+            "vctEligible": false,
+            "vctCertificateVerified": false,
+            "auditedStages": 1,
+            "auditedCount": 1,
+            "completedDisproofs": 0,
+            "unknowns": 1,
+            "verifiedLosses": 0,
+            "reservedNodes": 96000,
+            "consumedNodes": 1830,
+            "avoidedVerifiedLoss": false,
+            "rollback": false
+          }
+        },
+        {
+          "openingId": 64,
+          "ply": 22,
+          "boardMovesBefore": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              10,
+              7,
+              -1
+            ],
+            [
+              10,
+              9,
+              1
+            ],
+            [
+              4,
+              6,
+              -1
+            ],
+            [
+              10,
+              5,
+              1
+            ],
+            [
+              6,
+              6,
+              -1
+            ],
+            [
+              8,
+              7,
+              1
+            ],
+            [
+              7,
+              6,
+              -1
+            ],
+            [
+              5,
+              6,
+              1
+            ],
+            [
+              6,
+              7,
+              -1
+            ],
+            [
+              11,
+              4,
+              1
+            ],
+            [
+              9,
+              6,
+              -1
+            ],
+            [
+              8,
+              5,
+              1
+            ],
+            [
+              6,
+              4,
+              -1
+            ],
+            [
+              6,
+              5,
+              1
+            ],
+            [
+              8,
+              6,
+              -1
+            ],
+            [
+              10,
+              6,
+              1
+            ],
+            [
+              7,
+              5,
+              -1
+            ],
+            [
+              9,
+              7,
+              1
+            ],
+            [
+              4,
+              8,
+              -1
+            ],
+            [
+              5,
+              7,
+              1
+            ],
+            [
+              4,
+              7,
+              -1
+            ]
+          ],
+          "selectedMove": [
+            4,
+            9
+          ],
+          "selectedAudit": {
+            "class": 1,
+            "searchClass": 2,
+            "vcfStatus": 2,
+            "vcfDistance": 0,
+            "vcfVerified": false,
+            "vctStatus": 1,
+            "vctDistance": 9,
+            "vctVerified": true
+          },
+          "completedDefensiveAlternative": null,
+          "runtimeGuard": {
+            "eligible": true,
+            "skipReason": 0,
+            "provisionalX": 4,
+            "provisionalY": 9,
+            "provisionalClass": 2,
+            "selectedX": 4,
+            "selectedY": 9,
+            "selectedClass": 2,
+            "vcfStatus": 2,
+            "vcfDistance": 0,
+            "vcfNodes": 28,
+            "vcfMs": 9.548,
+            "vcfCertificateVerified": false,
+            "vctStatus": 0,
+            "vctDistance": 0,
+            "vctNodes": 3897,
+            "vctMs": 1402.108,
+            "vctEligible": true,
+            "vctCertificateVerified": false,
+            "auditedStages": 1,
+            "auditedCount": 1,
+            "completedDisproofs": 0,
+            "unknowns": 1,
+            "verifiedLosses": 0,
+            "reservedNodes": 96000,
+            "consumedNodes": 10345,
+            "avoidedVerifiedLoss": false,
+            "rollback": false
+          }
+        },
+        {
+          "openingId": 69,
+          "ply": 24,
+          "boardMovesBefore": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              10,
+              7,
+              -1
+            ],
+            [
+              10,
+              5,
+              1
+            ],
+            [
+              7,
+              6,
+              -1
+            ],
+            [
+              4,
+              7,
+              1
+            ],
+            [
+              5,
+              9,
+              -1
+            ],
+            [
+              5,
+              7,
+              1
+            ],
+            [
+              6,
+              7,
+              -1
+            ],
+            [
+              8,
+              5,
+              1
+            ],
+            [
+              7,
+              5,
+              -1
+            ],
+            [
+              5,
+              6,
+              1
+            ],
+            [
+              6,
+              5,
+              -1
+            ],
+            [
+              5,
+              5,
+              1
+            ],
+            [
+              5,
+              4,
+              -1
+            ],
+            [
+              8,
+              7,
+              1
+            ],
+            [
+              6,
+              4,
+              -1
+            ],
+            [
+              6,
+              6,
+              1
+            ],
+            [
+              8,
+              8,
+              -1
+            ],
+            [
+              4,
+              6,
+              1
+            ],
+            [
+              4,
+              4,
+              -1
+            ],
+            [
+              7,
+              4,
+              1
+            ],
+            [
+              4,
+              2,
+              -1
+            ],
+            [
+              3,
+              6,
+              1
+            ],
+            [
+              2,
+              6,
+              -1
+            ]
+          ],
+          "selectedMove": [
+            5,
+            3
+          ],
+          "selectedAudit": {
+            "class": 1,
+            "searchClass": 1,
+            "vcfStatus": 1,
+            "vcfDistance": 7,
+            "vcfVerified": true,
+            "vctStatus": 0,
+            "vctDistance": 0,
+            "vctVerified": false
+          },
+          "completedDefensiveAlternative": null,
+          "runtimeGuard": {
+            "eligible": true,
+            "skipReason": 0,
+            "provisionalX": 5,
+            "provisionalY": 3,
+            "provisionalClass": 2,
+            "selectedX": 5,
+            "selectedY": 3,
+            "selectedClass": 2,
+            "vcfStatus": 0,
+            "vcfDistance": 0,
+            "vcfNodes": 0,
+            "vcfMs": 0.004,
+            "vcfCertificateVerified": false,
+            "vctStatus": 0,
+            "vctDistance": 0,
+            "vctNodes": 0,
+            "vctMs": 0.0,
+            "vctEligible": false,
+            "vctCertificateVerified": false,
+            "auditedStages": 1,
+            "auditedCount": 1,
+            "completedDisproofs": 0,
+            "unknowns": 1,
+            "verifiedLosses": 0,
+            "reservedNodes": 96000,
+            "consumedNodes": 0,
+            "avoidedVerifiedLoss": false,
+            "rollback": false
+          }
+        }
+      ],
+      "avoidableLostBlackForcingIncidents": 0,
+      "originalSha256": "14dfa21f235c86dc23eac6ab22779d3c16e69212c6fbdbe6c16fcff152ecd867",
+      "regeneratedSha256": "06632815d1d88a0dd1efaebfe8ac3aff3946933cc023573a7e666072cffc4d6c"
+    }
+  ],
+  "deterministicDiscreteResults": false
+}

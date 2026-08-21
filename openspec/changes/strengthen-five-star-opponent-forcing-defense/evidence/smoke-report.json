@@ -1,0 +1,1660 @@
+{
+  "schemaVersion": 1,
+  "classification": "directional-48-game-smoke-not-formal-strength",
+  "control": {
+    "label": "UI-bound 5.4.1 control",
+    "source": "openspec/changes/strengthen-five-star-opponent-forcing-defense/evidence/smoke-control.jsonl",
+    "sha256": "5e1f81144e9cdd249b8560eaed2142c5bc1d66e75f90da80bae92ea567d078ed",
+    "profile": {
+      "name": "five-star-incremental-dfpn-candidate",
+      "version": "5.4.1-transactional-deadline-root-parallel-5s",
+      "maxDepth": 3,
+      "quiescenceDepth": 3,
+      "fourDepth": 10,
+      "doubleThreeDepth": 10,
+      "forcingDepth": 12,
+      "candidateLimit": 12,
+      "nodeBudget": 14000,
+      "timeBudgetMs": 850,
+      "transpositionCapacity": 65536,
+      "attackWeight": 100,
+      "defenseWeight": 112,
+      "centerWeight": 4,
+      "nearBestWindow": 60,
+      "randomTemperature": 45.0,
+      "maxRandomCandidates": 2,
+      "proofEnabled": true,
+      "proofEngineCandidate": true,
+      "proofCandidateStagesEnabled": true,
+      "parallelProofEnabled": true,
+      "openingBookEnabled": false,
+      "proofSearchClass": 2,
+      "proofMaxDepth": 12,
+      "proofNodeBudget": 36000,
+      "proofParallelNodeBudget": 288000,
+      "proofTimeBudgetMs": 1200,
+      "proofWorkerCount": 8,
+      "workerCountOverride": 0,
+      "proofTranspositionCapacity": 65536,
+      "proofGraphNodeCapacity": 0,
+      "proofGraphEdgeCapacity": 0,
+      "proofSessionMemoryBytes": 10747904,
+      "proofParallelPeakMemoryBytes": 85983232,
+      "lossAwareEnabled": true,
+      "quietThreatEnabled": true,
+      "proofEscapeCandidateLimit": 8,
+      "proofQuietRootLimit": 3,
+      "proofEmergencyTimeBudgetMs": 4200,
+      "decisionTimeBudgetMs": 4500,
+      "decisionHardLimitMs": 0,
+      "decisionLedgerVersion": 0,
+      "decisionNodeBudget": 0,
+      "decisionMemoryBudgetBytes": 0,
+      "decisionCorpusQueryBudget": 0,
+      "incrementalLegalityEnabled": false,
+      "validateLegalityCache": false,
+      "recoverySearchEnabled": false,
+      "forkFirstRecoveryEnabled": false,
+      "persistentWorkerPoolEnabled": false,
+      "parallelTokenBlockEnabled": false,
+      "parallelTokenBlockSize": 0,
+      "branchFirstSearchEnabled": false,
+      "branchFirstMinRemainingDepth": 0,
+      "branchFirstMinBranchCount": 0,
+      "branchFirstMaxBranches": 0,
+      "branchFirstPreviewDepth": 0,
+      "branchFirstAdvancedFourDepthBonus": 0,
+      "branchFirstAdvancedThreeDepthBonus": 0,
+      "branchFirstTacticalDepthCap": 0,
+      "opponentGuardEnabled": false,
+      "opponentGuardVCFMaxDepth": 0,
+      "opponentGuardVCFNodeBudget": 0,
+      "opponentGuardVCFTimeBudgetMs": 0,
+      "opponentGuardVCTMaxDepth": 0,
+      "opponentGuardVCTNodeBudget": 0,
+      "opponentGuardVCTTimeBudgetMs": 0,
+      "opponentGuardReservedNodes": 0,
+      "opponentGuardReservedTimeMs": 0,
+      "opponentGuardStructuralVCTEnabled": false,
+      "opponentGuardMaxAlternatives": 0,
+      "eliteCorpusEnabled": true,
+      "corpusVersion": "gomocup-elite-openings-2020-2026-rule-partitioned-v2",
+      "corpusScoreMargin": -80,
+      "corpusMinGames": 2,
+      "corpusMinEvents": 1
+    },
+    "black": {
+      "games": 12,
+      "wins": 8,
+      "draws": 0,
+      "losses": 4,
+      "scoreRate": 0.6666666666666666,
+      "scoreRate95Wilson": [
+        0.39062208887279953,
+        0.8618799089087867
+      ]
+    },
+    "white": {
+      "games": 12,
+      "wins": 2,
+      "draws": 0,
+      "losses": 10,
+      "scoreRate": 0.16666666666666666,
+      "scoreRate95Wilson": [
+        0.04696514218385378,
+        0.4480308622529734
+      ]
+    },
+    "overall": {
+      "games": 24,
+      "wins": 10,
+      "draws": 0,
+      "losses": 14,
+      "scoreRate": 0.4166666666666667,
+      "scoreRate95Wilson": [
+        0.24467602609811764,
+        0.6116533413477124
+      ]
+    },
+    "guard": {
+      "eligible": 0,
+      "vcfCompleted": 0,
+      "vctEligible": 0,
+      "vctCompleted": 0,
+      "candidatesAudited": 0,
+      "completedDisproofs": 0,
+      "unknowns": 0,
+      "verifiedLosses": 0,
+      "avoidedVerifiedLosses": 0,
+      "rollbacks": 0,
+      "reservedNodes": 0,
+      "consumedNodes": 0
+    },
+    "latencyMs": {
+      "p50": 195.8985,
+      "p95": 4500.341,
+      "max": 4601.773,
+      "over5000": 0
+    },
+    "budgetExhaustions": 97,
+    "anomalies": 0
+  },
+  "candidate": {
+    "label": "opponent-guard candidate",
+    "source": "openspec/changes/strengthen-five-star-opponent-forcing-defense/evidence/smoke-candidate.jsonl",
+    "sha256": "14dfa21f235c86dc23eac6ab22779d3c16e69212c6fbdbe6c16fcff152ecd867",
+    "profile": {
+      "name": "five-star-opponent-forcing-guard-candidate",
+      "version": "5.8.0-vcf-first-opponent-guard-4w",
+      "maxDepth": 3,
+      "quiescenceDepth": 3,
+      "fourDepth": 10,
+      "doubleThreeDepth": 10,
+      "forcingDepth": 12,
+      "candidateLimit": 12,
+      "nodeBudget": 14000,
+      "timeBudgetMs": 850,
+      "transpositionCapacity": 65536,
+      "attackWeight": 100,
+      "defenseWeight": 112,
+      "centerWeight": 4,
+      "nearBestWindow": 60,
+      "randomTemperature": 45.0,
+      "maxRandomCandidates": 2,
+      "proofEnabled": true,
+      "proofEngineCandidate": true,
+      "proofCandidateStagesEnabled": true,
+      "parallelProofEnabled": true,
+      "openingBookEnabled": false,
+      "proofSearchClass": 2,
+      "proofMaxDepth": 12,
+      "proofNodeBudget": 36000,
+      "proofParallelNodeBudget": 192000,
+      "proofTimeBudgetMs": 1200,
+      "proofWorkerCount": 4,
+      "workerCountOverride": 0,
+      "proofTranspositionCapacity": 65536,
+      "proofGraphNodeCapacity": 0,
+      "proofGraphEdgeCapacity": 0,
+      "proofSessionMemoryBytes": 10747904,
+      "proofParallelPeakMemoryBytes": 42991616,
+      "lossAwareEnabled": true,
+      "quietThreatEnabled": true,
+      "proofEscapeCandidateLimit": 8,
+      "proofQuietRootLimit": 3,
+      "proofEmergencyTimeBudgetMs": 4200,
+      "decisionTimeBudgetMs": 4500,
+      "decisionHardLimitMs": 5000,
+      "decisionLedgerVersion": 2,
+      "decisionNodeBudget": 288000,
+      "decisionMemoryBudgetBytes": 0,
+      "decisionCorpusQueryBudget": 0,
+      "incrementalLegalityEnabled": false,
+      "validateLegalityCache": false,
+      "recoverySearchEnabled": false,
+      "forkFirstRecoveryEnabled": false,
+      "persistentWorkerPoolEnabled": false,
+      "parallelTokenBlockEnabled": false,
+      "parallelTokenBlockSize": 0,
+      "branchFirstSearchEnabled": false,
+      "branchFirstMinRemainingDepth": 0,
+      "branchFirstMinBranchCount": 0,
+      "branchFirstMaxBranches": 0,
+      "branchFirstPreviewDepth": 0,
+      "branchFirstAdvancedFourDepthBonus": 0,
+      "branchFirstAdvancedThreeDepthBonus": 0,
+      "branchFirstTacticalDepthCap": 0,
+      "opponentGuardEnabled": true,
+      "opponentGuardVCFMaxDepth": 9,
+      "opponentGuardVCFNodeBudget": 48000,
+      "opponentGuardVCFTimeBudgetMs": 500,
+      "opponentGuardVCTMaxDepth": 10,
+      "opponentGuardVCTNodeBudget": 48000,
+      "opponentGuardVCTTimeBudgetMs": 700,
+      "opponentGuardReservedNodes": 96000,
+      "opponentGuardReservedTimeMs": 1400,
+      "opponentGuardStructuralVCTEnabled": true,
+      "opponentGuardMaxAlternatives": 8,
+      "eliteCorpusEnabled": true,
+      "corpusVersion": "gomocup-elite-openings-2020-2026-rule-partitioned-v2",
+      "corpusScoreMargin": -80,
+      "corpusMinGames": 2,
+      "corpusMinEvents": 1
+    },
+    "black": {
+      "games": 12,
+      "wins": 8,
+      "draws": 0,
+      "losses": 4,
+      "scoreRate": 0.6666666666666666,
+      "scoreRate95Wilson": [
+        0.39062208887279953,
+        0.8618799089087867
+      ]
+    },
+    "white": {
+      "games": 12,
+      "wins": 1,
+      "draws": 0,
+      "losses": 11,
+      "scoreRate": 0.08333333333333333,
+      "scoreRate95Wilson": [
+        0.014865094404917095,
+        0.35387991114111694
+      ]
+    },
+    "overall": {
+      "games": 24,
+      "wins": 9,
+      "draws": 0,
+      "losses": 15,
+      "scoreRate": 0.375,
+      "scoreRate95Wilson": [
+        0.21159367559548778,
+        0.5729003755732572
+      ]
+    },
+    "guard": {
+      "eligible": 223,
+      "vcfCompleted": 179,
+      "vctEligible": 128,
+      "vctCompleted": 77,
+      "candidatesAudited": 627,
+      "completedDisproofs": 90,
+      "unknowns": 125,
+      "verifiedLosses": 412,
+      "avoidedVerifiedLosses": 9,
+      "rollbacks": 0,
+      "reservedNodes": 24192000,
+      "consumedNodes": 688549
+    },
+    "latencyMs": {
+      "p50": 499.89599999999996,
+      "p95": 4500.192,
+      "max": 4693.466,
+      "over5000": 0
+    },
+    "budgetExhaustions": 103,
+    "anomalies": 0
+  },
+  "forcingIncidents": {
+    "control": [
+      {
+        "openingId": 62,
+        "ply": 24,
+        "boardMovesBefore": [
+          [
+            7,
+            7,
+            1
+          ],
+          [
+            8,
+            10,
+            -1
+          ],
+          [
+            9,
+            5,
+            1
+          ],
+          [
+            6,
+            10,
+            -1
+          ],
+          [
+            5,
+            6,
+            1
+          ],
+          [
+            5,
+            10,
+            -1
+          ],
+          [
+            7,
+            10,
+            1
+          ],
+          [
+            7,
+            8,
+            -1
+          ],
+          [
+            10,
+            4,
+            1
+          ],
+          [
+            8,
+            6,
+            -1
+          ],
+          [
+            6,
+            9,
+            1
+          ],
+          [
+            8,
+            8,
+            -1
+          ],
+          [
+            5,
+            8,
+            1
+          ],
+          [
+            8,
+            11,
+            -1
+          ],
+          [
+            8,
+            9,
+            1
+          ],
+          [
+            7,
+            9,
+            -1
+          ],
+          [
+            9,
+            7,
+            1
+          ],
+          [
+            9,
+            8,
+            -1
+          ],
+          [
+            6,
+            8,
+            1
+          ],
+          [
+            10,
+            8,
+            -1
+          ],
+          [
+            11,
+            8,
+            1
+          ],
+          [
+            7,
+            11,
+            -1
+          ],
+          [
+            4,
+            7,
+            1
+          ],
+          [
+            3,
+            6,
+            -1
+          ]
+        ],
+        "selectedMove": [
+          9,
+          9
+        ],
+        "selectedAudit": {
+          "class": 1,
+          "searchClass": 1,
+          "vcfStatus": 1,
+          "vcfDistance": 5,
+          "vcfVerified": true,
+          "vctStatus": 0,
+          "vctDistance": 0,
+          "vctVerified": false
+        },
+        "completedDefensiveAlternative": null,
+        "runtimeGuard": {
+          "eligible": false,
+          "skipReason": 0,
+          "provisionalX": 0,
+          "provisionalY": 0,
+          "provisionalClass": 0,
+          "selectedX": 0,
+          "selectedY": 0,
+          "selectedClass": 0,
+          "vcfStatus": 0,
+          "vcfDistance": 0,
+          "vcfNodes": 0,
+          "vcfMs": 0.0,
+          "vcfCertificateVerified": false,
+          "vctStatus": 0,
+          "vctDistance": 0,
+          "vctNodes": 0,
+          "vctMs": 0.0,
+          "vctEligible": false,
+          "vctCertificateVerified": false,
+          "auditedStages": 0,
+          "auditedCount": 0,
+          "completedDisproofs": 0,
+          "unknowns": 0,
+          "verifiedLosses": 0,
+          "reservedNodes": 0,
+          "consumedNodes": 0,
+          "avoidedVerifiedLoss": false,
+          "rollback": false
+        }
+      },
+      {
+        "openingId": 63,
+        "ply": 10,
+        "boardMovesBefore": [
+          [
+            7,
+            7,
+            1
+          ],
+          [
+            6,
+            7,
+            -1
+          ],
+          [
+            5,
+            9,
+            1
+          ],
+          [
+            9,
+            6,
+            -1
+          ],
+          [
+            5,
+            4,
+            1
+          ],
+          [
+            5,
+            7,
+            -1
+          ],
+          [
+            8,
+            6,
+            1
+          ],
+          [
+            6,
+            8,
+            -1
+          ],
+          [
+            7,
+            9,
+            1
+          ],
+          [
+            6,
+            9,
+            -1
+          ]
+        ],
+        "selectedMove": [
+          6,
+          10
+        ],
+        "selectedAudit": {
+          "class": 1,
+          "searchClass": 2,
+          "vcfStatus": 2,
+          "vcfDistance": 0,
+          "vcfVerified": false,
+          "vctStatus": 1,
+          "vctDistance": 9,
+          "vctVerified": true
+        },
+        "completedDefensiveAlternative": {
+          "move": [
+            6,
+            6
+          ],
+          "audit": {
+            "class": 3,
+            "searchClass": 2,
+            "vcfStatus": 2,
+            "vcfDistance": 0,
+            "vcfVerified": false,
+            "vctStatus": 2,
+            "vctDistance": 0,
+            "vctVerified": false
+          }
+        },
+        "runtimeGuard": {
+          "eligible": false,
+          "skipReason": 0,
+          "provisionalX": 0,
+          "provisionalY": 0,
+          "provisionalClass": 0,
+          "selectedX": 0,
+          "selectedY": 0,
+          "selectedClass": 0,
+          "vcfStatus": 0,
+          "vcfDistance": 0,
+          "vcfNodes": 0,
+          "vcfMs": 0.0,
+          "vcfCertificateVerified": false,
+          "vctStatus": 0,
+          "vctDistance": 0,
+          "vctNodes": 0,
+          "vctMs": 0.0,
+          "vctEligible": false,
+          "vctCertificateVerified": false,
+          "auditedStages": 0,
+          "auditedCount": 0,
+          "completedDisproofs": 0,
+          "unknowns": 0,
+          "verifiedLosses": 0,
+          "reservedNodes": 0,
+          "consumedNodes": 0,
+          "avoidedVerifiedLoss": false,
+          "rollback": false
+        }
+      },
+      {
+        "openingId": 64,
+        "ply": 22,
+        "boardMovesBefore": [
+          [
+            7,
+            7,
+            1
+          ],
+          [
+            10,
+            7,
+            -1
+          ],
+          [
+            10,
+            9,
+            1
+          ],
+          [
+            4,
+            6,
+            -1
+          ],
+          [
+            10,
+            5,
+            1
+          ],
+          [
+            6,
+            6,
+            -1
+          ],
+          [
+            8,
+            7,
+            1
+          ],
+          [
+            7,
+            6,
+            -1
+          ],
+          [
+            5,
+            6,
+            1
+          ],
+          [
+            6,
+            7,
+            -1
+          ],
+          [
+            11,
+            4,
+            1
+          ],
+          [
+            9,
+            6,
+            -1
+          ],
+          [
+            8,
+            5,
+            1
+          ],
+          [
+            6,
+            4,
+            -1
+          ],
+          [
+            6,
+            5,
+            1
+          ],
+          [
+            8,
+            6,
+            -1
+          ],
+          [
+            10,
+            6,
+            1
+          ],
+          [
+            7,
+            5,
+            -1
+          ],
+          [
+            9,
+            7,
+            1
+          ],
+          [
+            4,
+            8,
+            -1
+          ],
+          [
+            5,
+            7,
+            1
+          ],
+          [
+            4,
+            7,
+            -1
+          ]
+        ],
+        "selectedMove": [
+          4,
+          9
+        ],
+        "selectedAudit": {
+          "class": 1,
+          "searchClass": 2,
+          "vcfStatus": 2,
+          "vcfDistance": 0,
+          "vcfVerified": false,
+          "vctStatus": 1,
+          "vctDistance": 9,
+          "vctVerified": true
+        },
+        "completedDefensiveAlternative": null,
+        "runtimeGuard": {
+          "eligible": false,
+          "skipReason": 0,
+          "provisionalX": 0,
+          "provisionalY": 0,
+          "provisionalClass": 0,
+          "selectedX": 0,
+          "selectedY": 0,
+          "selectedClass": 0,
+          "vcfStatus": 0,
+          "vcfDistance": 0,
+          "vcfNodes": 0,
+          "vcfMs": 0.0,
+          "vcfCertificateVerified": false,
+          "vctStatus": 0,
+          "vctDistance": 0,
+          "vctNodes": 0,
+          "vctMs": 0.0,
+          "vctEligible": false,
+          "vctCertificateVerified": false,
+          "auditedStages": 0,
+          "auditedCount": 0,
+          "completedDisproofs": 0,
+          "unknowns": 0,
+          "verifiedLosses": 0,
+          "reservedNodes": 0,
+          "consumedNodes": 0,
+          "avoidedVerifiedLoss": false,
+          "rollback": false
+        }
+      },
+      {
+        "openingId": 69,
+        "ply": 24,
+        "boardMovesBefore": [
+          [
+            7,
+            7,
+            1
+          ],
+          [
+            10,
+            7,
+            -1
+          ],
+          [
+            10,
+            5,
+            1
+          ],
+          [
+            7,
+            6,
+            -1
+          ],
+          [
+            4,
+            7,
+            1
+          ],
+          [
+            5,
+            9,
+            -1
+          ],
+          [
+            5,
+            7,
+            1
+          ],
+          [
+            6,
+            7,
+            -1
+          ],
+          [
+            8,
+            5,
+            1
+          ],
+          [
+            7,
+            5,
+            -1
+          ],
+          [
+            5,
+            6,
+            1
+          ],
+          [
+            6,
+            5,
+            -1
+          ],
+          [
+            5,
+            5,
+            1
+          ],
+          [
+            5,
+            4,
+            -1
+          ],
+          [
+            8,
+            7,
+            1
+          ],
+          [
+            6,
+            4,
+            -1
+          ],
+          [
+            6,
+            6,
+            1
+          ],
+          [
+            8,
+            8,
+            -1
+          ],
+          [
+            4,
+            6,
+            1
+          ],
+          [
+            4,
+            4,
+            -1
+          ],
+          [
+            7,
+            4,
+            1
+          ],
+          [
+            4,
+            2,
+            -1
+          ],
+          [
+            3,
+            6,
+            1
+          ],
+          [
+            2,
+            6,
+            -1
+          ]
+        ],
+        "selectedMove": [
+          5,
+          3
+        ],
+        "selectedAudit": {
+          "class": 1,
+          "searchClass": 1,
+          "vcfStatus": 1,
+          "vcfDistance": 7,
+          "vcfVerified": true,
+          "vctStatus": 0,
+          "vctDistance": 0,
+          "vctVerified": false
+        },
+        "completedDefensiveAlternative": null,
+        "runtimeGuard": {
+          "eligible": false,
+          "skipReason": 0,
+          "provisionalX": 0,
+          "provisionalY": 0,
+          "provisionalClass": 0,
+          "selectedX": 0,
+          "selectedY": 0,
+          "selectedClass": 0,
+          "vcfStatus": 0,
+          "vcfDistance": 0,
+          "vcfNodes": 0,
+          "vcfMs": 0.0,
+          "vcfCertificateVerified": false,
+          "vctStatus": 0,
+          "vctDistance": 0,
+          "vctNodes": 0,
+          "vctMs": 0.0,
+          "vctEligible": false,
+          "vctCertificateVerified": false,
+          "auditedStages": 0,
+          "auditedCount": 0,
+          "completedDisproofs": 0,
+          "unknowns": 0,
+          "verifiedLosses": 0,
+          "reservedNodes": 0,
+          "consumedNodes": 0,
+          "avoidedVerifiedLoss": false,
+          "rollback": false
+        }
+      }
+    ],
+    "candidate": [
+      {
+        "openingId": 62,
+        "ply": 24,
+        "boardMovesBefore": [
+          [
+            7,
+            7,
+            1
+          ],
+          [
+            8,
+            10,
+            -1
+          ],
+          [
+            9,
+            5,
+            1
+          ],
+          [
+            6,
+            10,
+            -1
+          ],
+          [
+            5,
+            6,
+            1
+          ],
+          [
+            5,
+            10,
+            -1
+          ],
+          [
+            7,
+            10,
+            1
+          ],
+          [
+            7,
+            8,
+            -1
+          ],
+          [
+            10,
+            4,
+            1
+          ],
+          [
+            8,
+            6,
+            -1
+          ],
+          [
+            6,
+            9,
+            1
+          ],
+          [
+            8,
+            8,
+            -1
+          ],
+          [
+            5,
+            8,
+            1
+          ],
+          [
+            8,
+            11,
+            -1
+          ],
+          [
+            8,
+            9,
+            1
+          ],
+          [
+            7,
+            9,
+            -1
+          ],
+          [
+            9,
+            7,
+            1
+          ],
+          [
+            9,
+            8,
+            -1
+          ],
+          [
+            6,
+            8,
+            1
+          ],
+          [
+            10,
+            8,
+            -1
+          ],
+          [
+            11,
+            8,
+            1
+          ],
+          [
+            7,
+            11,
+            -1
+          ],
+          [
+            4,
+            7,
+            1
+          ],
+          [
+            3,
+            6,
+            -1
+          ]
+        ],
+        "selectedMove": [
+          9,
+          9
+        ],
+        "selectedAudit": {
+          "class": 1,
+          "searchClass": 1,
+          "vcfStatus": 1,
+          "vcfDistance": 5,
+          "vcfVerified": true,
+          "vctStatus": 0,
+          "vctDistance": 0,
+          "vctVerified": false
+        },
+        "completedDefensiveAlternative": null,
+        "runtimeGuard": {
+          "eligible": true,
+          "skipReason": 0,
+          "provisionalX": 9,
+          "provisionalY": 9,
+          "provisionalClass": 2,
+          "selectedX": 9,
+          "selectedY": 9,
+          "selectedClass": 2,
+          "vcfStatus": 0,
+          "vcfDistance": 0,
+          "vcfNodes": 0,
+          "vcfMs": 0.004,
+          "vcfCertificateVerified": false,
+          "vctStatus": 0,
+          "vctDistance": 0,
+          "vctNodes": 0,
+          "vctMs": 0.0,
+          "vctEligible": false,
+          "vctCertificateVerified": false,
+          "auditedStages": 1,
+          "auditedCount": 1,
+          "completedDisproofs": 0,
+          "unknowns": 1,
+          "verifiedLosses": 0,
+          "reservedNodes": 96000,
+          "consumedNodes": 0,
+          "avoidedVerifiedLoss": false,
+          "rollback": false
+        }
+      },
+      {
+        "openingId": 63,
+        "ply": 36,
+        "boardMovesBefore": [
+          [
+            7,
+            7,
+            1
+          ],
+          [
+            6,
+            7,
+            -1
+          ],
+          [
+            5,
+            9,
+            1
+          ],
+          [
+            9,
+            6,
+            -1
+          ],
+          [
+            5,
+            4,
+            1
+          ],
+          [
+            5,
+            7,
+            -1
+          ],
+          [
+            8,
+            6,
+            1
+          ],
+          [
+            6,
+            8,
+            -1
+          ],
+          [
+            7,
+            9,
+            1
+          ],
+          [
+            6,
+            9,
+            -1
+          ],
+          [
+            6,
+            6,
+            1
+          ],
+          [
+            7,
+            8,
+            -1
+          ],
+          [
+            8,
+            7,
+            1
+          ],
+          [
+            8,
+            8,
+            -1
+          ],
+          [
+            9,
+            8,
+            1
+          ],
+          [
+            5,
+            8,
+            -1
+          ],
+          [
+            4,
+            8,
+            1
+          ],
+          [
+            7,
+            10,
+            -1
+          ],
+          [
+            4,
+            7,
+            1
+          ],
+          [
+            9,
+            10,
+            -1
+          ],
+          [
+            7,
+            6,
+            1
+          ],
+          [
+            6,
+            5,
+            -1
+          ],
+          [
+            5,
+            6,
+            1
+          ],
+          [
+            4,
+            6,
+            -1
+          ],
+          [
+            6,
+            10,
+            1
+          ],
+          [
+            3,
+            7,
+            -1
+          ],
+          [
+            5,
+            5,
+            1
+          ],
+          [
+            11,
+            8,
+            -1
+          ],
+          [
+            10,
+            9,
+            1
+          ],
+          [
+            11,
+            10,
+            -1
+          ],
+          [
+            4,
+            4,
+            1
+          ],
+          [
+            3,
+            3,
+            -1
+          ],
+          [
+            5,
+            3,
+            1
+          ],
+          [
+            5,
+            2,
+            -1
+          ],
+          [
+            7,
+            11,
+            1
+          ],
+          [
+            8,
+            12,
+            -1
+          ]
+        ],
+        "selectedMove": [
+          8,
+          9
+        ],
+        "selectedAudit": {
+          "class": 1,
+          "searchClass": 2,
+          "vcfStatus": 2,
+          "vcfDistance": 0,
+          "vcfVerified": false,
+          "vctStatus": 1,
+          "vctDistance": 9,
+          "vctVerified": true
+        },
+        "completedDefensiveAlternative": null,
+        "runtimeGuard": {
+          "eligible": true,
+          "skipReason": 0,
+          "provisionalX": 8,
+          "provisionalY": 9,
+          "provisionalClass": 2,
+          "selectedX": 8,
+          "selectedY": 9,
+          "selectedClass": 2,
+          "vcfStatus": 0,
+          "vcfDistance": 0,
+          "vcfNodes": 872,
+          "vcfMs": 584.228,
+          "vcfCertificateVerified": false,
+          "vctStatus": 0,
+          "vctDistance": 0,
+          "vctNodes": 0,
+          "vctMs": 0.0,
+          "vctEligible": false,
+          "vctCertificateVerified": false,
+          "auditedStages": 1,
+          "auditedCount": 1,
+          "completedDisproofs": 0,
+          "unknowns": 1,
+          "verifiedLosses": 0,
+          "reservedNodes": 96000,
+          "consumedNodes": 1830,
+          "avoidedVerifiedLoss": false,
+          "rollback": false
+        }
+      },
+      {
+        "openingId": 64,
+        "ply": 22,
+        "boardMovesBefore": [
+          [
+            7,
+            7,
+            1
+          ],
+          [
+            10,
+            7,
+            -1
+          ],
+          [
+            10,
+            9,
+            1
+          ],
+          [
+            4,
+            6,
+            -1
+          ],
+          [
+            10,
+            5,
+            1
+          ],
+          [
+            6,
+            6,
+            -1
+          ],
+          [
+            8,
+            7,
+            1
+          ],
+          [
+            7,
+            6,
+            -1
+          ],
+          [
+            5,
+            6,
+            1
+          ],
+          [
+            6,
+            7,
+            -1
+          ],
+          [
+            11,
+            4,
+            1
+          ],
+          [
+            9,
+            6,
+            -1
+          ],
+          [
+            8,
+            5,
+            1
+          ],
+          [
+            6,
+            4,
+            -1
+          ],
+          [
+            6,
+            5,
+            1
+          ],
+          [
+            8,
+            6,
+            -1
+          ],
+          [
+            10,
+            6,
+            1
+          ],
+          [
+            7,
+            5,
+            -1
+          ],
+          [
+            9,
+            7,
+            1
+          ],
+          [
+            4,
+            8,
+            -1
+          ],
+          [
+            5,
+            7,
+            1
+          ],
+          [
+            4,
+            7,
+            -1
+          ]
+        ],
+        "selectedMove": [
+          4,
+          9
+        ],
+        "selectedAudit": {
+          "class": 1,
+          "searchClass": 2,
+          "vcfStatus": 2,
+          "vcfDistance": 0,
+          "vcfVerified": false,
+          "vctStatus": 1,
+          "vctDistance": 9,
+          "vctVerified": true
+        },
+        "completedDefensiveAlternative": null,
+        "runtimeGuard": {
+          "eligible": true,
+          "skipReason": 0,
+          "provisionalX": 4,
+          "provisionalY": 9,
+          "provisionalClass": 2,
+          "selectedX": 4,
+          "selectedY": 9,
+          "selectedClass": 2,
+          "vcfStatus": 2,
+          "vcfDistance": 0,
+          "vcfNodes": 28,
+          "vcfMs": 9.548,
+          "vcfCertificateVerified": false,
+          "vctStatus": 0,
+          "vctDistance": 0,
+          "vctNodes": 3897,
+          "vctMs": 1402.108,
+          "vctEligible": true,
+          "vctCertificateVerified": false,
+          "auditedStages": 1,
+          "auditedCount": 1,
+          "completedDisproofs": 0,
+          "unknowns": 1,
+          "verifiedLosses": 0,
+          "reservedNodes": 96000,
+          "consumedNodes": 10345,
+          "avoidedVerifiedLoss": false,
+          "rollback": false
+        }
+      },
+      {
+        "openingId": 69,
+        "ply": 24,
+        "boardMovesBefore": [
+          [
+            7,
+            7,
+            1
+          ],
+          [
+            10,
+            7,
+            -1
+          ],
+          [
+            10,
+            5,
+            1
+          ],
+          [
+            7,
+            6,
+            -1
+          ],
+          [
+            4,
+            7,
+            1
+          ],
+          [
+            5,
+            9,
+            -1
+          ],
+          [
+            5,
+            7,
+            1
+          ],
+          [
+            6,
+            7,
+            -1
+          ],
+          [
+            8,
+            5,
+            1
+          ],
+          [
+            7,
+            5,
+            -1
+          ],
+          [
+            5,
+            6,
+            1
+          ],
+          [
+            6,
+            5,
+            -1
+          ],
+          [
+            5,
+            5,
+            1
+          ],
+          [
+            5,
+            4,
+            -1
+          ],
+          [
+            8,
+            7,
+            1
+          ],
+          [
+            6,
+            4,
+            -1
+          ],
+          [
+            6,
+            6,
+            1
+          ],
+          [
+            8,
+            8,
+            -1
+          ],
+          [
+            4,
+            6,
+            1
+          ],
+          [
+            4,
+            4,
+            -1
+          ],
+          [
+            7,
+            4,
+            1
+          ],
+          [
+            4,
+            2,
+            -1
+          ],
+          [
+            3,
+            6,
+            1
+          ],
+          [
+            2,
+            6,
+            -1
+          ]
+        ],
+        "selectedMove": [
+          5,
+          3
+        ],
+        "selectedAudit": {
+          "class": 1,
+          "searchClass": 1,
+          "vcfStatus": 1,
+          "vcfDistance": 7,
+          "vcfVerified": true,
+          "vctStatus": 0,
+          "vctDistance": 0,
+          "vctVerified": false
+        },
+        "completedDefensiveAlternative": null,
+        "runtimeGuard": {
+          "eligible": true,
+          "skipReason": 0,
+          "provisionalX": 5,
+          "provisionalY": 3,
+          "provisionalClass": 2,
+          "selectedX": 5,
+          "selectedY": 3,
+          "selectedClass": 2,
+          "vcfStatus": 0,
+          "vcfDistance": 0,
+          "vcfNodes": 0,
+          "vcfMs": 0.004,
+          "vcfCertificateVerified": false,
+          "vctStatus": 0,
+          "vctDistance": 0,
+          "vctNodes": 0,
+          "vctMs": 0.0,
+          "vctEligible": false,
+          "vctCertificateVerified": false,
+          "auditedStages": 1,
+          "auditedCount": 1,
+          "completedDisproofs": 0,
+          "unknowns": 1,
+          "verifiedLosses": 0,
+          "reservedNodes": 96000,
+          "consumedNodes": 0,
+          "avoidedVerifiedLoss": false,
+          "rollback": false
+        }
+      }
+    ]
+  },
+  "gates": {
+    "correctnessAndReplay": false,
+    "hardDeadline": true,
+    "noNewAvoidableForcingIncident": true,
+    "blackDirectionNonNegative": true,
+    "whiteNoObviousRegression": false,
+    "overallNoObviousRegression": true,
+    "allPassed": false
+  },
+  "bindingDecision": "retain-ui-bound-5.4.1",
+  "commands": {
+    "control": "five_chess_benchmark --output smoke-control.jsonl --profile five-star --suite opponent-guard-smoke --random-mode best --strategy hybrid --seed 0x4755415244534d4b --opening-start 60 --opening-count 12 --max-moves 120 --forbidden-black 0 --opponent four-star --paired-phase 0",
+    "candidate": "five_chess_benchmark --output smoke-candidate.jsonl --profile five-star-opponent-guard --suite opponent-guard-smoke --random-mode best --strategy hybrid --seed 0x4755415244534d4b --opening-start 60 --opening-count 12 --max-moves 120 --forbidden-black 0 --opponent four-star --paired-phase 0",
+    "replay": "python3 tools/replay_opponent_guard_smoke.py --library libopponent_guard_replay.dylib --schedule smoke_schedule.json --control smoke-control.jsonl --control-regenerated smoke-control-regenerated.jsonl --candidate smoke-candidate.jsonl --candidate-regenerated smoke-candidate-regenerated.jsonl --output smoke-replay.json"
+  },
+  "provenance": {
+    "schedule": "openspec/changes/strengthen-five-star-opponent-forcing-defense/evidence/smoke_schedule.json",
+    "scheduleSha256": "ca08f0b75f9f6c6022eb5b375c9b4b516eaa4b5bd92680674ce7e31973fcb0f4",
+    "replay": "openspec/changes/strengthen-five-star-opponent-forcing-defense/evidence/smoke-replay.json",
+    "replaySha256": "21ced2dbee58c76150f0c9e9aa26098c0fca08c42f25907a9954629fd7755534"
+  }
+}

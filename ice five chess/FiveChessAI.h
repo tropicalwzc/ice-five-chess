@@ -131,6 +131,41 @@ typedef enum {
 } FCHandoffReason;
 
 typedef enum {
+    FC_GUARD_SKIP_NONE = 0,
+    FC_GUARD_SKIP_DISABLED = 1,
+    FC_GUARD_SKIP_IMMEDIATE_WIN = 2,
+    FC_GUARD_SKIP_VERIFIED_OWN_WIN = 3,
+    FC_GUARD_SKIP_ILLEGAL_PROVISIONAL = 4,
+    FC_GUARD_SKIP_NO_RESERVED_RESOURCE = 5,
+    FC_GUARD_SKIP_DEADLINE = 6
+} FCOpponentGuardSkipReason;
+
+typedef enum {
+    FC_GUARD_CLASS_UNKNOWN = 0,
+    FC_GUARD_CLASS_VERIFIED_LOSS = 1,
+    FC_GUARD_CLASS_IMMEDIATELY_SAFE_UNKNOWN = 2,
+    FC_GUARD_CLASS_SCOPED_DISPROOF = 3,
+    FC_GUARD_CLASS_OWN_VERIFIED_WIN = 4
+} FCOpponentGuardClass;
+
+typedef enum {
+    FC_GUARD_STAGE_NONE = 0,
+    FC_GUARD_STAGE_PROVISIONAL = 1,
+    FC_GUARD_STAGE_MANDATORY = 2,
+    FC_GUARD_STAGE_CERTIFICATE = 4,
+    FC_GUARD_STAGE_TACTICAL = 8,
+    FC_GUARD_STAGE_ORDINARY = 16,
+    FC_GUARD_STAGE_ALL_LEGAL = 32,
+    FC_GUARD_STAGE_CORPUS = 64
+} FCOpponentGuardStage;
+
+typedef enum {
+    FC_EARLY_VCF_POLICY_DISABLED = 0,
+    FC_EARLY_VCF_POLICY_FIXED = 1,
+    FC_EARLY_VCF_POLICY_ADAPTIVE = 2
+} FCEarlyVCFPolicy;
+
+typedef enum {
     FC_CORPUS_NOT_CHECKED = 0,
     FC_CORPUS_NO_POSITION = 1,
     FC_CORPUS_INSUFFICIENT_SUPPORT = 2,
@@ -207,6 +242,19 @@ typedef struct {
 } FCProofResult;
 
 typedef struct {
+    int status;
+    int completedClass;
+    int completedSearchClass;
+    bool placementLegal;
+    bool ownImmediateWin;
+    bool immediatelySafe;
+    bool vctEligible;
+    bool boardRestored;
+    FCProofResult vcf;
+    FCProofResult vct;
+} FCOpponentGuardAudit;
+
+typedef struct {
     const char *name;
     const char *version;
     int maxDepth;
@@ -280,6 +328,28 @@ typedef struct {
     int branchFirstAdvancedFourDepthBonus;
     int branchFirstAdvancedThreeDepthBonus;
     int branchFirstTacticalDepthCap;
+    /* Isolated five-star defensive acceptance boundary. Zero/false keeps
+     * every historical profile byte-for-byte behaviorally equivalent. */
+    bool opponentGuardEnabled;
+    int opponentGuardVCFMaxDepth;
+    uint64_t opponentGuardVCFNodeBudget;
+    uint32_t opponentGuardVCFTimeBudgetMs;
+    int opponentGuardVCTMaxDepth;
+    uint64_t opponentGuardVCTNodeBudget;
+    uint32_t opponentGuardVCTTimeBudgetMs;
+    uint64_t opponentGuardReservedNodes;
+    uint32_t opponentGuardReservedTimeMs;
+    bool opponentGuardStructuralVCTEnabled;
+    int opponentGuardMaxAlternatives;
+    /* A cheap strict-VCF sentinel runs before own-proof work.  It shares the
+     * opponent-guard reservation and never replaces the final VCF/VCT guard. */
+    bool earlyVCFSentinelEnabled;
+    int earlyVCFSentinelPolicy;
+    int earlyVCFBaseDepth;
+    int earlyVCFMaxDepth;
+    uint64_t earlyVCFNodeBudget;
+    uint32_t earlyVCFTimeBudgetMs;
+    int earlyVCFMaxAlternatives;
     int corpusScoreMargin;
     int corpusMinGames;
     int corpusMinEvents;
@@ -397,6 +467,59 @@ typedef struct {
     int forkUnknownCandidates;
     int forkAvoidedCount;
     bool forkProbeComplete;
+    bool opponentGuardEligible;
+    int opponentGuardSkipReason;
+    int opponentGuardProvisionalX;
+    int opponentGuardProvisionalY;
+    int opponentGuardProvisionalClass;
+    int opponentGuardSelectedX;
+    int opponentGuardSelectedY;
+    int opponentGuardSelectedClass;
+    int opponentGuardVCFStatus;
+    int opponentGuardVCFDistance;
+    uint64_t opponentGuardVCFNodes;
+    double opponentGuardVCFMilliseconds;
+    bool opponentGuardVCFCertificateVerified;
+    int opponentGuardVCTStatus;
+    int opponentGuardVCTDistance;
+    uint64_t opponentGuardVCTNodes;
+    double opponentGuardVCTMilliseconds;
+    bool opponentGuardVCTEligible;
+    bool opponentGuardVCTCertificateVerified;
+    uint32_t opponentGuardAuditedStages;
+    int opponentGuardAuditedCount;
+    int opponentGuardCompletedDisproofs;
+    int opponentGuardUnknowns;
+    int opponentGuardVerifiedLosses;
+    uint64_t opponentGuardReservedNodes;
+    uint64_t opponentGuardConsumedNodes;
+    bool opponentGuardAvoidedVerifiedLoss;
+    bool opponentGuardRollback;
+    bool earlyVCFEligible;
+    int earlyVCFSkipReason;
+    int earlyVCFPolicy;
+    int earlyVCFEffectiveDepth;
+    int earlyVCFProvisionalX;
+    int earlyVCFProvisionalY;
+    int earlyVCFSelectedX;
+    int earlyVCFSelectedY;
+    int earlyVCFStatus;
+    int earlyVCFDistance;
+    uint64_t earlyVCFNodes;
+    double earlyVCFMilliseconds;
+    bool earlyVCFCertificateVerified;
+    int earlyVCFAuditedCount;
+    int earlyVCFVerifiedLosses;
+    int earlyVCFReplacementSource;
+    bool earlyVCFAvoidedVerifiedLoss;
+    bool earlyVCFAdaptiveEscalated;
+    bool earlyVCFRollback;
+    bool earlyVCFCacheReused;
+    uint64_t earlyVCFCacheHits;
+    uint64_t earlyVCFConsumedNodes;
+    double earlyVCFDownstreamBudgetRemainingMs;
+    bool earlyVCFFinalGuardOnlyLoss;
+    bool earlyVCFEvidenceMismatch;
     bool corpusLookup;
     int corpusPositionIndex;
     int corpusCandidateCount;
@@ -570,6 +693,37 @@ typedef struct {
     uint64_t branchFirstAdvancedThreeDepthExtensions;
     uint64_t branchFirstMaxChildDepth;
     uint64_t branchFirstDeadlineStops;
+    uint64_t opponentGuardEligibleDecisions;
+    uint64_t opponentGuardSkippedDisabled;
+    uint64_t opponentGuardSkippedImmediateWins;
+    uint64_t opponentGuardSkippedVerifiedOwnWins;
+    uint64_t opponentGuardSkippedNoResource;
+    uint64_t opponentGuardVCFQueries;
+    uint64_t opponentGuardVCTQueries;
+    uint64_t opponentGuardVCTStructuralSkips;
+    uint64_t opponentGuardCandidatesAudited;
+    uint64_t opponentGuardCompletedDisproofs;
+    uint64_t opponentGuardUnknowns;
+    uint64_t opponentGuardVerifiedLosses;
+    uint64_t opponentGuardAvoidedVerifiedLosses;
+    uint64_t opponentGuardRollbacks;
+    uint64_t earlyVCFEligibleDecisions;
+    uint64_t earlyVCFSkippedDisabled;
+    uint64_t earlyVCFSkippedImmediateWins;
+    uint64_t earlyVCFSkippedNoResource;
+    uint64_t earlyVCFQueries;
+    uint64_t earlyVCFCompletedProofs;
+    uint64_t earlyVCFCompletedDisproofs;
+    uint64_t earlyVCFUnknowns;
+    uint64_t earlyVCFVerifiedLosses;
+    uint64_t earlyVCFAvoidedVerifiedLosses;
+    uint64_t earlyVCFAdaptiveEscalations;
+    uint64_t earlyVCFCacheHits;
+    uint64_t earlyVCFFreshNodes;
+    uint64_t earlyVCFFinalGuardOnlyLosses;
+    uint64_t earlyVCFDeadlineExhaustions;
+    uint64_t earlyVCFRollbacks;
+    uint64_t earlyVCFEvidenceMismatches;
 } FCProofDiagnostics;
 
 /* One resource ledger is shared by all stages of a five-star move.  Memory
@@ -590,6 +744,11 @@ typedef struct {
     _Atomic uint64_t nodesReserved;
     _Atomic uint64_t memoryReserved;
     _Atomic uint32_t queriesReserved;
+    uint64_t guardNodeReservation;
+    double ordinaryDeadlineMilliseconds;
+    _Atomic uint64_t guardNodesConsumed;
+    _Atomic bool guardReservationActive;
+    _Atomic bool guardPhaseActive;
     uint32_t version;
     /* Written by proof/escape workers and read by the coordinator. */
     _Atomic bool exhausted;
@@ -644,6 +803,8 @@ FCAIProfile fc_profile_frozen_four_star_control(void);
 FCAIProfile fc_profile_five_star(void);
 FCAIProfile fc_profile_five_star_loss_aware_candidate(void);
 FCAIProfile fc_profile_five_star_proof_engine_candidate(void);
+FCAIProfile fc_profile_five_star_opponent_guard_candidate(void);
+FCAIProfile fc_profile_five_star_early_micro_vcf_candidate(void);
 FCAIProfile fc_profile_five_star_v541_thread_scheduler_candidate(void);
 FCAIProfile fc_profile_five_star_color_hybrid_candidate(void);
 FCAIProfile fc_profile_five_star_v521_serial_hybrid_control(void);
@@ -667,6 +828,11 @@ void fc_decision_ledger_release_memory(FCDecisionLedger *ledger,
                                        uint64_t released);
 bool fc_decision_ledger_reserve_queries(FCDecisionLedger *ledger,
                                         uint32_t requested);
+bool fc_decision_ledger_reserve_guard(FCDecisionLedger *ledger,
+                                      uint64_t requestedNodes);
+bool fc_decision_ledger_enter_guard(FCDecisionLedger *ledger);
+void fc_decision_ledger_leave_guard(FCDecisionLedger *ledger);
+void fc_decision_ledger_release_guard(FCDecisionLedger *ledger);
 bool fc_decision_ledger_consume_node(FCDecisionLedger *ledger);
 bool fc_decision_ledger_consume_query(FCDecisionLedger *ledger);
 bool fc_decision_ledger_consume_memory(FCDecisionLedger *ledger,
@@ -833,6 +999,17 @@ bool fc_verify_scoped_disproof(
     int attacker,
     bool forbiddenBlack,
     const FCProofResult *result);
+bool fc_audit_opponent_after_move(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    int side,
+    bool forbiddenBlack,
+    const FCAIProfile *profile,
+    int x,
+    int y,
+    FCOpponentGuardAudit *audit);
+bool fc_test_opponent_guard_audit_better(
+    const FCOpponentGuardAudit *candidate,
+    const FCOpponentGuardAudit *current);
 
 bool fc_opening_book_lookup(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
                             int side,
@@ -972,6 +1149,17 @@ bool fc_analyze_five_star_v541_thread_scheduler_with_hint(
     int hintX,
     int hintY,
     FCAnalysisResult *result);
+
+bool fc_audit_opponent_micro_vcf_after_move(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    int side,
+    bool forbiddenBlack,
+    const FCAIProfile *profile,
+    int x,
+    int y,
+    FCOpponentGuardAudit *audit,
+    int *effectiveDepth,
+    bool *adaptiveEscalated);
 
 const char *fc_hybrid_component_name(int component);
 const char *fc_hybrid_component_version(int component);

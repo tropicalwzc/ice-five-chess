@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "classification": "diagnostic-only-not-runtime-policy-or-match-input",
+  "source": "../../strengthen-five-star-opponent-forcing-defense/evidence/followup-direct-candidate-vs-v541.jsonl",
+  "sourceSha256": "8add219d5e696a38ce06b9b307b0bdeff519745ed138505bf4a6b6b8712d71dc",
+  "fixtures": [
+    {
+      "id": "direct-v541-late-correction-60-step-17",
+      "rule": "freestyle",
+      "sideToMove": -1,
+      "movesBefore": [[7,7,1],[7,9,-1],[5,10,1],[10,7,-1],[7,8,1],[6,10,-1],[8,7,1],[6,9,-1],[6,7,1],[9,7,-1],[8,8,1],[8,9,-1],[5,9,1],[5,8,-1],[9,8,1],[10,8,-1],[10,9,1],[7,6,-1],[8,6,1],[6,8,-1],[6,6,1],[6,11,-1],[6,12,1]],
+      "provisional": [9,9],
+      "priorSelected": [5,7],
+      "priorProvisionalClass": "verified-loss"
+    },
+    {
+      "id": "direct-v541-late-correction-63-step-4",
+      "rule": "freestyle",
+      "sideToMove": 1,
+      "movesBefore": [[7,7,1],[6,7,-1],[5,9,1],[9,6,-1],[5,4,1],[5,7,-1],[8,6,1],[6,8,-1],[7,9,1],[6,9,-1]],
+      "provisional": [6,10],
+      "priorSelected": [6,6],
+      "priorProvisionalClass": "verified-loss"
+    },
+    {
+      "id": "direct-v541-late-correction-63-step-34",
+      "rule": "freestyle",
+      "sideToMove": 1,
+      "movesBefore": [[7,7,1],[6,7,-1],[5,9,1],[9,6,-1],[5,4,1],[5,7,-1],[8,6,1],[6,8,-1],[7,9,1],[6,9,-1],[6,6,1],[7,8,-1],[8,7,1],[8,8,-1],[9,8,1],[5,8,-1],[4,8,1],[7,10,-1],[4,7,1],[9,10,-1],[7,6,1],[6,5,-1],[5,6,1],[4,6,-1],[6,10,1],[3,7,-1],[5,5,1],[11,8,-1],[10,9,1],[11,10,-1],[4,4,1],[3,3,-1],[5,3,1],[5,2,-1],[7,11,1],[8,12,-1],[8,9,1],[12,9,-1],[11,9,1],[9,9,-1]],
+      "provisional": [13,10],
+      "priorSelected": [8,11],
+      "priorProvisionalClass": "verified-loss"
+    }
+  ]
+}

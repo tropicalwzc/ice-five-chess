@@ -1652,8 +1652,9 @@
 }
 -(void) five_star_analysisboard:(int) mode
 {
-    // The measured final five-star selection is the 5.4.1 proof engine.
-    production_ai_profile=fc_profile_five_star_proof_engine_candidate();
+    // The promoted five-star selection adds the bounded early micro-VCF
+    // sentinel while retaining exact 5.4.1 as the rollback/control profile.
+    production_ai_profile=fc_profile_five_star_early_micro_vcf_candidate();
     [self optimized_analysisboard:mode];
 }
 -(void) easy_analysisboard:(int) mode
@@ -3510,7 +3511,7 @@
 }
 -(NSString*)production_ai_profile_snapshot
 {
-    char buffer[1024]={};
+    char buffer[8192]={};
     fc_profile_snapshot(&production_ai_profile,buffer,sizeof(buffer));
     return [NSString stringWithUTF8String:buffer];
 }

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "status": "pass",
+  "gamesReplayed": 2,
+  "movesReplayed": 58,
+  "candidateDecisions": 22,
+  "controlDecisions": 22,
+  "certificatesReproved": {
+    "earlyVCF": 4,
+    "finalGuardVCF": 5,
+    "finalGuardVCT": 0,
+    "total": 9
+  },
+  "runtimeVerifiedAnalysisCertificates": 16,
+  "boardIntegrity": true,
+  "moveLegality": true,
+  "winnerReplay": true,
+  "anomalies": [],
+  "decisionsAbove5000Ms": [
+    {
+      "openingId": 12,
+      "newColor": -1,
+      "ply": 10,
+      "side": 1,
+      "engine": "five-star-control",
+      "move": [
+        5,
+        9
+      ],
+      "ms": 5047.209
+    }
+  ],
+  "maxDecision": {
+    "openingId": 12,
+    "newColor": -1,
+    "ply": 10,
+    "side": 1,
+    "engine": "five-star-control",
+    "move": [
+      5,
+      9
+    ],
+    "ms": 5047.209
+  },
+  "scheduleSha256": null,
+  "rawJsonlSha256": "e9c8db5d71585ed83e3a72fd4bead444859af6955514972a507c2dd7875bb2f2",
+  "referenceLibrarySha256": "f54b3a64d32a99be6092b2a0d9d65f995557d35f4685cd05abad74ec334cb9f5"
+}
