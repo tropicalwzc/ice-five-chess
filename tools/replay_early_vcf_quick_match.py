@@ -146,6 +146,7 @@ def main() -> int:
         "five-star-incremental-dfpn-candidate@"
         "5.4.1-transactional-deadline-root-parallel-5s",
         "four-star-proof-guided-no-book@3.0.0-vcf-dfpn-no-book",
+        "legacy-three-star@5224020",
     }
 
     if schedule is not None:
