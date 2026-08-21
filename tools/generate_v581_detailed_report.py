@@ -317,14 +317,19 @@ def nodes(stats: dict) -> str:
 
 
 def render_markdown(cells: list[dict], aggregate: dict) -> str:
+    forbidden_black = cells[0]["header"]["forbiddenBlack"]
+    assert all(cell["header"]["forbiddenBlack"] == forbidden_black
+               for cell in cells)
+    rule_label = "黑方禁手开启" if forbidden_black else "Freestyle 无禁手"
+    seed_domain = cells[0]["header"]["seedDomain"]
     lines = [
-        "# 五星 5.8.1 对三星、四星和 exact 5.4.1 详细标准测试报告",
+        f"# 五星 5.8.1 对三星、四星和 exact 5.4.1（{rule_label}）详细标准测试报告",
         "",
         "## 测试结论",
         "",
         "本报告比较 UI 已推广的五星模型 "
         "`5.8.1-early-micro-vcf-adaptive-16k-80ms-2a` 与冻结三星、四星和 "
-        "exact 5.4.1。每个对手使用同一批 50 个自然开局并交换颜色，共 100 局；"
+        f"exact 5.4.1。规则为{rule_label}；每个对手使用同一批 50 个自然开局并交换颜色，共 100 局；"
         "5.8.1 执黑 50 局、执白 50 局。三组共 300 局。",
         "",
         "| 对手 | 5.8.1 执黑 W/D/L | 5.8.1 执白 W/D/L | 总体 W/D/L | 得分率 | Wilson 95% | 配对 bootstrap 95% |",
@@ -338,29 +343,54 @@ def render_markdown(cells: list[dict], aggregate: dict) -> str:
             f"{pct(result['overall']['scoreRate'])} | "
             f"{interval(result['overall']['wilson95'])} | "
             f"{interval(cell['paired']['pairedBootstrap95'])} |")
+    point_estimates = "、".join(
+        f"对{cell['label']} {pct(cell['results']['overall']['scoreRate'])}"
+        for cell in cells)
+    all_candidate_violations = [
+        item for cell in cells
+        for item in cell["decisions"]["hardLimitViolations"]
+        if item["engine"] == "new"]
+    all_opponent_violations = [
+        item for cell in cells
+        for item in cell["decisions"]["hardLimitViolations"]
+        if item["engine"] != "new"]
+    candidate_violation_locations = {
+        (item["openingId"], item["newColor"], item["ply"],
+         item["side"], item["x"], item["y"])
+        for item in all_candidate_violations}
+    if (len(all_candidate_violations) > 1 and
+            len(candidate_violation_locations) == 1):
+        item = all_candidate_violations[0]
+        candidate_violation_note = (
+            f"候选侧的 {len(all_candidate_violations)} 次超时均为同一固定局面："
+            f"opening {item['openingId']}、5.8.1 执"
+            f"{'黑' if item['newColor'] == 1 else '白'}、ply {item['ply']}、"
+            f"走 ({item['x']},{item['y']})，属于跨对手重复出现的尾延迟。")
+    else:
+        candidate_violation_note = ""
     lines += [
         "",
         f"三组汇总为 **{wdl(aggregate['results'])}**，得分率 "
         f"**{pct(aggregate['results']['scoreRate'])}**。该合计只描述这三个不同对手的"
         "测试总量，不能用来代替逐对手结论。",
         "",
-        "点估计显示 5.8.1 对三星优势最明显，对四星为正向，对 exact 5.4.1 为轻微正向。"
-        "四星和 5.4.1 的总体区间仍跨越 50%，因此不能仅凭本样本宣称统计显著优势。"
-        "三个单元均显示黑棋得分高于白棋，配对结果也大量由交换颜色后各胜一盘构成，"
-        "应继续按颜色和配对开局解释。",
+        f"逐对手点估计为：{point_estimates}。显著性应同时参考 Wilson 和按 50 个开局"
+        "成对 bootstrap 的区间；颜色交换结果仍需按执黑、执白和配对开局分别解释。",
         "",
         "## 统一测试口径",
         "",
         "- Suite：`five-star-natural-final`；seed domain："
-        "`five-star-natural-final-five-star-natural-free-v4`。",
+        f"`{seed_domain}`。",
         "- Master seed：`0x9ee4d91480ac5889`；开局 ID 0–49。",
-        "- 规则：Freestyle，无禁手；每局最多 120 手。",
+        f"- 规则：{rule_label}；每局最多 120 手。",
         "- 选择：deterministic-best；策略：hybrid-deep-verified。",
         "- 每个开局交换颜色；每个对手 100 局，黑白各 50。",
         "- 5.8.1 sentinel：adaptive depth 5/7、16,000 nodes、80 ms、最多 2 个 early alternatives。",
         "- 决策内部预算 4,500 ms，玩家可见硬门槛 5,000 ms。",
-        "- 三组均单进程串行运行；四星和 5.4.1 使用此前同口径标准原始日志，"
-        "三星为本轮补跑；三组均由同一当前 replay 工具重新验证。",
+        ("- 三组均为本轮新跑、单进程串行运行，并由同一当前 replay 工具重新验证。"
+         if forbidden_black else
+         "- 三组均单进程串行运行；四星和 5.4.1 使用此前同口径标准原始日志，"
+         "三星为本轮补跑；三组均由同一当前 replay 工具重新验证。"),
         "",
         "## 逐对手详细结果",
         "",
@@ -375,7 +405,7 @@ def render_markdown(cells: list[dict], aggregate: dict) -> str:
         guard = cell["finalGuard"]
         replay = cell["replay"]
         lines += [
-            f"### 对 {cell['label']}",
+            f"### 对{cell['label']}",
             "",
             f"- 执黑：{wdl(result['black'])}，得分率 {pct(result['black']['scoreRate'])}，"
             f"Wilson 95% {interval(result['black']['wilson95'])}。",
@@ -477,24 +507,51 @@ def render_markdown(cells: list[dict], aggregate: dict) -> str:
             f"{len(cell['games']['anomalies'])} | pass |")
     lines += [
         "",
-        "5.8.1 在三组共 300 局中没有任何决策超过 5,000 ms。exact 5.4.1 单元"
-        "仍包含此前已复现的对照侧 5,074.030 ms 超时，因此该单元的“双方均通过硬门槛”"
-        "结论为失败，但不属于 5.8.1 超时。",
+        ("5.8.1 在三组共 300 局中没有任何决策超过 5,000 ms。"
+         if not all_candidate_violations else
+         f"5.8.1 在三组共 300 局中有 {len(all_candidate_violations)} 次决策超过 5,000 ms。")
+        + ("对手侧没有决策超过 5,000 ms。"
+           if not all_opponent_violations else
+           f"对手侧共有 {len(all_opponent_violations)} 次决策超过 5,000 ms，"
+           "具体位置见上表。"),
+        candidate_violation_note,
         "",
         "## 综合解释",
         "",
-        "- 对冻结三星：样本内优势方向明确，适合作为低级别强度回归证据。",
-        "- 对四星：总体 56%，但 Wilson 与配对区间仍覆盖 50%，属于正向但未证明显著。",
-        "- 对 exact 5.4.1：总体 52%，双杀开局 9 比 7，属于轻微正向且未证明显著。",
-        "- 5.8.1 的核心防守机制在三个对手上都实际触发并提前替换 verified-loss 走法；"
-        "最终 guard 仍捕获大量超出浅层 sentinel 范围的风险，说明两层防守都不可省略。",
-        "- 白棋得分在三组中均弱于黑棋。后续若继续改进，应优先分析白棋局和"
-        "final-guard-only catches，而不是只根据总体胜率继续扩大浅层 sentinel。",
+    ]
+    for cell in cells:
+        score = cell["results"]["overall"]["scoreRate"]
+        wilson95 = cell["results"]["overall"]["wilson95"]
+        paired95 = cell["paired"]["pairedBootstrap95"]
+        if wilson95[0] > 0.5 and paired95[0] > 0.5:
+            inference = "两种 95% 区间均高于 50%"
+        elif wilson95[1] < 0.5 and paired95[1] < 0.5:
+            inference = "两种 95% 区间均低于 50%"
+        else:
+            inference = "两种 95% 区间未同时排除 50%"
+        lines.append(
+            f"- 对{cell['label']}：总体 {pct(score)}，{inference}；配对双杀 "
+            f"{cell['paired']['candidateSweeps']} 比 "
+            f"{cell['paired']['opponentSweeps']}。")
+    avoided = sum(cell["sentinel"]["verifiedLossesAvoided"]
+                  for cell in cells)
+    final_catches = sum(cell["sentinel"]["finalGuardOnlyCatches"]
+                        for cell in cells)
+    lines += [
+        f"- Early sentinel 三组共提前避免 verified loss {avoided} 次；final-guard-only "
+        f"catch {final_catches} 次。两层机制的具体负载和收益应结合逐对手遥测解释。",
+        "- 黑白表现和换色配对结果见逐对手部分；不同规则下不可直接套用自由规则结论。",
+        ("- 三星单元有 1 局 `legacy-illegal-move-loss`：旧三星执黑尝试禁手，"
+         "非法着未落盘并按规则判负；独立重放已验证棋盘和胜方。"
+         if any("legacy-illegal-move-loss" in cell["games"]["terminations"]
+                for cell in cells) else ""),
         "",
         "## 限制",
         "",
-        "- 本报告只有 Freestyle；不代表有禁手规则表现。",
-        "- 每个对手仅 50 个配对开局；四星和 5.4.1 的区间不足以支持显著性结论。",
+        ("- 本报告只覆盖黑方禁手开启规则；不代表 Freestyle 表现。"
+         if forbidden_black else
+         "- 本报告只有 Freestyle；不代表有禁手规则表现。"),
+        "- 每个对手仅 50 个配对开局；是否显著以逐对手 Wilson 与配对区间为准。",
         "- 三组复用了同一批开局以增强横向可比性，因此三组结果不是相互独立样本。",
         "- JSONL 保存一般分析证书 ID 和验证标志，但未保存所有证书节点；冷重证范围是"
         "能够从最终/临时根精确重建的 early/final guard 证书。",
@@ -543,6 +600,7 @@ def main() -> int:
     aggregate = {
         "generatedAt": datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(),
         "model": "5.8.1-early-micro-vcf-adaptive-16k-80ms-2a",
+        "forbiddenBlack": cells[0]["header"]["forbiddenBlack"],
         "cells": 3,
         "games": wins + draws + losses,
         "results": {

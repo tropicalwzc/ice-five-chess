@@ -1,0 +1,1199 @@
+{
+  "schemaVersion": 1,
+  "aggregate": {
+    "generatedAt": "2026-08-21T17:34:00.499890+08:00",
+    "model": "5.8.1-early-micro-vcf-adaptive-16k-80ms-2a",
+    "forbiddenBlack": true,
+    "cells": 3,
+    "games": 300,
+    "results": {
+      "games": 300,
+      "wins": 169,
+      "draws": 0,
+      "losses": 131,
+      "scoreRate": 0.5633333333333334,
+      "wilson95": [
+        0.5067592167427277,
+        0.6183060069021631
+      ]
+    },
+    "candidateHardLimitViolations": 3,
+    "allHardLimitViolations": 4,
+    "runnerAnomalies": 0,
+    "certificatesReproved": 705
+  },
+  "cells": [
+    {
+      "label": "冻结三星",
+      "rawPath": "raw/v581-vs-three-star-forbidden-100g.jsonl",
+      "replayPath": "replay/v581-vs-three-star-forbidden-100g-replay.json",
+      "rawSha256": "bb0dd39d4492ec32a7e86e339d627ba27cfc6ef37c1566ca7f2d09d7f68b1af4",
+      "replaySha256": "ba081f9f03c359f7e75ccb306616e259e6d3ae58fe8c9f454373667038a69606",
+      "header": {
+        "type": "header",
+        "schemaVersion": 5,
+        "suite": "five-star-natural-final",
+        "seedDomain": "five-star-natural-final-five-star-natural-forbidden-v4",
+        "randomMode": "deterministic-best",
+        "strategy": "hybrid-deep-verified",
+        "masterSeed": "0x9ee4d91480ac5889",
+        "openingStart": 0,
+        "openingCount": 50,
+        "games": 100,
+        "maxMoves": 120,
+        "forbiddenBlack": true,
+        "openingMode": "gomocup-held-out-prefix",
+        "openingBookVersion": "gomocup-2024-2025-freestyle15-v2",
+        "eliteCorpusVersion": "gomocup-elite-openings-2020-2026-rule-partitioned-v2",
+        "newProfile": {
+          "name": "five-star-early-micro-vcf-sentinel-candidate",
+          "version": "5.8.1-early-micro-vcf-adaptive-16k-80ms-2a",
+          "maxDepth": 3,
+          "quiescenceDepth": 3,
+          "fourDepth": 10,
+          "doubleThreeDepth": 10,
+          "forcingDepth": 12,
+          "candidateLimit": 12,
+          "nodeBudget": 14000,
+          "timeBudgetMs": 850,
+          "transpositionCapacity": 65536,
+          "attackWeight": 100,
+          "defenseWeight": 112,
+          "centerWeight": 4,
+          "nearBestWindow": 60,
+          "randomTemperature": 45.0,
+          "maxRandomCandidates": 2,
+          "proofEnabled": true,
+          "proofEngineCandidate": true,
+          "proofCandidateStagesEnabled": true,
+          "parallelProofEnabled": true,
+          "openingBookEnabled": false,
+          "proofSearchClass": 2,
+          "proofMaxDepth": 12,
+          "proofNodeBudget": 36000,
+          "proofParallelNodeBudget": 192000,
+          "proofTimeBudgetMs": 1200,
+          "proofWorkerCount": 4,
+          "workerCountOverride": 0,
+          "proofTranspositionCapacity": 65536,
+          "proofGraphNodeCapacity": 0,
+          "proofGraphEdgeCapacity": 0,
+          "proofSessionMemoryBytes": 10747904,
+          "proofParallelPeakMemoryBytes": 42991616,
+          "lossAwareEnabled": true,
+          "quietThreatEnabled": true,
+          "proofEscapeCandidateLimit": 8,
+          "proofQuietRootLimit": 3,
+          "proofEmergencyTimeBudgetMs": 4200,
+          "decisionTimeBudgetMs": 4500,
+          "decisionHardLimitMs": 5000,
+          "decisionLedgerVersion": 2,
+          "decisionNodeBudget": 288000,
+          "decisionMemoryBudgetBytes": 0,
+          "decisionCorpusQueryBudget": 0,
+          "incrementalLegalityEnabled": false,
+          "validateLegalityCache": false,
+          "recoverySearchEnabled": false,
+          "forkFirstRecoveryEnabled": false,
+          "persistentWorkerPoolEnabled": false,
+          "parallelTokenBlockEnabled": false,
+          "parallelTokenBlockSize": 0,
+          "branchFirstSearchEnabled": false,
+          "branchFirstMinRemainingDepth": 0,
+          "branchFirstMinBranchCount": 0,
+          "branchFirstMaxBranches": 0,
+          "branchFirstPreviewDepth": 0,
+          "branchFirstAdvancedFourDepthBonus": 0,
+          "branchFirstAdvancedThreeDepthBonus": 0,
+          "branchFirstTacticalDepthCap": 0,
+          "opponentGuardEnabled": true,
+          "opponentGuardVCFMaxDepth": 9,
+          "opponentGuardVCFNodeBudget": 48000,
+          "opponentGuardVCFTimeBudgetMs": 500,
+          "opponentGuardVCTMaxDepth": 10,
+          "opponentGuardVCTNodeBudget": 48000,
+          "opponentGuardVCTTimeBudgetMs": 700,
+          "opponentGuardReservedNodes": 96000,
+          "opponentGuardReservedTimeMs": 1400,
+          "opponentGuardStructuralVCTEnabled": true,
+          "opponentGuardMaxAlternatives": 8,
+          "earlyVCFSentinelEnabled": true,
+          "earlyVCFSentinelPolicy": 2,
+          "earlyVCFBaseDepth": 5,
+          "earlyVCFMaxDepth": 7,
+          "earlyVCFNodeBudget": 16000,
+          "earlyVCFTimeBudgetMs": 80,
+          "earlyVCFMaxAlternatives": 2,
+          "eliteCorpusEnabled": true,
+          "corpusVersion": "gomocup-elite-openings-2020-2026-rule-partitioned-v2",
+          "corpusScoreMargin": -80,
+          "corpusMinGames": 2,
+          "corpusMinEvents": 1
+        },
+        "opponentProfile": "legacy-three-star@5224020"
+      },
+      "results": {
+        "black": {
+          "games": 50,
+          "wins": 30,
+          "draws": 0,
+          "losses": 20,
+          "scoreRate": 0.6,
+          "wilson95": [
+            0.4618143774758936,
+            0.7239161026974346
+          ]
+        },
+        "white": {
+          "games": 50,
+          "wins": 30,
+          "draws": 0,
+          "losses": 20,
+          "scoreRate": 0.6,
+          "wilson95": [
+            0.4618143774758936,
+            0.7239161026974346
+          ]
+        },
+        "overall": {
+          "games": 100,
+          "wins": 60,
+          "draws": 0,
+          "losses": 40,
+          "scoreRate": 0.6,
+          "wilson95": [
+            0.5020025867910618,
+            0.6905987135675411
+          ]
+        }
+      },
+      "sameColor": {
+        "candidateBlackScoreRate": 0.6,
+        "opponentBlackScoreRate": 0.4,
+        "blackDelta": 0.19999999999999996,
+        "candidateWhiteScoreRate": 0.6,
+        "opponentWhiteScoreRate": 0.4,
+        "whiteDelta": 0.19999999999999996
+      },
+      "paired": {
+        "openings": 50,
+        "candidateSweeps": 15,
+        "opponentSweeps": 5,
+        "splitDecisive": 30,
+        "involvingDraw": 0,
+        "candidatePairedScoreRate": 0.6,
+        "pairedBootstrap95": [
+          0.52,
+          0.68
+        ]
+      },
+      "games": {
+        "moves": {
+          "count": 100,
+          "p50": 32,
+          "p95": 78,
+          "max": 89,
+          "total": 3836
+        },
+        "terminations": {
+          "five-in-a-row": 99,
+          "legacy-illegal-move-loss": 1
+        },
+        "anomalies": []
+      },
+      "decisions": {
+        "candidate": 1556,
+        "opponent": 1546,
+        "candidateByColor": {
+          "black": 813,
+          "white": 743
+        },
+        "candidateWallMs": {
+          "count": 1556,
+          "p50": 856.495,
+          "p95": 4507.717,
+          "max": 5021.533,
+          "total": 2010384.708
+        },
+        "opponentWallMs": {
+          "count": 1546,
+          "p50": 0.499,
+          "p95": 62.598,
+          "max": 712.668,
+          "total": 20233.679
+        },
+        "candidateCpuMs": {
+          "count": 1556,
+          "p50": 940.886,
+          "p95": 6042.311,
+          "max": 15623.233,
+          "total": 3007932.96
+        },
+        "opponentCpuMs": {
+          "count": 1546,
+          "p50": 0.49,
+          "p95": 62.27,
+          "max": 712.018,
+          "total": 20080.022
+        },
+        "candidateNodes": {
+          "count": 1556,
+          "p50": 14,
+          "p95": 87,
+          "max": 713,
+          "total": 40865
+        },
+        "opponentNodes": {
+          "count": 1546,
+          "p50": 0,
+          "p95": 0,
+          "max": 0,
+          "total": 0
+        },
+        "candidatePeakResidentBytes": 36208640,
+        "opponentPeakResidentBytes": 36208640,
+        "candidateBudgetExhausted": 749,
+        "opponentBudgetExhausted": 0,
+        "candidateFallbacks": 40,
+        "opponentFallbacks": 0,
+        "candidateDecisionStatuses": {
+          "1": 232,
+          "3": 1324
+        },
+        "opponentDecisionStatuses": {
+          "0": 1546
+        },
+        "hardLimitViolations": [
+          {
+            "openingId": 12,
+            "newColor": -1,
+            "ply": 7,
+            "engine": "new",
+            "side": -1,
+            "x": 12,
+            "y": 5,
+            "ms": 5021.533
+          }
+        ],
+        "candidateMax": {
+          "openingId": 12,
+          "newColor": -1,
+          "ply": 7,
+          "engine": "new",
+          "side": -1,
+          "x": 12,
+          "y": 5,
+          "ms": 5021.533
+        },
+        "opponentMax": {
+          "openingId": 12,
+          "newColor": -1,
+          "ply": 10,
+          "engine": "legacy",
+          "side": 1,
+          "x": 6,
+          "y": 10,
+          "ms": 712.668
+        }
+      },
+      "sentinel": {
+        "eligible": 1497,
+        "skipped": 59,
+        "skipReasons": {
+          "2": 59
+        },
+        "effectiveDepths": {
+          "5": 354,
+          "7": 1143
+        },
+        "statuses": {
+          "no-forced-win-in-scope": 1126,
+          "proven-win": 97,
+          "unknown": 274
+        },
+        "adaptiveEscalations": 1143,
+        "auditedAlternatives": 1677,
+        "verifiedLossAlternatives": 267,
+        "verifiedLossesAvoided": 18,
+        "moveChanges": 18,
+        "latencyMs": {
+          "count": 1497,
+          "p50": 7.495,
+          "p95": 83.484,
+          "max": 111.96,
+          "total": 38249.622
+        },
+        "nodes": {
+          "count": 1497,
+          "p50": 5,
+          "p95": 43,
+          "max": 58,
+          "total": 16861
+        },
+        "cacheReuseDecisions": 92,
+        "cacheHits": 1281,
+        "rollbacks": 0,
+        "evidenceMismatches": 0,
+        "finalGuardOnlyCatches": 111
+      },
+      "finalGuard": {
+        "eligible": 1323,
+        "auditedCandidates": 2328,
+        "verifiedLossAlternatives": 990,
+        "verifiedLossesAvoided": 30,
+        "vcfLatencyMs": {
+          "count": 1323,
+          "p50": 4.249,
+          "p95": 679.722,
+          "max": 2000.722,
+          "total": 126357.167
+        },
+        "vctEligible": 1064,
+        "vctLatencyMs": {
+          "count": 1064,
+          "p50": 65.416,
+          "p95": 1285.603,
+          "max": 4116.139,
+          "total": 269041.584
+        },
+        "rollbacks": 0
+      },
+      "replay": {
+        "schemaVersion": 1,
+        "status": "pass",
+        "gamesReplayed": 100,
+        "movesReplayed": 3836,
+        "candidateDecisions": 1556,
+        "controlDecisions": 1546,
+        "certificatesReproved": {
+          "earlyVCF": 97,
+          "finalGuardVCF": 94,
+          "finalGuardVCT": 0,
+          "total": 191
+        },
+        "runtimeVerifiedAnalysisCertificates": 268,
+        "boardIntegrity": true,
+        "moveLegality": true,
+        "winnerReplay": true,
+        "anomalies": [],
+        "decisionsAbove5000Ms": [
+          {
+            "openingId": 12,
+            "newColor": -1,
+            "ply": 7,
+            "side": -1,
+            "engine": "new",
+            "move": [
+              12,
+              5
+            ],
+            "ms": 5021.533
+          }
+        ],
+        "maxDecision": {
+          "openingId": 12,
+          "newColor": -1,
+          "ply": 7,
+          "side": -1,
+          "engine": "new",
+          "move": [
+            12,
+            5
+          ],
+          "ms": 5021.533
+        },
+        "scheduleSha256": null,
+        "rawJsonlSha256": "bb0dd39d4492ec32a7e86e339d627ba27cfc6ef37c1566ca7f2d09d7f68b1af4",
+        "referenceLibrarySha256": "b5084ddcd01a3d07c12b35b8b9b858d32fd5a82b3b1892a27aa2b9dc329db094"
+      }
+    },
+    {
+      "label": "四星",
+      "rawPath": "raw/v581-vs-four-star-forbidden-100g.jsonl",
+      "replayPath": "replay/v581-vs-four-star-forbidden-100g-replay.json",
+      "rawSha256": "8780f3cc046b6fcd2401239b1e6a9452a6c147981197295c2b044970ba4dffb9",
+      "replaySha256": "480eba6b5df77e3a30bbc0266987cb24e0c0e73f405380641588360a63b1f385",
+      "header": {
+        "type": "header",
+        "schemaVersion": 5,
+        "suite": "five-star-natural-final",
+        "seedDomain": "five-star-natural-final-five-star-natural-forbidden-v4",
+        "randomMode": "deterministic-best",
+        "strategy": "hybrid-deep-verified",
+        "masterSeed": "0x9ee4d91480ac5889",
+        "openingStart": 0,
+        "openingCount": 50,
+        "games": 100,
+        "maxMoves": 120,
+        "forbiddenBlack": true,
+        "openingMode": "gomocup-held-out-prefix",
+        "openingBookVersion": "gomocup-2024-2025-freestyle15-v2",
+        "eliteCorpusVersion": "gomocup-elite-openings-2020-2026-rule-partitioned-v2",
+        "newProfile": {
+          "name": "five-star-early-micro-vcf-sentinel-candidate",
+          "version": "5.8.1-early-micro-vcf-adaptive-16k-80ms-2a",
+          "maxDepth": 3,
+          "quiescenceDepth": 3,
+          "fourDepth": 10,
+          "doubleThreeDepth": 10,
+          "forcingDepth": 12,
+          "candidateLimit": 12,
+          "nodeBudget": 14000,
+          "timeBudgetMs": 850,
+          "transpositionCapacity": 65536,
+          "attackWeight": 100,
+          "defenseWeight": 112,
+          "centerWeight": 4,
+          "nearBestWindow": 60,
+          "randomTemperature": 45.0,
+          "maxRandomCandidates": 2,
+          "proofEnabled": true,
+          "proofEngineCandidate": true,
+          "proofCandidateStagesEnabled": true,
+          "parallelProofEnabled": true,
+          "openingBookEnabled": false,
+          "proofSearchClass": 2,
+          "proofMaxDepth": 12,
+          "proofNodeBudget": 36000,
+          "proofParallelNodeBudget": 192000,
+          "proofTimeBudgetMs": 1200,
+          "proofWorkerCount": 4,
+          "workerCountOverride": 0,
+          "proofTranspositionCapacity": 65536,
+          "proofGraphNodeCapacity": 0,
+          "proofGraphEdgeCapacity": 0,
+          "proofSessionMemoryBytes": 10747904,
+          "proofParallelPeakMemoryBytes": 42991616,
+          "lossAwareEnabled": true,
+          "quietThreatEnabled": true,
+          "proofEscapeCandidateLimit": 8,
+          "proofQuietRootLimit": 3,
+          "proofEmergencyTimeBudgetMs": 4200,
+          "decisionTimeBudgetMs": 4500,
+          "decisionHardLimitMs": 5000,
+          "decisionLedgerVersion": 2,
+          "decisionNodeBudget": 288000,
+          "decisionMemoryBudgetBytes": 0,
+          "decisionCorpusQueryBudget": 0,
+          "incrementalLegalityEnabled": false,
+          "validateLegalityCache": false,
+          "recoverySearchEnabled": false,
+          "forkFirstRecoveryEnabled": false,
+          "persistentWorkerPoolEnabled": false,
+          "parallelTokenBlockEnabled": false,
+          "parallelTokenBlockSize": 0,
+          "branchFirstSearchEnabled": false,
+          "branchFirstMinRemainingDepth": 0,
+          "branchFirstMinBranchCount": 0,
+          "branchFirstMaxBranches": 0,
+          "branchFirstPreviewDepth": 0,
+          "branchFirstAdvancedFourDepthBonus": 0,
+          "branchFirstAdvancedThreeDepthBonus": 0,
+          "branchFirstTacticalDepthCap": 0,
+          "opponentGuardEnabled": true,
+          "opponentGuardVCFMaxDepth": 9,
+          "opponentGuardVCFNodeBudget": 48000,
+          "opponentGuardVCFTimeBudgetMs": 500,
+          "opponentGuardVCTMaxDepth": 10,
+          "opponentGuardVCTNodeBudget": 48000,
+          "opponentGuardVCTTimeBudgetMs": 700,
+          "opponentGuardReservedNodes": 96000,
+          "opponentGuardReservedTimeMs": 1400,
+          "opponentGuardStructuralVCTEnabled": true,
+          "opponentGuardMaxAlternatives": 8,
+          "earlyVCFSentinelEnabled": true,
+          "earlyVCFSentinelPolicy": 2,
+          "earlyVCFBaseDepth": 5,
+          "earlyVCFMaxDepth": 7,
+          "earlyVCFNodeBudget": 16000,
+          "earlyVCFTimeBudgetMs": 80,
+          "earlyVCFMaxAlternatives": 2,
+          "eliteCorpusEnabled": true,
+          "corpusVersion": "gomocup-elite-openings-2020-2026-rule-partitioned-v2",
+          "corpusScoreMargin": -80,
+          "corpusMinGames": 2,
+          "corpusMinEvents": 1
+        },
+        "opponentProfile": "four-star-proof-guided-no-book@3.0.0-vcf-dfpn-no-book"
+      },
+      "results": {
+        "black": {
+          "games": 50,
+          "wins": 29,
+          "draws": 0,
+          "losses": 21,
+          "scoreRate": 0.58,
+          "wilson95": [
+            0.4423344176857823,
+            0.7062499664528802
+          ]
+        },
+        "white": {
+          "games": 50,
+          "wins": 26,
+          "draws": 0,
+          "losses": 24,
+          "scoreRate": 0.52,
+          "wilson95": [
+            0.38511744890044614,
+            0.6520286471342196
+          ]
+        },
+        "overall": {
+          "games": 100,
+          "wins": 55,
+          "draws": 0,
+          "losses": 45,
+          "scoreRate": 0.55,
+          "wilson95": [
+            0.45244602997442135,
+            0.6438546202048803
+          ]
+        }
+      },
+      "sameColor": {
+        "candidateBlackScoreRate": 0.58,
+        "opponentBlackScoreRate": 0.48,
+        "blackDelta": 0.09999999999999998,
+        "candidateWhiteScoreRate": 0.52,
+        "opponentWhiteScoreRate": 0.42,
+        "whiteDelta": 0.10000000000000003
+      },
+      "paired": {
+        "openings": 50,
+        "candidateSweeps": 12,
+        "opponentSweeps": 7,
+        "splitDecisive": 31,
+        "involvingDraw": 0,
+        "candidatePairedScoreRate": 0.55,
+        "pairedBootstrap95": [
+          0.47,
+          0.63
+        ]
+      },
+      "games": {
+        "moves": {
+          "count": 100,
+          "p50": 35,
+          "p95": 84,
+          "max": 93,
+          "total": 4003
+        },
+        "terminations": {
+          "five-in-a-row": 45,
+          "proven-loss": 55
+        },
+        "anomalies": []
+      },
+      "decisions": {
+        "candidate": 1637,
+        "opponent": 1632,
+        "candidateByColor": {
+          "black": 839,
+          "white": 798
+        },
+        "candidateWallMs": {
+          "count": 1637,
+          "p50": 908.853,
+          "p95": 4506.24,
+          "max": 5019.576,
+          "total": 2251269.364
+        },
+        "opponentWallMs": {
+          "count": 1632,
+          "p50": 177.618,
+          "p95": 361.729,
+          "max": 1184.234,
+          "total": 281982.063
+        },
+        "candidateCpuMs": {
+          "count": 1637,
+          "p50": 1077.72,
+          "p95": 5905.855,
+          "max": 15619.109,
+          "total": 3320110.41
+        },
+        "opponentCpuMs": {
+          "count": 1632,
+          "p50": 176.519,
+          "p95": 360.02,
+          "max": 1180.762,
+          "total": 279915.817
+        },
+        "candidateNodes": {
+          "count": 1637,
+          "p50": 13,
+          "p95": 89,
+          "max": 679,
+          "total": 42268
+        },
+        "opponentNodes": {
+          "count": 1632,
+          "p50": 14,
+          "p95": 168,
+          "max": 287,
+          "total": 65512
+        },
+        "candidatePeakResidentBytes": 36110336,
+        "opponentPeakResidentBytes": 36110336,
+        "candidateBudgetExhausted": 808,
+        "opponentBudgetExhausted": 632,
+        "candidateFallbacks": 45,
+        "opponentFallbacks": 0,
+        "candidateDecisionStatuses": {
+          "1": 152,
+          "3": 1485
+        },
+        "opponentDecisionStatuses": {
+          "0": 1632
+        },
+        "hardLimitViolations": [
+          {
+            "openingId": 12,
+            "newColor": -1,
+            "ply": 7,
+            "engine": "new",
+            "side": -1,
+            "x": 12,
+            "y": 5,
+            "ms": 5019.576
+          }
+        ],
+        "candidateMax": {
+          "openingId": 12,
+          "newColor": -1,
+          "ply": 7,
+          "engine": "new",
+          "side": -1,
+          "x": 12,
+          "y": 5,
+          "ms": 5019.576
+        },
+        "opponentMax": {
+          "openingId": 27,
+          "newColor": -1,
+          "ply": 34,
+          "engine": "four-star",
+          "side": 1,
+          "x": 13,
+          "y": 6,
+          "ms": 1184.234
+        }
+      },
+      "sentinel": {
+        "eligible": 1637,
+        "skipped": 0,
+        "skipReasons": {},
+        "effectiveDepths": {
+          "5": 416,
+          "7": 1221
+        },
+        "statuses": {
+          "no-forced-win-in-scope": 1206,
+          "proven-win": 124,
+          "unknown": 307
+        },
+        "adaptiveEscalations": 1221,
+        "auditedAlternatives": 1864,
+        "verifiedLossAlternatives": 340,
+        "verifiedLossesAvoided": 19,
+        "moveChanges": 19,
+        "latencyMs": {
+          "count": 1637,
+          "p50": 7.796,
+          "p95": 83.403,
+          "max": 110.059,
+          "total": 43442.311
+        },
+        "nodes": {
+          "count": 1637,
+          "p50": 5,
+          "p95": 44,
+          "max": 58,
+          "total": 19352
+        },
+        "cacheReuseDecisions": 118,
+        "cacheHits": 1482,
+        "rollbacks": 0,
+        "evidenceMismatches": 0,
+        "finalGuardOnlyCatches": 145
+      },
+      "finalGuard": {
+        "eligible": 1484,
+        "auditedCandidates": 2750,
+        "verifiedLossAlternatives": 1269,
+        "verifiedLossesAvoided": 35,
+        "vcfLatencyMs": {
+          "count": 1484,
+          "p50": 4.191,
+          "p95": 697.955,
+          "max": 2000.701,
+          "total": 143374.52
+        },
+        "vctEligible": 1180,
+        "vctLatencyMs": {
+          "count": 1180,
+          "p50": 68.288,
+          "p95": 1267.619,
+          "max": 4109.341,
+          "total": 294327.41
+        },
+        "rollbacks": 0
+      },
+      "replay": {
+        "schemaVersion": 1,
+        "status": "pass",
+        "gamesReplayed": 100,
+        "movesReplayed": 4003,
+        "candidateDecisions": 1637,
+        "controlDecisions": 1632,
+        "certificatesReproved": {
+          "earlyVCF": 124,
+          "finalGuardVCF": 122,
+          "finalGuardVCT": 0,
+          "total": 246
+        },
+        "runtimeVerifiedAnalysisCertificates": 275,
+        "boardIntegrity": true,
+        "moveLegality": true,
+        "winnerReplay": true,
+        "anomalies": [],
+        "decisionsAbove5000Ms": [
+          {
+            "openingId": 12,
+            "newColor": -1,
+            "ply": 7,
+            "side": -1,
+            "engine": "new",
+            "move": [
+              12,
+              5
+            ],
+            "ms": 5019.576
+          }
+        ],
+        "maxDecision": {
+          "openingId": 12,
+          "newColor": -1,
+          "ply": 7,
+          "side": -1,
+          "engine": "new",
+          "move": [
+            12,
+            5
+          ],
+          "ms": 5019.576
+        },
+        "scheduleSha256": null,
+        "rawJsonlSha256": "8780f3cc046b6fcd2401239b1e6a9452a6c147981197295c2b044970ba4dffb9",
+        "referenceLibrarySha256": "b5084ddcd01a3d07c12b35b8b9b858d32fd5a82b3b1892a27aa2b9dc329db094"
+      }
+    },
+    {
+      "label": "exact 5.4.1",
+      "rawPath": "raw/v581-vs-v541-forbidden-100g.jsonl",
+      "replayPath": "replay/v581-vs-v541-forbidden-100g-replay.json",
+      "rawSha256": "2f600334ebf91e71a0f31102c0fbfe080e544fa58791a0914b34fae4b47bdc47",
+      "replaySha256": "abddb3824c26265774e146f9eb7aeb9c3034fc67958ffb52576390175c3d11e2",
+      "header": {
+        "type": "header",
+        "schemaVersion": 5,
+        "suite": "five-star-natural-final",
+        "seedDomain": "five-star-natural-final-five-star-natural-forbidden-v4",
+        "randomMode": "deterministic-best",
+        "strategy": "hybrid-deep-verified",
+        "masterSeed": "0x9ee4d91480ac5889",
+        "openingStart": 0,
+        "openingCount": 50,
+        "games": 100,
+        "maxMoves": 120,
+        "forbiddenBlack": true,
+        "openingMode": "gomocup-held-out-prefix",
+        "openingBookVersion": "gomocup-2024-2025-freestyle15-v2",
+        "eliteCorpusVersion": "gomocup-elite-openings-2020-2026-rule-partitioned-v2",
+        "newProfile": {
+          "name": "five-star-early-micro-vcf-sentinel-candidate",
+          "version": "5.8.1-early-micro-vcf-adaptive-16k-80ms-2a",
+          "maxDepth": 3,
+          "quiescenceDepth": 3,
+          "fourDepth": 10,
+          "doubleThreeDepth": 10,
+          "forcingDepth": 12,
+          "candidateLimit": 12,
+          "nodeBudget": 14000,
+          "timeBudgetMs": 850,
+          "transpositionCapacity": 65536,
+          "attackWeight": 100,
+          "defenseWeight": 112,
+          "centerWeight": 4,
+          "nearBestWindow": 60,
+          "randomTemperature": 45.0,
+          "maxRandomCandidates": 2,
+          "proofEnabled": true,
+          "proofEngineCandidate": true,
+          "proofCandidateStagesEnabled": true,
+          "parallelProofEnabled": true,
+          "openingBookEnabled": false,
+          "proofSearchClass": 2,
+          "proofMaxDepth": 12,
+          "proofNodeBudget": 36000,
+          "proofParallelNodeBudget": 192000,
+          "proofTimeBudgetMs": 1200,
+          "proofWorkerCount": 4,
+          "workerCountOverride": 0,
+          "proofTranspositionCapacity": 65536,
+          "proofGraphNodeCapacity": 0,
+          "proofGraphEdgeCapacity": 0,
+          "proofSessionMemoryBytes": 10747904,
+          "proofParallelPeakMemoryBytes": 42991616,
+          "lossAwareEnabled": true,
+          "quietThreatEnabled": true,
+          "proofEscapeCandidateLimit": 8,
+          "proofQuietRootLimit": 3,
+          "proofEmergencyTimeBudgetMs": 4200,
+          "decisionTimeBudgetMs": 4500,
+          "decisionHardLimitMs": 5000,
+          "decisionLedgerVersion": 2,
+          "decisionNodeBudget": 288000,
+          "decisionMemoryBudgetBytes": 0,
+          "decisionCorpusQueryBudget": 0,
+          "incrementalLegalityEnabled": false,
+          "validateLegalityCache": false,
+          "recoverySearchEnabled": false,
+          "forkFirstRecoveryEnabled": false,
+          "persistentWorkerPoolEnabled": false,
+          "parallelTokenBlockEnabled": false,
+          "parallelTokenBlockSize": 0,
+          "branchFirstSearchEnabled": false,
+          "branchFirstMinRemainingDepth": 0,
+          "branchFirstMinBranchCount": 0,
+          "branchFirstMaxBranches": 0,
+          "branchFirstPreviewDepth": 0,
+          "branchFirstAdvancedFourDepthBonus": 0,
+          "branchFirstAdvancedThreeDepthBonus": 0,
+          "branchFirstTacticalDepthCap": 0,
+          "opponentGuardEnabled": true,
+          "opponentGuardVCFMaxDepth": 9,
+          "opponentGuardVCFNodeBudget": 48000,
+          "opponentGuardVCFTimeBudgetMs": 500,
+          "opponentGuardVCTMaxDepth": 10,
+          "opponentGuardVCTNodeBudget": 48000,
+          "opponentGuardVCTTimeBudgetMs": 700,
+          "opponentGuardReservedNodes": 96000,
+          "opponentGuardReservedTimeMs": 1400,
+          "opponentGuardStructuralVCTEnabled": true,
+          "opponentGuardMaxAlternatives": 8,
+          "earlyVCFSentinelEnabled": true,
+          "earlyVCFSentinelPolicy": 2,
+          "earlyVCFBaseDepth": 5,
+          "earlyVCFMaxDepth": 7,
+          "earlyVCFNodeBudget": 16000,
+          "earlyVCFTimeBudgetMs": 80,
+          "earlyVCFMaxAlternatives": 2,
+          "eliteCorpusEnabled": true,
+          "corpusVersion": "gomocup-elite-openings-2020-2026-rule-partitioned-v2",
+          "corpusScoreMargin": -80,
+          "corpusMinGames": 2,
+          "corpusMinEvents": 1
+        },
+        "opponentProfile": "five-star-incremental-dfpn-candidate@5.4.1-transactional-deadline-root-parallel-5s"
+      },
+      "results": {
+        "black": {
+          "games": 50,
+          "wins": 29,
+          "draws": 0,
+          "losses": 21,
+          "scoreRate": 0.58,
+          "wilson95": [
+            0.4423344176857823,
+            0.7062499664528802
+          ]
+        },
+        "white": {
+          "games": 50,
+          "wins": 25,
+          "draws": 0,
+          "losses": 25,
+          "scoreRate": 0.5,
+          "wilson95": [
+            0.3664451431682858,
+            0.6335548568317142
+          ]
+        },
+        "overall": {
+          "games": 100,
+          "wins": 54,
+          "draws": 0,
+          "losses": 46,
+          "scoreRate": 0.54,
+          "wilson95": [
+            0.44264860323368227,
+            0.6343919169097589
+          ]
+        }
+      },
+      "sameColor": {
+        "candidateBlackScoreRate": 0.58,
+        "opponentBlackScoreRate": 0.5,
+        "blackDelta": 0.07999999999999996,
+        "candidateWhiteScoreRate": 0.5,
+        "opponentWhiteScoreRate": 0.42,
+        "whiteDelta": 0.08000000000000002
+      },
+      "paired": {
+        "openings": 50,
+        "candidateSweeps": 5,
+        "opponentSweeps": 1,
+        "splitDecisive": 44,
+        "involvingDraw": 0,
+        "candidatePairedScoreRate": 0.54,
+        "pairedBootstrap95": [
+          0.5,
+          0.59
+        ]
+      },
+      "games": {
+        "moves": {
+          "count": 100,
+          "p50": 38,
+          "p95": 79,
+          "max": 104,
+          "total": 4146
+        },
+        "terminations": {
+          "five-in-a-row": 100
+        },
+        "anomalies": []
+      },
+      "decisions": {
+        "candidate": 1708,
+        "opponent": 1704,
+        "candidateByColor": {
+          "black": 840,
+          "white": 868
+        },
+        "candidateWallMs": {
+          "count": 1708,
+          "p50": 736.718,
+          "p95": 4503.653,
+          "max": 5044.334,
+          "total": 2225437.807
+        },
+        "opponentWallMs": {
+          "count": 1704,
+          "p50": 222.301,
+          "p95": 4500.409,
+          "max": 5233.651,
+          "total": 1147669.079
+        },
+        "candidateCpuMs": {
+          "count": 1708,
+          "p50": 890.133,
+          "p95": 5976.91,
+          "max": 15606.018,
+          "total": 3179381.704
+        },
+        "opponentCpuMs": {
+          "count": 1704,
+          "p50": 221.146,
+          "p95": 8844.329,
+          "max": 34373.043,
+          "total": 2555011.182
+        },
+        "candidateNodes": {
+          "count": 1708,
+          "p50": 13,
+          "p95": 80,
+          "max": 655,
+          "total": 41581
+        },
+        "opponentNodes": {
+          "count": 1704,
+          "p50": 13,
+          "p95": 111,
+          "max": 649,
+          "total": 49190
+        },
+        "candidatePeakResidentBytes": 53149696,
+        "opponentPeakResidentBytes": 53149696,
+        "candidateBudgetExhausted": 838,
+        "opponentBudgetExhausted": 746,
+        "candidateFallbacks": 46,
+        "opponentFallbacks": 0,
+        "candidateDecisionStatuses": {
+          "1": 222,
+          "3": 1486
+        },
+        "opponentDecisionStatuses": {
+          "1": 146,
+          "3": 1558
+        },
+        "hardLimitViolations": [
+          {
+            "openingId": 12,
+            "newColor": -1,
+            "ply": 7,
+            "engine": "new",
+            "side": -1,
+            "x": 12,
+            "y": 5,
+            "ms": 5044.334
+          },
+          {
+            "openingId": 12,
+            "newColor": -1,
+            "ply": 10,
+            "engine": "five-star-control",
+            "side": 1,
+            "x": 6,
+            "y": 10,
+            "ms": 5233.651
+          }
+        ],
+        "candidateMax": {
+          "openingId": 12,
+          "newColor": -1,
+          "ply": 7,
+          "engine": "new",
+          "side": -1,
+          "x": 12,
+          "y": 5,
+          "ms": 5044.334
+        },
+        "opponentMax": {
+          "openingId": 12,
+          "newColor": -1,
+          "ply": 10,
+          "engine": "five-star-control",
+          "side": 1,
+          "x": 6,
+          "y": 10,
+          "ms": 5233.651
+        }
+      },
+      "sentinel": {
+        "eligible": 1654,
+        "skipped": 54,
+        "skipReasons": {
+          "2": 54
+        },
+        "effectiveDepths": {
+          "5": 443,
+          "7": 1211
+        },
+        "statuses": {
+          "no-forced-win-in-scope": 1246,
+          "proven-win": 138,
+          "unknown": 270
+        },
+        "adaptiveEscalations": 1211,
+        "auditedAlternatives": 1904,
+        "verifiedLossAlternatives": 373,
+        "verifiedLossesAvoided": 20,
+        "moveChanges": 20,
+        "latencyMs": {
+          "count": 1654,
+          "p50": 8.183,
+          "p95": 83.996,
+          "max": 110.025,
+          "total": 43714.599
+        },
+        "nodes": {
+          "count": 1654,
+          "p50": 5,
+          "p95": 38,
+          "max": 60,
+          "total": 17548
+        },
+        "cacheReuseDecisions": 129,
+        "cacheHits": 1365,
+        "rollbacks": 0,
+        "evidenceMismatches": 0,
+        "finalGuardOnlyCatches": 156
+      },
+      "finalGuard": {
+        "eligible": 1486,
+        "auditedCandidates": 2822,
+        "verifiedLossAlternatives": 1344,
+        "verifiedLossesAvoided": 36,
+        "vcfLatencyMs": {
+          "count": 1486,
+          "p50": 4.484,
+          "p95": 500.917,
+          "max": 1506.435,
+          "total": 107299.902
+        },
+        "vctEligible": 1215,
+        "vctLatencyMs": {
+          "count": 1215,
+          "p50": 62.695,
+          "p95": 1154.454,
+          "max": 4098.812,
+          "total": 290568.154
+        },
+        "rollbacks": 0
+      },
+      "replay": {
+        "schemaVersion": 1,
+        "status": "pass",
+        "gamesReplayed": 100,
+        "movesReplayed": 4146,
+        "candidateDecisions": 1708,
+        "controlDecisions": 1704,
+        "certificatesReproved": {
+          "earlyVCF": 138,
+          "finalGuardVCF": 127,
+          "finalGuardVCT": 3,
+          "total": 268
+        },
+        "runtimeVerifiedAnalysisCertificates": 532,
+        "boardIntegrity": true,
+        "moveLegality": true,
+        "winnerReplay": true,
+        "anomalies": [],
+        "decisionsAbove5000Ms": [
+          {
+            "openingId": 12,
+            "newColor": -1,
+            "ply": 7,
+            "side": -1,
+            "engine": "new",
+            "move": [
+              12,
+              5
+            ],
+            "ms": 5044.334
+          },
+          {
+            "openingId": 12,
+            "newColor": -1,
+            "ply": 10,
+            "side": 1,
+            "engine": "five-star-control",
+            "move": [
+              6,
+              10
+            ],
+            "ms": 5233.651
+          }
+        ],
+        "maxDecision": {
+          "openingId": 12,
+          "newColor": -1,
+          "ply": 10,
+          "side": 1,
+          "engine": "five-star-control",
+          "move": [
+            6,
+            10
+          ],
+          "ms": 5233.651
+        },
+        "scheduleSha256": null,
+        "rawJsonlSha256": "2f600334ebf91e71a0f31102c0fbfe080e544fa58791a0914b34fae4b47bdc47",
+        "referenceLibrarySha256": "b5084ddcd01a3d07c12b35b8b9b858d32fd5a82b3b1892a27aa2b9dc329db094"
+      }
+    }
+  ]
+}

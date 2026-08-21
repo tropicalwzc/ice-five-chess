@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "status": "pass",
+  "gamesReplayed": 100,
+  "movesReplayed": 4146,
+  "candidateDecisions": 1708,
+  "controlDecisions": 1704,
+  "certificatesReproved": {
+    "earlyVCF": 138,
+    "finalGuardVCF": 127,
+    "finalGuardVCT": 3,
+    "total": 268
+  },
+  "runtimeVerifiedAnalysisCertificates": 532,
+  "boardIntegrity": true,
+  "moveLegality": true,
+  "winnerReplay": true,
+  "anomalies": [],
+  "decisionsAbove5000Ms": [
+    {
+      "openingId": 12,
+      "newColor": -1,
+      "ply": 7,
+      "side": -1,
+      "engine": "new",
+      "move": [
+        12,
+        5
+      ],
+      "ms": 5044.334
+    },
+    {
+      "openingId": 12,
+      "newColor": -1,
+      "ply": 10,
+      "side": 1,
+      "engine": "five-star-control",
+      "move": [
+        6,
+        10
+      ],
+      "ms": 5233.651
+    }
+  ],
+  "maxDecision": {
+    "openingId": 12,
+    "newColor": -1,
+    "ply": 10,
+    "side": 1,
+    "engine": "five-star-control",
+    "move": [
+      6,
+      10
+    ],
+    "ms": 5233.651
+  },
+  "scheduleSha256": null,
+  "rawJsonlSha256": "2f600334ebf91e71a0f31102c0fbfe080e544fa58791a0914b34fae4b47bdc47",
+  "referenceLibrarySha256": "b5084ddcd01a3d07c12b35b8b9b858d32fd5a82b3b1892a27aa2b9dc329db094"
+}

@@ -89,8 +89,8 @@ def copy_board(board: Board) -> Board:
     return copied
 
 
-def replay_proof(lib, board: Board, attacker: int, search_class: int,
-                 depth: int, recorded_nodes: int) -> dict:
+def replay_proof(lib, board: Board, attacker: int, forbidden_black: bool,
+                 search_class: int, depth: int, recorded_nodes: int) -> dict:
     before = board_bytes(board)
     result = FCProofResult()
     # Runtime node telemetry can be session-local (and therefore tiny after
@@ -98,7 +98,7 @@ def replay_proof(lib, board: Board, attacker: int, search_class: int,
     # room without a wall-clock cutoff.
     budget = max(5_000_000, recorded_nodes * 256 + 65_536)
     proven = lib.fc_prove_forced_win(
-        board, attacker, False, search_class, max(depth, 1), budget, 0,
+        board, attacker, forbidden_black, search_class, max(depth, 1), budget, 0,
         65_536, ctypes.byref(result))
     assert board_bytes(board) == before
     assert proven and result.status == FC_PROOF_PROVEN_WIN, {
@@ -139,7 +139,8 @@ def main() -> int:
         assert header["masterSeed"].lower() == schedule["masterSeed"].lower()
         assert header["games"] == schedule["expectedGames"]
     assert header["randomMode"] == "deterministic-best"
-    assert header["forbiddenBlack"] is False
+    assert isinstance(header["forbiddenBlack"], bool)
+    forbidden_black = header["forbiddenBlack"]
     assert header["newProfile"]["version"] == \
         "5.8.1-early-micro-vcf-adaptive-16k-80ms-2a"
     assert header["opponentProfile"] in {
@@ -195,7 +196,8 @@ def main() -> int:
         for ply, (x, y, side) in enumerate(game["moves"]):
             assert winner == 0
             assert side == (1 if ply % 2 == 0 else -1)
-            assert lib.fc_is_legal_move(board, x, y, side, False)
+            assert lib.fc_is_legal_move(
+                board, x, y, side, forbidden_black)
             if ply >= len(prefix):
                 step = game["steps"][step_index]
                 step_index += 1
@@ -234,10 +236,12 @@ def main() -> int:
                         assert early["certificateVerified"]
                         after = copy_board(board)
                         px, py = early["provisionalX"], early["provisionalY"]
-                        assert lib.fc_is_legal_move(after, px, py, side, False)
+                        assert lib.fc_is_legal_move(
+                            after, px, py, side, forbidden_black)
                         after[px][py] = side
                         replay_proof(
-                            lib, after, -side, FC_PROOF_SEARCH_VCF,
+                            lib, after, -side, forbidden_black,
+                            FC_PROOF_SEARCH_VCF,
                             early["effectiveDepth"], early["nodes"])
                         early_proofs += 1
 
@@ -249,7 +253,8 @@ def main() -> int:
                         assert (sx, sy) == (x, y)
                         after[sx][sy] = side
                         replay_proof(
-                            lib, after, -side, FC_PROOF_SEARCH_VCF, 9,
+                            lib, after, -side, forbidden_black,
+                            FC_PROOF_SEARCH_VCF, 9,
                             guard["vcfNodes"])
                         guard_vcf_proofs += 1
                     if guard["vctStatus"] == FC_PROOF_PROVEN_WIN:
@@ -259,7 +264,7 @@ def main() -> int:
                         assert (sx, sy) == (x, y)
                         after[sx][sy] = side
                         replay_proof(
-                            lib, after, -side, 2, 10,
+                            lib, after, -side, forbidden_black, 2, 10,
                             guard["vctNodes"])
                         guard_vct_proofs += 1
             board[x][y] = side
@@ -276,6 +281,14 @@ def main() -> int:
             # the side that would move next, and no earlier move may already
             # have completed five.
             next_side = 1 if len(game["moves"]) % 2 == 0 else -1
+            assert winner == 0
+            assert game["winner"] == -next_side
+        elif game["termination"] == "legacy-illegal-move-loss":
+            # The legacy engine proposed a forbidden black move. The runner
+            # rejects it before appending a step, so the board must remain
+            # non-terminal and the legal opponent wins immediately.
+            next_side = 1 if len(game["moves"]) % 2 == 0 else -1
+            assert forbidden_black and next_side == 1
             assert winner == 0
             assert game["winner"] == -next_side
         else:
