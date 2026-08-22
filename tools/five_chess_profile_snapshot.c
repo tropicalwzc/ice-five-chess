@@ -29,6 +29,16 @@ static FCAIProfile fc_snapshot_five_star_early_vcf(void)
     return fc_profile_five_star_early_micro_vcf_candidate();
 }
 
+static FCAIProfile fc_snapshot_five_star_black_double_three(void)
+{
+    return fc_profile_five_star_black_double_three_candidate();
+}
+
+static FCAIProfile fc_snapshot_five_star_black_defense_recovery(void)
+{
+    return fc_profile_five_star_black_defense_recovery_candidate();
+}
+
 int main(void)
 {
     static const struct {
@@ -41,6 +51,10 @@ int main(void)
         {"five-star-opponent-guard-candidate", fc_snapshot_five_star_guard},
         {"five-star-early-micro-vcf-candidate",
          fc_snapshot_five_star_early_vcf},
+        {"five-star-black-double-three-5.8.2-candidate",
+         fc_snapshot_five_star_black_double_three},
+        {"five-star-black-defense-recovery-5.8.2-candidate",
+         fc_snapshot_five_star_black_defense_recovery},
     };
     char snapshot[8192];
     puts("{");

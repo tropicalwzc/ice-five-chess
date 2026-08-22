@@ -37,6 +37,7 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *ban_choice;
 @property (weak, nonatomic) IBOutlet UILabel *sudoback;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView* rotater;
+@property (weak, nonatomic) IBOutlet UIToolbar *bottom_toolbar;
 @property (strong, nonatomic) UIView *board_surface;
 @property (strong, nonatomic) CAGradientLayer *board_gradient_layer;
 @property (strong, nonatomic) CAShapeLayer *board_grid_layer;
@@ -74,35 +75,58 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
 - (void)update_analysis_loading_appearance;
 - (void)hide_analysis_loading;
 - (void)render_teacher_overlay;
+- (void)update_board_surface_geometry;
+- (void)layout_board;
 @end
 
 @implementation ViewController_m
 
 - (CGRect)board_grid_frame
 {
-    CGFloat width = MAX(1.0, (CGFloat)ScreenWidth);
-    CGFloat height = MAX(1.0, (CGFloat)ScreenHeight);
-    CGFloat cell;
-    CGFloat originY;
-    if (height < width) {
-        cell = (height - 150.0) / 16.0;
-        originY = 120.0;
-    } else {
-        cell = width / 16.0;
-        originY = 80.0 + (height - 150.0 - cell * 15.0) * 0.5;
+    CGRect bounds = self.view.bounds;
+    CGFloat width = CGRectGetWidth(bounds);
+    CGFloat height = CGRectGetHeight(bounds);
+    if (width <= 1.0 || height <= 1.0) {
+        width = MAX(1.0, (CGFloat)ScreenWidth);
+        height = MAX(1.0, (CGFloat)ScreenHeight);
+        bounds = CGRectMake(0.0, 0.0, width, height);
     }
-    cell = MAX(1.0, cell);
-    CGFloat originX = (width - cell * 15.0) * 0.5;
-    if (_tech_texter != nil) {
-        originY = MAX(originY, CGRectGetMaxY(_tech_texter.frame) + 4.0);
+
+    // The board lives in the space between the status text and the bottom
+    // toolbar. Using the view's bounds (instead of UIScreen's portrait
+    // bounds) also keeps the layout correct after an iPad rotation.
+    CGRect contentFrame = UIEdgeInsetsInsetRect(bounds, self.view.safeAreaInsets);
+    CGFloat top = CGRectGetMinY(contentFrame) + 96.0;
+    if (_tech_texter != nil && _tech_texter.superview != nil) {
+        CGRect infoFrame = [_tech_texter.superview convertRect:_tech_texter.frame toView:self.view];
+        top = MAX(top, CGRectGetMaxY(infoFrame) + 14.0);
     }
-    if (height < width && originY + cell * 15.0 > height - 60.0) {
-        cell = MAX(1.0, (height - 60.0 - originY) / 15.0);
+
+    CGFloat bottom = CGRectGetMaxY(contentFrame) - 55.0 - 16.0;
+    if (_bottom_toolbar != nil && _bottom_toolbar.superview != nil) {
+        CGRect toolbarFrame = [_bottom_toolbar.superview convertRect:_bottom_toolbar.frame toView:self.view];
+        if (CGRectGetHeight(toolbarFrame) > 1.0) {
+            bottom = MIN(bottom, CGRectGetMinY(toolbarFrame) - 16.0);
+        }
     }
+
+    if (bottom <= top) {
+        bottom = CGRectGetMaxY(contentFrame) - 16.0;
+        top = MIN(top, bottom - 120.0);
+    }
+
+    CGFloat horizontalInset = MIN(72.0, MAX(24.0, width * 0.05));
+    CGFloat availableWidth = MAX(1.0, CGRectGetWidth(contentFrame) - horizontalInset * 2.0);
+    CGFloat availableHeight = MAX(1.0, bottom - top);
+    CGFloat boardSize = MIN(availableWidth, availableHeight);
+    CGFloat cell = MAX(1.0, boardSize / 15.0);
+    boardSize = cell * 15.0;
+    CGFloat originX = CGRectGetMidX(contentFrame) - boardSize * 0.5;
+    CGFloat originY = top + (availableHeight - boardSize) * 0.5;
 
     self.board_cell_size = cell;
     self.board_grid_origin = CGPointMake(originX, originY);
-    return CGRectMake(originX, originY, cell * 15.0, cell * 15.0);
+    return CGRectMake(originX, originY, boardSize, boardSize);
 }
 
 - (void)setup_board_surface
@@ -126,23 +150,54 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
     self.board_gradient_layer = gradient;
     [surface.layer addSublayer:gradient];
 
+    CAShapeLayer *gridLayer = [CAShapeLayer layer];
+    gridLayer.fillColor = UIColor.clearColor.CGColor;
+    gridLayer.contentsScale = UIScreen.mainScreen.scale;
+    self.board_grid_layer = gridLayer;
+    [surface.layer addSublayer:gridLayer];
+
+    CAShapeLayer *starLayer = [CAShapeLayer layer];
+    starLayer.contentsScale = UIScreen.mainScreen.scale;
+    self.board_star_layer = starLayer;
+    [surface.layer addSublayer:starLayer];
+
+    CAShapeLayer *borderLayer = [CAShapeLayer layer];
+    borderLayer.fillColor = UIColor.clearColor.CGColor;
+    borderLayer.contentsScale = UIScreen.mainScreen.scale;
+    self.board_border_layer = borderLayer;
+    [surface.layer addSublayer:borderLayer];
+
+    if (_sudoback != nil) {
+        [self.view insertSubview:surface aboveSubview:_sudoback];
+    } else {
+        [self.view insertSubview:surface atIndex:0];
+    }
+    [self update_board_surface_geometry];
+    [self update_board_surface_appearance];
+}
+
+- (void)update_board_surface_geometry
+{
+    if (self.board_surface == nil) {
+        return;
+    }
+
     CGFloat cell = self.board_cell_size;
     CGFloat lineOffset = cell * 0.5;
+    self.board_surface.layer.cornerRadius = MIN(16.0, cell * 0.45);
+    self.board_gradient_layer.frame = self.board_surface.bounds;
+    self.board_gradient_layer.cornerRadius = self.board_surface.layer.cornerRadius;
+
     UIBezierPath *gridPath = [UIBezierPath bezierPath];
     for (NSInteger index = 0; index < 15; index++) {
         CGFloat offset = lineOffset + index * cell;
         [gridPath moveToPoint:CGPointMake(offset, lineOffset)];
-        [gridPath addLineToPoint:CGPointMake(offset, CGRectGetHeight(surface.bounds) - lineOffset)];
+        [gridPath addLineToPoint:CGPointMake(offset, CGRectGetHeight(self.board_surface.bounds) - lineOffset)];
         [gridPath moveToPoint:CGPointMake(lineOffset, offset)];
-        [gridPath addLineToPoint:CGPointMake(CGRectGetWidth(surface.bounds) - lineOffset, offset)];
+        [gridPath addLineToPoint:CGPointMake(CGRectGetWidth(self.board_surface.bounds) - lineOffset, offset)];
     }
-    CAShapeLayer *gridLayer = [CAShapeLayer layer];
-    gridLayer.path = gridPath.CGPath;
-    gridLayer.fillColor = UIColor.clearColor.CGColor;
-    gridLayer.lineWidth = MAX(0.8, cell * 0.035);
-    gridLayer.contentsScale = UIScreen.mainScreen.scale;
-    self.board_grid_layer = gridLayer;
-    [surface.layer addSublayer:gridLayer];
+    self.board_grid_layer.path = gridPath.CGPath;
+    self.board_grid_layer.lineWidth = MAX(0.8, cell * 0.035);
 
     UIBezierPath *starPath = [UIBezierPath bezierPath];
     NSArray<NSNumber *> *starIndexes = @[@3, @7, @11];
@@ -159,29 +214,47 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
                              clockwise:YES];
         }
     }
-    CAShapeLayer *starLayer = [CAShapeLayer layer];
-    starLayer.path = starPath.CGPath;
-    starLayer.fillColor = [UIColor blackColor].CGColor;
-    starLayer.contentsScale = UIScreen.mainScreen.scale;
-    self.board_star_layer = starLayer;
-    [surface.layer addSublayer:starLayer];
+    self.board_star_layer.path = starPath.CGPath;
 
-    UIBezierPath *borderPath = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(surface.bounds, lineOffset, lineOffset)
+    UIBezierPath *borderPath = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(self.board_surface.bounds, lineOffset, lineOffset)
                                                                   cornerRadius:MIN(10.0, cell * 0.30)];
-    CAShapeLayer *borderLayer = [CAShapeLayer layer];
-    borderLayer.path = borderPath.CGPath;
-    borderLayer.fillColor = UIColor.clearColor.CGColor;
-    borderLayer.lineWidth = MAX(1.4, cell * 0.07);
-    borderLayer.contentsScale = UIScreen.mainScreen.scale;
-    self.board_border_layer = borderLayer;
-    [surface.layer addSublayer:borderLayer];
+    self.board_border_layer.path = borderPath.CGPath;
+    self.board_border_layer.lineWidth = MAX(1.4, cell * 0.07);
+}
 
-    if (_sudoback != nil) {
-        [self.view insertSubview:surface aboveSubview:_sudoback];
-    } else {
-        [self.view insertSubview:surface atIndex:0];
+- (void)layout_board
+{
+    if (self.board_surface == nil) {
+        return;
     }
-    [self update_board_surface_appearance];
+
+    CGRect oldSurfaceFrame = self.board_surface.frame;
+    CGRect gridFrame = [self board_grid_frame];
+    BOOL geometryChanged = !CGRectEqualToRect(oldSurfaceFrame, gridFrame);
+    self.board_surface.frame = gridFrame;
+    [self update_board_surface_geometry];
+
+    for (NSInteger x = 0; x < 15; x++) {
+        for (NSInteger y = 0; y < 15; y++) {
+            UIButton *button = chess_map[x][y];
+            if (button == nil) {
+                continue;
+            }
+            button.frame = CGRectMake(CGRectGetMinX(gridFrame) + x * self.board_cell_size,
+                                      CGRectGetMinY(gridFrame) + y * self.board_cell_size,
+                                      self.board_cell_size,
+                                      self.board_cell_size);
+        }
+    }
+
+    if (geometryChanged) {
+        _player_sure_btn.hidden = YES;
+        _player_sure_btn.userInteractionEnabled = NO;
+        [self flush_chess_map_according_to:map_state];
+        if (focus_has_been_selected && focus_x >= 0 && focus_x < 15 && focus_y >= 0 && focus_y < 15) {
+            [self set_op_focus_sign];
+        }
+    }
 }
 
 - (void)update_board_surface_appearance
@@ -548,7 +621,10 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
 
 -(void) initial
 {
-    Screensize=[UIScreen mainScreen].bounds;
+    Screensize=self.view.bounds;
+    if (CGRectGetWidth(Screensize) <= 1.0 || CGRectGetHeight(Screensize) <= 1.0) {
+        Screensize=[UIScreen mainScreen].bounds;
+    }
     ScreenWidth=(int)Screensize.size.width;
     ScreenHeight=(int)Screensize.size.height;
     int smal=0;
@@ -599,6 +675,7 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
     player_prefer_difficulty=0;
     _difficulty_choice_seg.selectedSegmentIndex=fc_segment_for_difficulty(player_prefer_difficulty);
     _player_sure_btn.tag=1001;
+    _player_sure_btn.hidden=YES;
 }
 -(NSString*) usr_lang
 {
@@ -641,6 +718,16 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
+    CGRect bounds = self.view.bounds;
+    if (CGRectGetWidth(bounds) > 1.0 && CGRectGetHeight(bounds) > 1.0) {
+        Screensize = bounds;
+        ScreenWidth = (int)CGRectGetWidth(bounds);
+        ScreenHeight = (int)CGRectGetHeight(bounds);
+        CGFloat shortestSide = MIN(CGRectGetWidth(bounds), CGRectGetHeight(bounds));
+        perwidth = shortestSide / 19.0;
+        perheight = perwidth;
+    }
+    [self layout_board];
     [self layout_analysis_loading_indicator];
 }
 
@@ -876,6 +963,8 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
     self.analysis_request_id += 1;
     think_flag=0;
     focus_has_been_selected=false;
+    _player_sure_btn.hidden=YES;
+    _player_sure_btn.userInteractionEnabled=NO;
     [self hide_analysis_loading];
 }
 -(void) paint_chess_map_with_x:(long)x y:(long)y val:(int)val
@@ -1321,40 +1410,50 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
 }
 -(void) following_act_with_x:(int)x y:(int)y
 {
-
-    _player_sure_btn.frame=CGRectMake(2000, 1000, 40, 40);
-    if(x>90 || map_state[x][y]!=0)
+    _player_sure_btn.hidden=YES;
+    _player_sure_btn.userInteractionEnabled=NO;
+    if(x < 0 || x >= 15 || y < 0 || y >= 15 || map_state[x][y]!=0)
         return;
-    
-    if(y>1 && map_state[x][y-1]==0)
+
+    NSInteger targetX = x;
+    NSInteger targetY = y;
+    UIImage *directionImage = nil;
+    if(y > 0 && map_state[x][y-1] == 0)
     {
-        [ _player_sure_btn setImage :[UIImage imageNamed:@"d_downer"] forState:UIControlStateNormal];
-        float px = x*perwidth-perwidth/3;
-        float py = ScreenHeight/2+(y-9.1)*perheight;
-        _player_sure_btn.frame=CGRectMake(px, py, 40, 40);
+        targetY = y - 1;
+        directionImage = [UIImage imageNamed:@"d_downer"];
     }
-    else if(y<14 && map_state[x][y+1]==0)
+    else if(y < 14 && map_state[x][y+1] == 0)
     {
-        [ _player_sure_btn setImage :[UIImage imageNamed:@"d_upper"] forState:UIControlStateNormal];
-        float px = x*perwidth-perwidth/3;
-        float py = ScreenHeight/2+(y-6.9)*perheight;
-        _player_sure_btn.frame=CGRectMake(px, py, 40, 40);
+        targetY = y + 1;
+        directionImage = [UIImage imageNamed:@"d_upper"];
     }
-    else if(x<14&& map_state[x+1][y]==0)
+    else if(x < 14 && map_state[x+1][y] == 0)
     {
-        [ _player_sure_btn setImage :[UIImage imageNamed:@"d_lefter"] forState:UIControlStateNormal];
-        float px = x*perwidth-perwidth/3+perwidth*1.1;
-        float py = ScreenHeight/2+(y-8)*perheight;
-        _player_sure_btn.frame=CGRectMake(px, py, 40, 40);
+        targetX = x + 1;
+        directionImage = [UIImage imageNamed:@"d_lefter"];
     }
-    else if(x>1&& map_state[x-1][y]==0)
+    else if(x > 0 && map_state[x-1][y] == 0)
     {
-        [ _player_sure_btn setImage :[UIImage imageNamed:@"d_righter"] forState:UIControlStateNormal];
-        float px = x*perwidth-perwidth/3-perwidth*1.1;
-        float py = ScreenHeight/2+(y-8)*perheight;
-        _player_sure_btn.frame=CGRectMake(px, py, 40, 40);
+        targetX = x - 1;
+        directionImage = [UIImage imageNamed:@"d_righter"];
     }
-    
+
+    if (directionImage == nil) {
+        return;
+    }
+
+    CGRect gridFrame = [self board_grid_frame];
+    CGFloat side = MIN(44.0, MAX(32.0, self.board_cell_size * 0.90));
+    CGPoint targetCenter = CGPointMake(CGRectGetMinX(gridFrame) + (targetX + 0.5) * self.board_cell_size,
+                                       CGRectGetMinY(gridFrame) + (targetY + 0.5) * self.board_cell_size);
+    _player_sure_btn.frame = CGRectMake(targetCenter.x - side * 0.5,
+                                        targetCenter.y - side * 0.5,
+                                        side,
+                                        side);
+    [_player_sure_btn setImage:directionImage forState:UIControlStateNormal];
+    _player_sure_btn.hidden=NO;
+    _player_sure_btn.userInteractionEnabled=YES;
     [self.view addSubview:_player_sure_btn];
 }
 @end

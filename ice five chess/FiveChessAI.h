@@ -84,7 +84,8 @@ typedef enum {
     FC_OVERRIDE_UNPROVEN_ESCAPE = 6,
     FC_OVERRIDE_LONGEST_SURVIVAL = 7,
     FC_OVERRIDE_QUIET_PROVEN_ATTACK = 8,
-    FC_OVERRIDE_FORK_SAFE_RECOVERY = 9
+    FC_OVERRIDE_FORK_SAFE_RECOVERY = 9,
+    FC_OVERRIDE_DOUBLE_THREE_PREEMPTION = 10
 } FCOverrideReason;
 
 typedef enum {
@@ -123,6 +124,18 @@ typedef enum {
 } FCForkRisk;
 
 typedef enum {
+    FC_RECOVERY_SOURCE_NONE = 0,
+    FC_RECOVERY_SOURCE_PROVISIONAL = 1,
+    FC_RECOVERY_SOURCE_BASELINE = 2,
+    FC_RECOVERY_SOURCE_DEFAULT = 3,
+    FC_RECOVERY_SOURCE_HANDOFF = 4,
+    FC_RECOVERY_SOURCE_IMMEDIATE_BLOCK = 5,
+    FC_RECOVERY_SOURCE_FORK_SAFE = 6,
+    FC_RECOVERY_SOURCE_VCT_UNKNOWN = 7,
+    FC_RECOVERY_SOURCE_CERTIFICATE = 8
+} FCRecoverySource;
+
+typedef enum {
     FC_HANDOFF_NONE = 0,
     FC_HANDOFF_FOUR_STAR_INVALID = 1,
     FC_HANDOFF_FOUR_STAR_UNKNOWN = 2,
@@ -139,6 +152,15 @@ typedef enum {
     FC_GUARD_SKIP_NO_RESERVED_RESOURCE = 5,
     FC_GUARD_SKIP_DEADLINE = 6
 } FCOpponentGuardSkipReason;
+
+typedef enum {
+    FC_DOUBLE_THREE_STATUS_NONE = 0,
+    FC_DOUBLE_THREE_STATUS_COMPLETE_NO_GAINS = 1,
+    FC_DOUBLE_THREE_STATUS_COMPLETE_SAFE = 2,
+    FC_DOUBLE_THREE_STATUS_COMPLETE_UNRESOLVED = 3,
+    FC_DOUBLE_THREE_STATUS_UNKNOWN = 4,
+    FC_DOUBLE_THREE_STATUS_BYPASSED = 5
+} FCDoubleThreeStatus;
 
 typedef enum {
     FC_GUARD_CLASS_UNKNOWN = 0,
@@ -192,6 +214,12 @@ typedef struct {
     int x;
     int y;
 } FCPoint;
+
+typedef struct {
+    int x;
+    int y;
+    uint8_t directionMask;
+} FCDoubleThreeGain;
 
 typedef struct {
     FCPoint gain;
@@ -248,7 +276,13 @@ typedef struct {
     bool placementLegal;
     bool ownImmediateWin;
     bool immediatelySafe;
+    int opponentImmediateWinCount;
+    bool immediateBlockPriorityEnabled;
+    int forkRisk;
+    int forkRepliesExamined;
+    bool forkProbeComplete;
     bool vctEligible;
+    bool vctEscalatedOnUnknown;
     bool boardRestored;
     FCProofResult vcf;
     FCProofResult vct;
@@ -341,6 +375,16 @@ typedef struct {
     uint32_t opponentGuardReservedTimeMs;
     bool opponentGuardStructuralVCTEnabled;
     int opponentGuardMaxAlternatives;
+    /* Isolated recovery controls.  These are deliberately separate from the
+     * historical guard knobs so control profiles remain unchanged. */
+    bool opponentGuardImmediateBlockEnabled;
+    bool opponentGuardTwoStepForkEnabled;
+    int opponentGuardForkMaxReplies;
+    uint64_t opponentGuardForkNodeBudget;
+    uint32_t opponentGuardForkTimeBudgetMs;
+    bool opponentGuardVCTOnUnknownEnabled;
+    uint64_t opponentGuardRecoveryReservedNodes;
+    uint32_t opponentGuardRecoveryReservedTimeMs;
     /* A cheap strict-VCF sentinel runs before own-proof work.  It shares the
      * opponent-guard reservation and never replaces the final VCF/VCT guard. */
     bool earlyVCFSentinelEnabled;
@@ -350,6 +394,16 @@ typedef struct {
     uint64_t earlyVCFNodeBudget;
     uint32_t earlyVCFTimeBudgetMs;
     int earlyVCFMaxAlternatives;
+    /* Isolated 5.8.2 black-side structural preemption.  Zero/false keeps
+     * every historical profile behaviorally unchanged. */
+    bool blackDoubleThreeDefenseEnabled;
+    int blackDoubleThreeMaxGains;
+    int blackDoubleThreeMaxCandidates;
+    uint32_t blackDoubleThreeTimeBudgetMs;
+    /* 0..100.  Lower values make a single-threat structural switch pay a
+     * larger distance cost against the existing move; 100 retains the hard
+     * preemption behavior used by the initial 5.8.2 candidate. */
+    int blackDoubleThreeDefenseWeight;
     int corpusScoreMargin;
     int corpusMinGames;
     int corpusMinEvents;
@@ -467,6 +521,19 @@ typedef struct {
     int forkUnknownCandidates;
     int forkAvoidedCount;
     bool forkProbeComplete;
+    int recoverySource;
+    int recoveryImmediateWinCount;
+    int recoveryForkRisk;
+    int recoveryForkRepliesExamined;
+    bool recoveryForkProbeComplete;
+    bool recoveryVCTEscalatedOnUnknown;
+    bool recoveryFinalCandidateConsistent;
+    int recoveryBaselineX;
+    int recoveryBaselineY;
+    int recoveryDefaultX;
+    int recoveryDefaultY;
+    int recoveryHandoffX;
+    int recoveryHandoffY;
     bool opponentGuardEligible;
     int opponentGuardSkipReason;
     int opponentGuardProvisionalX;
@@ -520,6 +587,18 @@ typedef struct {
     double earlyVCFDownstreamBudgetRemainingMs;
     bool earlyVCFFinalGuardOnlyLoss;
     bool earlyVCFEvidenceMismatch;
+    FCDoubleThreeStatus doubleThreeStatus;
+    bool doubleThreeScanComplete;
+    bool doubleThreeScanOverflow;
+    int doubleThreeGainCount;
+    int doubleThreeProvisionalResidualCount;
+    int doubleThreeSelectedResidualCount;
+    int doubleThreeCandidatesExamined;
+    int doubleThreeCandidatesEliminated;
+    bool doubleThreeOwnVCFBypass;
+    bool doubleThreeStructuralOverride;
+    bool doubleThreeRollback;
+    bool doubleThreeDeadlineAnomaly;
     bool corpusLookup;
     int corpusPositionIndex;
     int corpusCandidateCount;
@@ -724,6 +803,16 @@ typedef struct {
     uint64_t earlyVCFDeadlineExhaustions;
     uint64_t earlyVCFRollbacks;
     uint64_t earlyVCFEvidenceMismatches;
+    uint64_t doubleThreeScans;
+    uint64_t doubleThreeCompleteScans;
+    uint64_t doubleThreeIncompleteScans;
+    uint64_t doubleThreeGains;
+    uint64_t doubleThreeCandidatesExamined;
+    uint64_t doubleThreeCandidatesEliminated;
+    uint64_t doubleThreeStructuralOverrides;
+    uint64_t doubleThreeOwnVCFBypasses;
+    uint64_t doubleThreeRollbacks;
+    uint64_t doubleThreeDeadlineAnomalies;
 } FCProofDiagnostics;
 
 /* One resource ledger is shared by all stages of a five-star move.  Memory
@@ -805,6 +894,8 @@ FCAIProfile fc_profile_five_star_loss_aware_candidate(void);
 FCAIProfile fc_profile_five_star_proof_engine_candidate(void);
 FCAIProfile fc_profile_five_star_opponent_guard_candidate(void);
 FCAIProfile fc_profile_five_star_early_micro_vcf_candidate(void);
+FCAIProfile fc_profile_five_star_black_double_three_candidate(void);
+FCAIProfile fc_profile_five_star_black_defense_recovery_candidate(void);
 FCAIProfile fc_profile_five_star_v541_thread_scheduler_candidate(void);
 FCAIProfile fc_profile_five_star_color_hybrid_candidate(void);
 FCAIProfile fc_profile_five_star_v521_serial_hybrid_control(void);
@@ -876,6 +967,13 @@ bool fc_is_legal_move(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
                       int y,
                       int side,
                       bool forbiddenBlack);
+
+int fc_enumerate_white_double_three_gains(
+    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
+    bool forbiddenBlack,
+    FCDoubleThreeGain *out,
+    int capacity,
+    bool *complete);
 
 bool fc_has_five(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
                  int x,

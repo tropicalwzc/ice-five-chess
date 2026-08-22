@@ -91,6 +91,19 @@ typedef struct {
     int forkUnknownCandidates;
     int forkAvoidedCount;
     bool forkProbeComplete;
+    int recoverySource;
+    int recoveryImmediateWinCount;
+    int recoveryForkRisk;
+    int recoveryForkRepliesExamined;
+    bool recoveryForkProbeComplete;
+    bool recoveryVCTEscalatedOnUnknown;
+    bool recoveryFinalCandidateConsistent;
+    int recoveryBaselineX;
+    int recoveryBaselineY;
+    int recoveryDefaultX;
+    int recoveryDefaultY;
+    int recoveryHandoffX;
+    int recoveryHandoffY;
     int handoffReason;
     bool opponentGuardEligible;
     int opponentGuardSkipReason;
@@ -145,6 +158,18 @@ typedef struct {
     double earlyVCFDownstreamBudgetRemainingMs;
     bool earlyVCFFinalGuardOnlyLoss;
     bool earlyVCFEvidenceMismatch;
+    int doubleThreeStatus;
+    bool doubleThreeScanComplete;
+    bool doubleThreeScanOverflow;
+    int doubleThreeGainCount;
+    int doubleThreeProvisionalResidualCount;
+    int doubleThreeSelectedResidualCount;
+    int doubleThreeCandidatesExamined;
+    int doubleThreeCandidatesEliminated;
+    bool doubleThreeOwnVCFBypass;
+    bool doubleThreeStructuralOverride;
+    bool doubleThreeRollback;
+    bool doubleThreeDeadlineAnomaly;
     bool corpusLookup;
     int corpusPositionIndex;
     int corpusCandidateCount;
@@ -177,10 +202,19 @@ typedef struct {
     bool hintOnlyStrategy;
     int openingStart;
     int openingCount;
+    int explicitOpeningCount;
+    int explicitOpeningIds[100];
     int maxMoves;
     bool forbiddenBlack;
+    bool blackOnly;
+    const char *mutationSpec;
+    const char *nodeId;
+    const char *parentNodeId;
+    const char *sampleLabel;
     bool opponentFourStar;
+    bool opponentThreeStar;
     bool opponentFiveStarControl;
+    bool opponentFiveStarEarlyVCFControl;
     int pairedPhase;
     int proofWorkerCountOverride;
     int guardVCFDepthOverride;
@@ -204,6 +238,8 @@ typedef struct {
 static const uint64_t FC_TRAINING_MASTER_SEED = 0xA8B6C4D220260813ULL;
 static const uint64_t FC_FINAL_MASTER_SEED = 0xF1CE5EED20260814ULL;
 static const uint64_t FC_PROOF_FINAL_MASTER_SEED = 0xC0DEC0DE20260813ULL;
+static const uint64_t FC_DOUBLE_THREE_BENCHMARK_MASTER_SEED =
+    UINT64_C(0xD0B1E3E20260821);
 
 #include "../ice five chess/FiveChessOpeningBook.inc"
 #include "FiveChessFormalOpenings.inc"
@@ -280,6 +316,12 @@ static FCAIProfile profile_named(const char *name)
     if (strcmp(name, "five-star-opponent-guard") == 0)
         return fc_profile_five_star_opponent_guard_candidate();
     if (strcmp(name, "five-star-early-vcf") == 0)
+        return fc_profile_five_star_early_micro_vcf_candidate();
+    if (strcmp(name, "five-star-5.8.2") == 0)
+        return fc_profile_five_star_black_double_three_candidate();
+    if (strcmp(name, "five-star-5.8.2-recovery") == 0)
+        return fc_profile_five_star_black_defense_recovery_candidate();
+    if (strcmp(name, "five-star-5.8.1") == 0)
         return fc_profile_five_star_early_micro_vcf_candidate();
     if (strcmp(name, "five-star-color-hybrid") == 0)
         return fc_profile_five_star_color_hybrid_candidate();
@@ -360,6 +402,136 @@ static bool parse_u64(const char *text, uint64_t *value)
     return true;
 }
 
+static bool parse_opening_ids(const char *text, BenchmarkOptions *options)
+{
+    if (text == NULL || options == NULL || *text == '\0') return false;
+    size_t length = strlen(text);
+    if (length >= 4096) return false;
+    char buffer[4096];
+    memcpy(buffer, text, length + 1);
+    int count = 0;
+    for (char *token = strtok(buffer, ","); token != NULL;
+         token = strtok(NULL, ",")) {
+        if (count >= (int)(sizeof(options->explicitOpeningIds) /
+                           sizeof(options->explicitOpeningIds[0]))) {
+            return false;
+        }
+        int openingId = -1;
+        if (!parse_int(token, &openingId) || openingId < 0 ||
+            openingId >= 100) return false;
+        for (int i = 0; i < count; i++) {
+            if (options->explicitOpeningIds[i] == openingId) return false;
+        }
+        options->explicitOpeningIds[count++] = openingId;
+    }
+    if (count <= 0) return false;
+    options->explicitOpeningCount = count;
+    options->openingStart = -1;
+    options->openingCount = count;
+    return true;
+}
+
+static bool parse_bool_mutation_value(const char *value, bool *out)
+{
+    int parsed = -1;
+    if (!parse_int(value, &parsed) || (parsed != 0 && parsed != 1))
+        return false;
+    *out = parsed != 0;
+    return true;
+}
+
+static bool apply_one_research_mutation(FCAIProfile *profile,
+                                        const char *mutationSpec)
+{
+    if (profile == NULL || mutationSpec == NULL ||
+        strcmp(mutationSpec, "none") == 0) return true;
+    const char *separator = strchr(mutationSpec, '=');
+    if (separator == NULL || separator == mutationSpec ||
+        separator[1] == '\0') return false;
+    size_t keyLength = (size_t)(separator - mutationSpec);
+    if (keyLength >= 64) return false;
+    char key[64];
+    memcpy(key, mutationSpec, keyLength);
+    key[keyLength] = '\0';
+    const char *value = separator + 1;
+    bool enabled = false;
+    int parsed = 0;
+    if (strcmp(key, "black-double-three-weight") == 0) {
+        if (!parse_int(value, &parsed) || parsed < 0 || parsed > 100)
+            return false;
+        profile->blackDoubleThreeDefenseEnabled = parsed > 0;
+        profile->blackDoubleThreeDefenseWeight = parsed;
+        profile->blackDoubleThreeMaxGains = 16;
+        profile->blackDoubleThreeMaxCandidates = 32;
+        profile->blackDoubleThreeTimeBudgetMs = 80;
+    } else if (strcmp(key, "immediate-block") == 0) {
+        if (!parse_bool_mutation_value(value, &enabled)) return false;
+        profile->opponentGuardImmediateBlockEnabled = enabled;
+        if (enabled) profile->opponentGuardEnabled = true;
+    } else if (strcmp(key, "two-step-fork") == 0) {
+        if (!parse_bool_mutation_value(value, &enabled)) return false;
+        profile->opponentGuardTwoStepForkEnabled = enabled;
+        if (enabled) {
+            profile->opponentGuardEnabled = true;
+            profile->opponentGuardForkMaxReplies = FC_BOARD_SIZE * FC_BOARD_SIZE;
+            profile->opponentGuardForkNodeBudget = 120000;
+            profile->opponentGuardForkTimeBudgetMs = 150;
+        }
+    } else if (strcmp(key, "vct-on-unknown") == 0) {
+        if (!parse_bool_mutation_value(value, &enabled)) return false;
+        profile->opponentGuardVCTOnUnknownEnabled = enabled;
+        if (enabled) {
+            profile->opponentGuardEnabled = true;
+            profile->opponentGuardRecoveryReservedNodes = 112000;
+            profile->opponentGuardRecoveryReservedTimeMs = 1600;
+            profile->opponentGuardReservedNodes = 112000;
+            profile->opponentGuardReservedTimeMs = 1600;
+        }
+    } else if (strcmp(key, "guard-max-alternatives") == 0) {
+        if (!parse_int(value, &parsed) || parsed < 1 || parsed > 32)
+            return false;
+        profile->opponentGuardMaxAlternatives = parsed;
+        profile->opponentGuardEnabled = true;
+    } else if (strcmp(key, "recovery-ordering") == 0) {
+        if (strcmp(value, "immediate-block") == 0) {
+            profile->opponentGuardImmediateBlockEnabled = true;
+            profile->opponentGuardEnabled = true;
+        } else if (strcmp(value, "structural") == 0) {
+            profile->opponentGuardImmediateBlockEnabled = false;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+    return true;
+}
+
+static bool apply_research_mutation(FCAIProfile *profile,
+                                    const char *mutationSpec)
+{
+    if (profile == NULL || mutationSpec == NULL ||
+        strcmp(mutationSpec, "none") == 0) return true;
+    size_t length = strlen(mutationSpec);
+    if (length >= 4096) return false;
+    char buffer[4096];
+    memcpy(buffer, mutationSpec, length + 1);
+    for (char *token = strtok(buffer, ";"); token != NULL;
+         token = strtok(NULL, ";")) {
+        if (!apply_one_research_mutation(profile, token)) return false;
+    }
+    profile->name = "five-star-random-candidate";
+    profile->version = mutationSpec;
+    return true;
+}
+
+static int opening_id_for_offset(const BenchmarkOptions *options, int offset)
+{
+    if (options->explicitOpeningCount > 0)
+        return options->explicitOpeningIds[offset];
+    return options->openingStart + offset;
+}
+
 static bool parse_options(int argc, const char *argv[], BenchmarkOptions *options)
 {
     *options = (BenchmarkOptions){
@@ -367,8 +539,13 @@ static bool parse_options(int argc, const char *argv[], BenchmarkOptions *option
         .outputPath = NULL, .masterSeed = 0, .seedWasProvided = false,
         .randomUserMode = true, .hintOnlyStrategy = false,
         .openingStart = 0, .openingCount = 1, .maxMoves = 120,
-        .forbiddenBlack = false, .opponentFourStar = false,
+        .explicitOpeningCount = 0,
+        .forbiddenBlack = false, .blackOnly = false,
+        .mutationSpec = "none", .nodeId = NULL, .parentNodeId = NULL,
+        .sampleLabel = NULL, .opponentFourStar = false,
+        .opponentThreeStar = false,
         .opponentFiveStarControl = false,
+        .opponentFiveStarEarlyVCFControl = false,
         .pairedPhase = 0, .proofWorkerCountOverride = 0,
         .guardVCFDepthOverride = -1, .guardVCTDepthOverride = -1,
         .guardVCFNodesOverride = 0, .guardVCTNodesOverride = 0,
@@ -408,18 +585,36 @@ static bool parse_options(int argc, const char *argv[], BenchmarkOptions *option
             if (!parse_int(argv[++i], &options->openingStart)) return false;
         } else if (strcmp(argv[i], "--opening-count") == 0 && i + 1 < argc) {
             if (!parse_int(argv[++i], &options->openingCount)) return false;
+        } else if (strcmp(argv[i], "--opening-ids") == 0 && i + 1 < argc) {
+            if (!parse_opening_ids(argv[++i], options)) return false;
         } else if (strcmp(argv[i], "--max-moves") == 0 && i + 1 < argc) {
             if (!parse_int(argv[++i], &options->maxMoves)) return false;
         } else if (strcmp(argv[i], "--forbidden-black") == 0 && i + 1 < argc) {
             int enabled = 0;
             if (!parse_int(argv[++i], &enabled)) return false;
             options->forbiddenBlack = enabled != 0;
+        } else if (strcmp(argv[i], "--black-only") == 0 && i + 1 < argc) {
+            int enabled = 0;
+            if (!parse_int(argv[++i], &enabled)) return false;
+            options->blackOnly = enabled != 0;
+        } else if (strcmp(argv[i], "--mutation") == 0 && i + 1 < argc) {
+            options->mutationSpec = argv[++i];
+        } else if (strcmp(argv[i], "--node-id") == 0 && i + 1 < argc) {
+            options->nodeId = argv[++i];
+        } else if (strcmp(argv[i], "--parent-node-id") == 0 && i + 1 < argc) {
+            options->parentNodeId = argv[++i];
+        } else if (strcmp(argv[i], "--sample-label") == 0 && i + 1 < argc) {
+            options->sampleLabel = argv[++i];
         } else if (strcmp(argv[i], "--opponent") == 0 && i + 1 < argc) {
             const char *opponent = argv[++i];
             if (strcmp(opponent, "four-star") == 0)
                 options->opponentFourStar = true;
+            else if (strcmp(opponent, "three-star") == 0)
+                options->opponentThreeStar = true;
             else if (strcmp(opponent, "five-star-control") == 0)
                 options->opponentFiveStarControl = true;
+            else if (strcmp(opponent, "five-star-5.8.1") == 0)
+                options->opponentFiveStarEarlyVCFControl = true;
             else if (strcmp(opponent, "legacy") == 0)
                 options->opponentFourStar = false;
             else return false;
@@ -521,6 +716,20 @@ static bool parse_options(int argc, const char *argv[], BenchmarkOptions *option
         if (options->masterSeed == FC_PROOF_FINAL_MASTER_SEED) return false;
     } else if (strcmp(options->suiteName, "smoke") == 0) {
         if (!options->seedWasProvided) options->masterSeed = 0x534d4f4b452021ULL;
+    } else if (strcmp(options->suiteName, "five-star-double-three-small") == 0) {
+        if (!options->seedWasProvided)
+            options->masterSeed = FC_DOUBLE_THREE_BENCHMARK_MASTER_SEED;
+    } else if (strcmp(options->suiteName,
+                      "five-star-defense-recovery-standard") == 0) {
+        if (!options->seedWasProvided)
+            options->masterSeed = FC_DOUBLE_THREE_BENCHMARK_MASTER_SEED;
+    } else if (strcmp(options->suiteName,
+                      "five-star-candidate-search") == 0) {
+        if (!options->seedWasProvided)
+            options->masterSeed = FC_TRAINING_MASTER_SEED;
+        if (options->explicitOpeningCount != 12 ||
+            options->openingCount != 12 || options->openingStart != -1)
+            return false;
     } else {
         return false;
     }
@@ -533,9 +742,12 @@ static bool parse_options(int argc, const char *argv[], BenchmarkOptions *option
     formal = formal || strcmp(options->suiteName,
                               "five-star-v541-final") == 0;
     int openingLimit = formal ? fcFormalOpeningCount : 100;
+    bool openingRangeValid = options->explicitOpeningCount > 0
+        ? options->explicitOpeningCount == options->openingCount
+        : options->openingStart >= 0 &&
+          options->openingStart + options->openingCount <= openingLimit;
     return options->outputPath != NULL && options->openingCount > 0
-        && options->openingStart >= 0 && options->maxMoves >= 16
-        && options->openingStart + options->openingCount <= openingLimit;
+        && options->maxMoves >= 16 && openingRangeValid;
 }
 
 static void apply_guard_overrides(FCAIProfile *profile,
@@ -780,17 +992,25 @@ static void write_header(FILE *output,
                          const FCAIProfile *profile)
 {
     char snapshot[8192] = {0};
+    char opponentSnapshot[8192] = {0};
     fc_profile_snapshot(profile, snapshot, sizeof(snapshot));
+    if (options->opponentFourStar) {
+        FCAIProfile opponent = fc_profile_frozen_four_star_control();
+        fc_profile_snapshot(&opponent, opponentSnapshot,
+                            sizeof(opponentSnapshot));
+    }
     fprintf(output,
-            "{\"type\":\"header\",\"schemaVersion\":5,"
+            "{\"type\":\"header\",\"schemaVersion\":%d,"
             "\"suite\":\"%s\",\"seedDomain\":\"%s-%s\","
             "\"randomMode\":\"%s\",\"strategy\":\"%s\","
             "\"masterSeed\":\"0x%016llx\",\"openingStart\":%d,"
             "\"openingCount\":%d,\"games\":%d,\"maxMoves\":%d,"
             "\"forbiddenBlack\":%s,\"openingMode\":\"%s\","
             "\"openingBookVersion\":\"%s\",\"eliteCorpusVersion\":\"%s\","
-            "\"newProfile\":%s,\"opponentProfile\":\"%s\"}\n",
-            options->suiteName, options->suiteName,
+            "\"newProfile\":%s,\"opponentProfile\":\"%s\"",
+            options->explicitOpeningCount > 0 ? 6 : 5,
+            options->suiteName,
+            options->suiteName,
             strcmp(options->suiteName, "final") == 0 ? "v2"
             : strcmp(options->suiteName, "proof-final") == 0
                 ? "proof-v2"
@@ -801,6 +1021,9 @@ static void write_header(FILE *output,
                                            : "five-star-natural-free-v4")
                 : strcmp(options->suiteName, "opponent-guard-smoke") == 0
                 ? "opponent-guard-smoke-v1"
+                : strcmp(options->suiteName,
+                         "five-star-defense-recovery-standard") == 0
+                ? "five-star-defense-recovery-v1"
                 : strcmp(options->suiteName, "five-star-hybrid-final") == 0
                 ? (options->forbiddenBlack ? "five-star-hybrid-forbidden-v1"
                                            : "five-star-hybrid-free-v1")
@@ -820,7 +1043,8 @@ static void write_header(FILE *output,
             (unsigned long long)options->masterSeed,
             options->openingStart, options->openingCount,
             options->openingCount *
-                (strcmp(options->suiteName, "elite-paired") == 0 ? 4 : 2),
+                (options->blackOnly ? 1
+                 : strcmp(options->suiteName, "elite-paired") == 0 ? 4 : 2),
             options->maxMoves,
             options->forbiddenBlack ? "true" : "false",
             strcmp(options->suiteName, "proof-final") == 0 ||
@@ -838,13 +1062,60 @@ static void write_header(FILE *output,
                    strcmp(options->suiteName, "elite-paired") == 0)
                 ? "aggregated-corpus-position-diagnostic"
                 : strcmp(options->suiteName, "diagnostic") == 0
-                ? "gomocup-curated-prefix" : "seeded-random",
+                ? "gomocup-curated-prefix"
+                : strcmp(options->suiteName,
+                         "five-star-candidate-search") == 0
+                ? "seeded-random-explicit" : "seeded-random",
             fc_opening_book_version(), fc_elite_corpus_version(), snapshot,
-            options->opponentFiveStarControl
+            options->opponentFiveStarEarlyVCFControl
+                ? "five-star-early-micro-vcf@5.8.1-early-micro-vcf-adaptive-16k-80ms-2a"
+                : options->opponentFiveStarControl
                 ? "five-star-incremental-dfpn-candidate@5.4.1-transactional-deadline-root-parallel-5s"
+                : options->opponentThreeStar
+                ? "three-star-production@2.2.0-legacy-hint-safe-gate"
                 : options->opponentFourStar
                 ? "four-star-proof-guided-no-book@3.0.0-vcf-dfpn-no-book"
                 : "legacy-three-star@5224020");
+    if (options->opponentFourStar) {
+        fputs(",\"opponentProfileSnapshot\":", output);
+        fputs(opponentSnapshot, output);
+    }
+    if (strcmp(options->suiteName, "five-star-candidate-search") == 0) {
+        fputs(",\"openingPoolVersion\":\"generated-training-v1\","
+              "\"randomSeedAlgorithm\":\"splitmix64-v1\","
+              "\"benchmarkIdentity\":\"five_chess_benchmark\"", output);
+    } else if (strcmp(options->suiteName,
+                      "five-star-natural-final") == 0) {
+        fputs(",\"openingPoolVersion\":\"gomocup-formal-held-out-v4\","
+              "\"benchmarkIdentity\":\"five_chess_benchmark\"", output);
+    }
+    if (options->explicitOpeningCount > 0) {
+        fputs(",\"openingIds\":[", output);
+        for (int i = 0; i < options->explicitOpeningCount; i++) {
+            if (i > 0) fputc(',', output);
+            fprintf(output, "%d", options->explicitOpeningIds[i]);
+        }
+        fputs("]", output);
+    }
+    fprintf(output, ",\"blackOnly\":%s",
+            options->blackOnly ? "true" : "false");
+    if (options->mutationSpec != NULL) {
+        fputs(",\"mutation\":", output);
+        write_json_string(output, options->mutationSpec);
+    }
+    if (options->nodeId != NULL) {
+        fputs(",\"nodeId\":", output);
+        write_json_string(output, options->nodeId);
+    }
+    if (options->parentNodeId != NULL) {
+        fputs(",\"parentNodeId\":", output);
+        write_json_string(output, options->parentNodeId);
+    }
+    if (options->sampleLabel != NULL) {
+        fputs(",\"sampleLabel\":", output);
+        write_json_string(output, options->sampleLabel);
+    }
+    fputs("}\n", output);
 }
 
 static void write_game(FILE *output,
@@ -927,7 +1198,21 @@ static void write_game(FILE *output,
                 "\"forkRiskyCandidates\":%d,"
                 "\"forkUnknownCandidates\":%d,"
                 "\"forkAvoidedCount\":%d,"
-                "\"forkProbeComplete\":%s,\"handoffReason\":%d,"
+                "\"forkProbeComplete\":%s,"
+                "\"recoverySource\":%d,"
+                "\"recoveryImmediateWinCount\":%d,"
+                "\"recoveryForkRisk\":%d,"
+                "\"recoveryForkRepliesExamined\":%d,"
+                "\"recoveryForkProbeComplete\":%s,"
+                "\"recoveryVCTEscalatedOnUnknown\":%s,"
+                "\"recoveryFinalCandidateConsistent\":%s,"
+                "\"recoveryBaselineX\":%d,"
+                "\"recoveryBaselineY\":%d,"
+                "\"recoveryDefaultX\":%d,"
+                "\"recoveryDefaultY\":%d,"
+                "\"recoveryHandoffX\":%d,"
+                "\"recoveryHandoffY\":%d,"
+                "\"handoffReason\":%d,"
                 "\"opponentGuard\":{\"eligible\":%s,"
                 "\"skipReason\":%d,\"provisionalX\":%d,"
                 "\"provisionalY\":%d,\"provisionalClass\":%d,"
@@ -959,6 +1244,13 @@ static void write_game(FILE *output,
                 "\"downstreamBudgetRemainingMs\":%.6f,"
                 "\"finalGuardOnlyLoss\":%s,"
                 "\"evidenceMismatch\":%s},"
+                "\"doubleThree\":{\"status\":%d,"
+                "\"scanComplete\":%s,\"scanOverflow\":%s,"
+                "\"gainCount\":%d,\"provisionalResidual\":%d,"
+                "\"selectedResidual\":%d,\"candidatesExamined\":%d,"
+                "\"candidatesEliminated\":%d,\"ownVCFBypass\":%s,"
+                "\"structuralOverride\":%s,\"rollback\":%s,"
+                "\"deadlineAnomaly\":%s},"
                 "\"corpusLookup\":%s,"
                 "\"corpusPositionIndex\":%d,\"corpusCandidateCount\":%d,"
                 "\"corpusMatchType\":%d,\"corpusTrustTier\":%d,"
@@ -1116,7 +1408,17 @@ static void write_game(FILE *output,
                 "\"earlyVCFFinalGuardOnlyLosses\":%llu,"
                 "\"earlyVCFDeadlineExhaustions\":%llu,"
                 "\"earlyVCFRollbacks\":%llu,"
-                "\"earlyVCFEvidenceMismatches\":%llu}}",
+                "\"earlyVCFEvidenceMismatches\":%llu,"
+                "\"doubleThreeScans\":%llu,"
+                "\"doubleThreeCompleteScans\":%llu,"
+                "\"doubleThreeIncompleteScans\":%llu,"
+                "\"doubleThreeGains\":%llu,"
+                "\"doubleThreeCandidatesExamined\":%llu,"
+                "\"doubleThreeCandidatesEliminated\":%llu,"
+                "\"doubleThreeStructuralOverrides\":%llu,"
+                "\"doubleThreeOwnVCFBypasses\":%llu,"
+                "\"doubleThreeRollbacks\":%llu,"
+                "\"doubleThreeDeadlineAnomalies\":%llu}}",
                 steps[i].x, steps[i].y, steps[i].side, steps[i].engine,
                 steps[i].milliseconds,
                 steps[i].cpuMilliseconds,
@@ -1185,6 +1487,19 @@ static void write_game(FILE *output,
                 steps[i].forkUnknownCandidates,
                 steps[i].forkAvoidedCount,
                 steps[i].forkProbeComplete ? "true" : "false",
+                steps[i].recoverySource,
+                steps[i].recoveryImmediateWinCount,
+                steps[i].recoveryForkRisk,
+                steps[i].recoveryForkRepliesExamined,
+                steps[i].recoveryForkProbeComplete ? "true" : "false",
+                steps[i].recoveryVCTEscalatedOnUnknown ? "true" : "false",
+                steps[i].recoveryFinalCandidateConsistent ? "true" : "false",
+                steps[i].recoveryBaselineX,
+                steps[i].recoveryBaselineY,
+                steps[i].recoveryDefaultX,
+                steps[i].recoveryDefaultY,
+                steps[i].recoveryHandoffX,
+                steps[i].recoveryHandoffY,
                 steps[i].handoffReason,
                 steps[i].opponentGuardEligible ? "true" : "false",
                 steps[i].opponentGuardSkipReason,
@@ -1242,6 +1557,18 @@ static void write_game(FILE *output,
                 steps[i].earlyVCFDownstreamBudgetRemainingMs,
                 steps[i].earlyVCFFinalGuardOnlyLoss ? "true" : "false",
                 steps[i].earlyVCFEvidenceMismatch ? "true" : "false",
+                steps[i].doubleThreeStatus,
+                steps[i].doubleThreeScanComplete ? "true" : "false",
+                steps[i].doubleThreeScanOverflow ? "true" : "false",
+                steps[i].doubleThreeGainCount,
+                steps[i].doubleThreeProvisionalResidualCount,
+                steps[i].doubleThreeSelectedResidualCount,
+                steps[i].doubleThreeCandidatesExamined,
+                steps[i].doubleThreeCandidatesEliminated,
+                steps[i].doubleThreeOwnVCFBypass ? "true" : "false",
+                steps[i].doubleThreeStructuralOverride ? "true" : "false",
+                steps[i].doubleThreeRollback ? "true" : "false",
+                steps[i].doubleThreeDeadlineAnomaly ? "true" : "false",
                 steps[i].corpusLookup ? "true" : "false",
                 steps[i].corpusPositionIndex, steps[i].corpusCandidateCount,
                 steps[i].corpusMatchType, steps[i].corpusTrustTier,
@@ -1406,7 +1733,17 @@ static void write_game(FILE *output,
                 (unsigned long long)steps[i].diagnostics.earlyVCFFinalGuardOnlyLosses,
                 (unsigned long long)steps[i].diagnostics.earlyVCFDeadlineExhaustions,
                 (unsigned long long)steps[i].diagnostics.earlyVCFRollbacks,
-                (unsigned long long)steps[i].diagnostics.earlyVCFEvidenceMismatches);
+                (unsigned long long)steps[i].diagnostics.earlyVCFEvidenceMismatches,
+                (unsigned long long)steps[i].diagnostics.doubleThreeScans,
+                (unsigned long long)steps[i].diagnostics.doubleThreeCompleteScans,
+                (unsigned long long)steps[i].diagnostics.doubleThreeIncompleteScans,
+                (unsigned long long)steps[i].diagnostics.doubleThreeGains,
+                (unsigned long long)steps[i].diagnostics.doubleThreeCandidatesExamined,
+                (unsigned long long)steps[i].diagnostics.doubleThreeCandidatesEliminated,
+                (unsigned long long)steps[i].diagnostics.doubleThreeStructuralOverrides,
+                (unsigned long long)steps[i].diagnostics.doubleThreeOwnVCFBypasses,
+                (unsigned long long)steps[i].diagnostics.doubleThreeRollbacks,
+                (unsigned long long)steps[i].diagnostics.doubleThreeDeadlineAnomalies);
     }
     fputs("]}\n", output);
     fflush(output);
@@ -1694,6 +2031,24 @@ static bool run_game(FILE *output,
             step.forkUnknownCandidates = analysis.forkUnknownCandidates;
             step.forkAvoidedCount = analysis.forkAvoidedCount;
             step.forkProbeComplete = analysis.forkProbeComplete;
+            step.recoverySource = analysis.recoverySource;
+            step.recoveryImmediateWinCount =
+                analysis.recoveryImmediateWinCount;
+            step.recoveryForkRisk = analysis.recoveryForkRisk;
+            step.recoveryForkRepliesExamined =
+                analysis.recoveryForkRepliesExamined;
+            step.recoveryForkProbeComplete =
+                analysis.recoveryForkProbeComplete;
+            step.recoveryVCTEscalatedOnUnknown =
+                analysis.recoveryVCTEscalatedOnUnknown;
+            step.recoveryFinalCandidateConsistent =
+                analysis.recoveryFinalCandidateConsistent;
+            step.recoveryBaselineX = analysis.recoveryBaselineX;
+            step.recoveryBaselineY = analysis.recoveryBaselineY;
+            step.recoveryDefaultX = analysis.recoveryDefaultX;
+            step.recoveryDefaultY = analysis.recoveryDefaultY;
+            step.recoveryHandoffX = analysis.recoveryHandoffX;
+            step.recoveryHandoffY = analysis.recoveryHandoffY;
             step.handoffReason = analysis.handoffReason;
             step.opponentGuardEligible = analysis.opponentGuardEligible;
             step.opponentGuardSkipReason = analysis.opponentGuardSkipReason;
@@ -1773,6 +2128,24 @@ static bool run_game(FILE *output,
                 analysis.earlyVCFFinalGuardOnlyLoss;
             step.earlyVCFEvidenceMismatch =
                 analysis.earlyVCFEvidenceMismatch;
+            step.doubleThreeStatus = analysis.doubleThreeStatus;
+            step.doubleThreeScanComplete = analysis.doubleThreeScanComplete;
+            step.doubleThreeScanOverflow = analysis.doubleThreeScanOverflow;
+            step.doubleThreeGainCount = analysis.doubleThreeGainCount;
+            step.doubleThreeProvisionalResidualCount =
+                analysis.doubleThreeProvisionalResidualCount;
+            step.doubleThreeSelectedResidualCount =
+                analysis.doubleThreeSelectedResidualCount;
+            step.doubleThreeCandidatesExamined =
+                analysis.doubleThreeCandidatesExamined;
+            step.doubleThreeCandidatesEliminated =
+                analysis.doubleThreeCandidatesEliminated;
+            step.doubleThreeOwnVCFBypass = analysis.doubleThreeOwnVCFBypass;
+            step.doubleThreeStructuralOverride =
+                analysis.doubleThreeStructuralOverride;
+            step.doubleThreeRollback = analysis.doubleThreeRollback;
+            step.doubleThreeDeadlineAnomaly =
+                analysis.doubleThreeDeadlineAnomaly;
             step.corpusLookup = analysis.corpusLookup;
             step.corpusPositionIndex = analysis.corpusPositionIndex;
             step.corpusCandidateCount = analysis.corpusCandidateCount;
@@ -1787,7 +2160,8 @@ static bool run_game(FILE *output,
             step.corpusSupportSources = analysis.corpusSupportSources;
             step.corpusAcceptedCandidateCount =
                 analysis.corpusAcceptedCandidateCount;
-        } else if (options->opponentFiveStarControl) {
+        } else if (options->opponentFiveStarControl ||
+                   options->opponentFiveStarEarlyVCFControl) {
             doublethree *advisor = [[doublethree alloc] init];
             [advisor set_banmode:options->forbiddenBlack ? 1 : 0];
             uint64_t advisorSeed = fc_board_key(
@@ -1802,8 +2176,9 @@ static bool run_game(FILE *output,
             [advisor harsh_analysisboard:side];
             int hint[2] = {-1, -1};
             [advisor get_last_pos_return_color:hint];
-            FCAIProfile control =
-                fc_profile_five_star_proof_engine_candidate();
+            FCAIProfile control = options->opponentFiveStarEarlyVCFControl
+                ? fc_profile_five_star_early_micro_vcf_candidate()
+                : fc_profile_five_star_proof_engine_candidate();
             FCAnalysisResult analysis;
             bool found = fc_analyze_five_star_profile_with_hint(
                 (const int (*)[FC_BOARD_SIZE])board, side,
@@ -1821,7 +2196,8 @@ static bool run_game(FILE *output,
             }
             x = analysis.x;
             y = analysis.y;
-            step.engine = "five-star-control";
+            step.engine = options->opponentFiveStarEarlyVCFControl
+                ? "five-star-5.8.1-control" : "five-star-control";
             step.nodes = analysis.stats.nodes;
             step.hits = analysis.stats.transpositionHits;
             step.depth = analysis.stats.completedDepth;
@@ -1876,6 +2252,37 @@ static bool run_game(FILE *output,
             step.hintY = hint[1];
             step.choseHint = x == hint[0] && y == hint[1];
             step.budgetExhausted = analysis.stats.budgetExhausted;
+        } else if (options->opponentThreeStar) {
+            FCAIProfile threeStar = fc_profile_production();
+            FCAnalysisResult analysis;
+            bool found = fc_analyze_with_hint(
+                (const int (*)[FC_BOARD_SIZE])board, side,
+                options->forbiddenBlack, &threeStar, seed,
+                FC_RANDOM_EVALUATION, -1, -1, &analysis);
+            if (!found) {
+                if (analysis.provenLoss) {
+                    winner = -side;
+                    termination = fc_loss_reason_name(analysis.lossReason);
+                } else {
+                    anomaly = "three-star opponent returned no legal move";
+                    termination = "anomaly";
+                }
+                break;
+            }
+            x = analysis.x;
+            y = analysis.y;
+            step.engine = "three-star";
+            step.nodes = analysis.stats.nodes;
+            step.hits = analysis.stats.transpositionHits;
+            step.depth = analysis.stats.completedDepth;
+            step.tacticalClass = analysis.tacticalClass;
+            step.candidateCount = analysis.candidateCount;
+            step.budgetExhausted = analysis.stats.budgetExhausted;
+            step.decisionStatus = analysis.decisionStatus;
+            step.defaultSource = analysis.defaultSource;
+            step.defaultX = analysis.defaultX;
+            step.defaultY = analysis.defaultY;
+            step.overrideReason = analysis.overrideReason;
         } else {
             srand((unsigned int)(seed ^ (seed >> 32)));
             [legacy harsh_analysisboard:side];
@@ -1894,13 +2301,16 @@ static bool run_game(FILE *output,
         if (!fc_is_legal_move((const int (*)[FC_BOARD_SIZE])board,
                               x, y, side, options->forbiddenBlack)) {
             if (!useNew && !options->opponentFourStar &&
-                !options->opponentFiveStarControl) {
+                !options->opponentFiveStarControl &&
+                !options->opponentFiveStarEarlyVCFControl) {
                 winner = -side;
                 termination = "legacy-illegal-move-loss";
             } else {
                 anomaly = useNew ? "new engine produced illegal move"
                                  : options->opponentFiveStarControl
                                  ? "five-star control produced illegal move"
+                                 : options->opponentFiveStarEarlyVCFControl
+                                 ? "5.8.1 control produced illegal move"
                                  : "four-star engine produced illegal move";
                 termination = "anomaly";
             }
@@ -1910,7 +2320,8 @@ static bool run_game(FILE *output,
         moves[moveCount++] = (BenchmarkMove){x, y, side};
         steps[stepCount++] = step;
         if (useNew && !options->opponentFourStar &&
-            !options->opponentFiveStarControl) {
+            !options->opponentFiveStarControl &&
+            !options->opponentFiveStarEarlyVCFControl) {
             [legacy add_a_chess:x pl_y:y mode:side];
         }
         if (fc_has_five((const int (*)[FC_BOARD_SIZE])board, x, y, side)) {
@@ -1935,13 +2346,14 @@ int main(int argc, const char *argv[])
         BenchmarkOptions options;
         if (!parse_options(argc, argv, &options)) {
             fprintf(stderr,
-                    "usage: %s --output PATH [--profile production|legacy-control|proof-book|proof-no-book|four-star-control|five-star|five-star-opponent-guard|five-star-early-vcf|five-star-color-hybrid|five-star-v521-hybrid-serial|five-star-v521-hybrid-parallel|five-star-v57|five-star-v57-thread-scheduler|five-star-v541-thread-scheduler|five-star-v57-branch-first|five-star-v51|five-star-v521|five-star-mn120|five-star-mn80|five-star-mn40|five-star-m0|five-star-m60|five-star-m120|proof-fast|proof-vcf|a0|b1|b2|c1|c2|d1|d2|d3] "
-                    "[--suite smoke|training|final|diagnostic|elite-diagnostic|elite-fixed|elite-paired|proof-final|five-star-final|five-star-natural-final|opponent-guard-smoke|five-star-hybrid-final|five-star-parallel-v521-final|five-star-v57-final|five-star-v541-final] "
+                    "usage: %s --output PATH [--profile production|legacy-control|proof-book|proof-no-book|four-star-control|five-star|five-star-opponent-guard|five-star-early-vcf|five-star-5.8.2|five-star-5.8.2-recovery|five-star-5.8.1|five-star-color-hybrid|five-star-v521-hybrid-serial|five-star-v521-hybrid-parallel|five-star-v57|five-star-v57-thread-scheduler|five-star-v541-thread-scheduler|five-star-v57-branch-first|five-star-v51|five-star-v521|five-star-mn120|five-star-mn80|five-star-mn40|five-star-m0|five-star-m60|five-star-m120|proof-fast|proof-vcf|a0|b1|b2|c1|c2|d1|d2|d3] "
+                    "[--suite smoke|training|final|diagnostic|elite-diagnostic|elite-fixed|elite-paired|proof-final|five-star-final|five-star-natural-final|opponent-guard-smoke|five-star-double-three-small|five-star-defense-recovery-standard|five-star-candidate-search|five-star-hybrid-final|five-star-parallel-v521-final|five-star-v57-final|five-star-v541-final] "
                     "[--random-mode user|best] "
                     "[--strategy hybrid|hint] "
-                    "[--seed N] [--opening-start N] [--opening-count N] "
-                    "[--max-moves N] [--forbidden-black 0|1] "
-                    "[--opponent legacy|four-star|five-star-control] [--paired-phase 0|1] "
+                    "[--seed N] [--opening-start N] [--opening-count N] [--opening-ids CSV] "
+                    "[--max-moves N] [--forbidden-black 0|1] [--black-only 0|1] "
+                    "[--mutation KEY=VALUE] [--node-id ID] [--parent-node-id ID] [--sample-label LABEL] "
+                    "[--opponent legacy|three-star|four-star|five-star-control|five-star-5.8.1] [--paired-phase 0|1] "
                 "[--proof-workers 1|4|8] [--guard-vcf-depth N] [--guard-vct-depth N] [--guard-vcf-nodes N] [--guard-vct-nodes N] [--guard-vcf-ms N] [--guard-vct-ms N] [--guard-reserved-nodes N] [--guard-reserved-ms N] [--guard-structural-vct 0|1] [--guard-max-alternatives N] [--sentinel-policy disabled|fixed|adaptive] [--sentinel-base-depth N] [--sentinel-max-depth N] [--sentinel-nodes N] [--sentinel-ms N] [--sentinel-max-alternatives N]\n",
                     argv[0]);
             return 2;
@@ -1956,6 +2368,13 @@ int main(int argc, const char *argv[])
         FCAIProfile profile = paired
             ? profile_named("five-star")
             : profile_named(options.profileName);
+        if (!apply_research_mutation(&profile, options.mutationSpec)) {
+            fprintf(stderr, "invalid research mutation: %s\n",
+                    options.mutationSpec == NULL ? "(null)"
+                                                 : options.mutationSpec);
+            fclose(output);
+            return 2;
+        }
         apply_guard_overrides(&profile, &options);
         apply_sentinel_overrides(&profile, &options);
         if (options.proofWorkerCountOverride > 0 &&
@@ -1987,7 +2406,7 @@ int main(int argc, const char *argv[])
         }
         int anomalies = 0;
         for (int offset = 0; offset < options.openingCount; offset++) {
-            int openingId = options.openingStart + offset;
+            int openingId = opening_id_for_offset(&options, offset);
             if (paired) {
                 const int colors[2] = {1, -1};
                 for (int colorIndex = 0; colorIndex < 2; colorIndex++) {
@@ -2012,10 +2431,15 @@ int main(int argc, const char *argv[])
                     }
                 }
             } else {
-                if (!run_game(output, &options, &profile, openingId, 1))
-                    anomalies++;
-                if (!run_game(output, &options, &profile, openingId, -1))
-                    anomalies++;
+                if (options.blackOnly) {
+                    if (!run_game(output, &options, &profile, openingId, -1))
+                        anomalies++;
+                } else {
+                    if (!run_game(output, &options, &profile, openingId, 1))
+                        anomalies++;
+                    if (!run_game(output, &options, &profile, openingId, -1))
+                        anomalies++;
+                }
             }
             fprintf(stderr, "opening %d complete (%d/%d)\n",
                     openingId, offset + 1, options.openingCount);

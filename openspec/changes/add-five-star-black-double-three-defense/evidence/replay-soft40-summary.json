@@ -1,0 +1,1445 @@
+{
+  "schemaVersion": 1,
+  "status": "pass",
+  "suite": "five-star-double-three-small",
+  "games": 48,
+  "masterSeed": "0x0d0b1e3e20260821",
+  "openingIds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "scheduleMatch": true,
+  "cells": [
+    {
+      "schemaVersion": 1,
+      "status": "pass",
+      "input": "/tmp/five-star-5.8.2-soft40-vs-four-star.jsonl",
+      "rawJsonlSha256": "cba7c4ec11ec0ba9d27e30e03843e5a39cbd28b739b5bb341aa0aff125acf644",
+      "masterSeed": "0x0d0b1e3e20260821",
+      "openingIds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "openings": [
+        {
+          "openingId": 0,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              8,
+              4,
+              -1
+            ],
+            [
+              7,
+              5,
+              1
+            ],
+            [
+              6,
+              5,
+              -1
+            ],
+            [
+              6,
+              8,
+              1
+            ],
+            [
+              7,
+              8,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 1,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              5,
+              5,
+              -1
+            ],
+            [
+              9,
+              5,
+              1
+            ],
+            [
+              4,
+              8,
+              -1
+            ],
+            [
+              9,
+              10,
+              1
+            ],
+            [
+              7,
+              9,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 2,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              5,
+              4,
+              -1
+            ],
+            [
+              6,
+              7,
+              1
+            ],
+            [
+              4,
+              5,
+              -1
+            ],
+            [
+              6,
+              9,
+              1
+            ],
+            [
+              9,
+              8,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 3,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              6,
+              7,
+              -1
+            ],
+            [
+              7,
+              4,
+              1
+            ],
+            [
+              8,
+              6,
+              -1
+            ],
+            [
+              4,
+              7,
+              1
+            ],
+            [
+              8,
+              7,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 4,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              7,
+              6,
+              -1
+            ],
+            [
+              6,
+              4,
+              1
+            ],
+            [
+              8,
+              6,
+              -1
+            ],
+            [
+              8,
+              7,
+              1
+            ],
+            [
+              9,
+              5,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 5,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              8,
+              9,
+              -1
+            ],
+            [
+              5,
+              8,
+              1
+            ],
+            [
+              4,
+              6,
+              -1
+            ],
+            [
+              10,
+              6,
+              1
+            ],
+            [
+              7,
+              10,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 6,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              9,
+              9,
+              -1
+            ],
+            [
+              8,
+              6,
+              1
+            ],
+            [
+              6,
+              7,
+              -1
+            ],
+            [
+              7,
+              9,
+              1
+            ],
+            [
+              4,
+              6,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 7,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              10,
+              9,
+              -1
+            ],
+            [
+              7,
+              10,
+              1
+            ],
+            [
+              7,
+              6,
+              -1
+            ],
+            [
+              9,
+              5,
+              1
+            ],
+            [
+              5,
+              9,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 8,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              4,
+              8,
+              -1
+            ],
+            [
+              8,
+              6,
+              1
+            ],
+            [
+              10,
+              7,
+              -1
+            ],
+            [
+              7,
+              5,
+              1
+            ],
+            [
+              9,
+              4,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 9,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              9,
+              4,
+              -1
+            ],
+            [
+              5,
+              10,
+              1
+            ],
+            [
+              7,
+              10,
+              -1
+            ],
+            [
+              6,
+              6,
+              1
+            ],
+            [
+              10,
+              7,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 10,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              4,
+              6,
+              -1
+            ],
+            [
+              9,
+              9,
+              1
+            ],
+            [
+              7,
+              8,
+              -1
+            ],
+            [
+              4,
+              8,
+              1
+            ],
+            [
+              6,
+              10,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 11,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              8,
+              10,
+              -1
+            ],
+            [
+              5,
+              9,
+              1
+            ],
+            [
+              6,
+              10,
+              -1
+            ],
+            [
+              5,
+              5,
+              1
+            ],
+            [
+              10,
+              9,
+              -1
+            ]
+          ]
+        }
+      ],
+      "profiles": {
+        "candidate": "five-star-black-double-three-defense-candidate@5.8.2-black-double-three-soft-40-16g-32c-80ms",
+        "opponent": "four-star-proof-guided-no-book@3.0.0-vcf-dfpn-no-book"
+      },
+      "games": 24,
+      "movesReplayed": 625,
+      "candidateBlack": {
+        "wins": 8,
+        "draws": 0,
+        "losses": 4,
+        "games": 12
+      },
+      "candidateWhite": {
+        "wins": 5,
+        "draws": 0,
+        "losses": 7,
+        "games": 12
+      },
+      "overall": {
+        "wins": 13,
+        "draws": 0,
+        "losses": 11,
+        "games": 24
+      },
+      "telemetryByCandidateColor": {
+        "1": {
+          "decisions": 126,
+          "gainCount": 20,
+          "positionsWithGains": 19,
+          "safeSelections": 7,
+          "unresolvedSelections": 12,
+          "unknownScans": 0,
+          "incompleteScans": 0,
+          "deadlineAnomalies": 0,
+          "structuralOverrides": 2,
+          "rollbacks": 0,
+          "forcingCertificateClaims": 35
+        },
+        "-1": {
+          "decisions": 115,
+          "gainCount": 0,
+          "positionsWithGains": 0,
+          "safeSelections": 0,
+          "unresolvedSelections": 0,
+          "unknownScans": 0,
+          "incompleteScans": 0,
+          "deadlineAnomalies": 0,
+          "structuralOverrides": 0,
+          "rollbacks": 0,
+          "forcingCertificateClaims": 34
+        }
+      },
+      "latencyByCandidateColor": {
+        "1": {
+          "p50Ms": 239.974,
+          "p95Ms": 4511.177,
+          "maxMs": 4569.987,
+          "meanMs": 1090.6502301587302
+        },
+        "-1": {
+          "p50Ms": 884.732,
+          "p95Ms": 4500.816,
+          "maxMs": 4621.765,
+          "meanMs": 1179.8560695652175
+        }
+      },
+      "latencyByBlackPositionType": {
+        "candidateBlackOrdinary": {
+          "p50Ms": 232.249,
+          "p95Ms": 4533.507,
+          "maxMs": 4569.987,
+          "meanMs": 1107.4758691588784
+        },
+        "candidateBlackDoubleThree": {
+          "p50Ms": 603.316,
+          "p95Ms": 4511.177,
+          "maxMs": 4511.177,
+          "meanMs": 995.8953157894737
+        }
+      },
+      "deadlineAnomalyCount": 0,
+      "incompleteScanCount": 0,
+      "replay": {
+        "boardIntegrity": true,
+        "moveLegality": true,
+        "terminalResults": true,
+        "certificateReplays": {
+          "earlyVCF": 28,
+          "finalGuardVCF": 26,
+          "finalGuardVCT": 5,
+          "ownProof": 38
+        },
+        "certificateReplayTotal": 97,
+        "certificateClaimsRuntimeVerified": 69
+      },
+      "diagnostics": {
+        "boardHashCellVisits": 198531225,
+        "threatCellScans": 36579685,
+        "refutationCellScans": 66646278,
+        "legalityCalls": 18259503610,
+        "legalityBoardCopies": 0,
+        "forbiddenLegalityCachedChecks": 0,
+        "forbiddenLegalityCacheMismatches": 0,
+        "forbiddenLegalityCacheValidationSamples": 0,
+        "forbiddenLegalityCacheMismatchX": 0,
+        "forbiddenLegalityCacheMismatchY": 0,
+        "forbiddenLegalityCacheMismatchSide": 0,
+        "allocations": 5047,
+        "allocatedBytes": 35332354320,
+        "clearedBytes": 11636371728,
+        "incrementalMakes": 898983,
+        "incrementalUnmakes": 898935,
+        "proofSessionQueries": 4656,
+        "proofSessionHits": 25232,
+        "proofSessionGlobalTerminations": 277,
+        "mostProvingExpansions": 276614,
+        "proofGraphNodes": 1070869,
+        "proofGraphEdges": 1091099,
+        "proofGraphArenaExhaustions": 0,
+        "completedScopeDisproofs": 3677,
+        "dfpnNoProgressTerminations": 0,
+        "relevanceAllLegalReplies": 58997912,
+        "relevanceZonePoints": 9782372,
+        "relevanceReplyCandidates": 1300231,
+        "relevanceVerifiedOmissions": 57697681,
+        "relevanceUnresolved": 208,
+        "relevanceFallbacks": 0,
+        "relevanceFallbackReplies": 0,
+        "iteratedRelatedZoneIntersections": 18,
+        "iteratedRelatedZoneContinuations": 28724,
+        "iteratedRelatedZonePointsRemoved": 460,
+        "dependencyCombinations": 4975,
+        "dependencyChainsProposed": 4694,
+        "dependencyMaximumDepth": 291,
+        "threatDependencyPoints": 28132764,
+        "threatFiveWindowPoints": 28113306,
+        "threatLegalityDependencyPoints": 0,
+        "threatCertificateZonePoints": 28132764,
+        "stageImmediateDecisions": 0,
+        "stageMandatoryDefenseDecisions": 35,
+        "stageVCFQueries": 15,
+        "stageVCTQueries": 15,
+        "stageDependencyQueries": 6,
+        "stageQuietQueries": 16,
+        "quietEligibleDecisions": 16,
+        "quietRootsExamined": 37,
+        "quietUnknowns": 4,
+        "parallelBatches": 526,
+        "parallelWorkersLaunched": 1799,
+        "parallelRootJobs": 3699,
+        "parallelRootJobsCompleted": 2547,
+        "parallelRootWins": 245,
+        "parallelAggregateDisproofs": 237,
+        "parallelFallbacks": 299,
+        "parallelExactDuplicateRoots": 0,
+        "parallelDependencyOverlapPairs": 16294,
+        "parallelFiveWindowOverlapPairs": 16067,
+        "parallelLegalityOverlapPairs": 0,
+        "parallelCertificateOverlapPairs": 16294,
+        "parallelOverlapPairs": 16294,
+        "parallelOverlapGroups": 639,
+        "parallelLargestOverlapGroup": 1722,
+        "parallelGroupedRootJobs": 3811,
+        "parallelBudgetTokens": 660772,
+        "parallelMaxConcurrentWorkers": 711,
+        "parallelIndependentDispatches": 526,
+        "parallelMultiRootSingleWorkerFallbacks": 0,
+        "parallelPoolDispatches": 0,
+        "parallelPoolWorkersReused": 0,
+        "parallelPoolFallbacks": 0,
+        "parallelTokenBlockClaims": 0,
+        "parallelTokenBlockTokens": 0,
+        "parallelTokenBlockReturns": 0,
+        "branchFirstPreviewBranches": 0,
+        "branchFirstAdvancedFourPreviews": 0,
+        "branchFirstAdvancedThreePreviews": 0,
+        "branchFirstPreviewIncomplete": 0,
+        "branchFirstWaves": 0,
+        "branchFirstWorkersLaunched": 0,
+        "branchFirstJobs": 0,
+        "branchFirstJobsCompleted": 0,
+        "branchFirstVerifiedJobs": 0,
+        "branchFirstUsefulJobs": 0,
+        "branchFirstMergeFailures": 0,
+        "branchFirstUnknownJobs": 0,
+        "branchFirstMaxConcurrentWorkers": 0,
+        "branchFirstDispatchFallbacks": 0,
+        "branchFirstSerialFallbacks": 0,
+        "branchFirstDepthExtensions": 0,
+        "branchFirstAdvancedFourDepthExtensions": 0,
+        "branchFirstAdvancedThreeDepthExtensions": 0,
+        "branchFirstMaxChildDepth": 0,
+        "branchFirstDeadlineStops": 0,
+        "parallelEscapeBatches": 8,
+        "parallelEscapeWorkersLaunched": 32,
+        "parallelEscapeJobs": 96,
+        "parallelEscapeJobsCompleted": 64,
+        "parallelEscapeMaxConcurrentWorkers": 32,
+        "parallelEscapeBudgetExhausted": 0,
+        "decisionCount": 241,
+        "decisionUnknowns": 420,
+        "decisionFallbacks": 10,
+        "decisionNoLegalMoves": 0,
+        "decisionVerifiedWins": 11,
+        "decisionVerifiedLosses": 17,
+        "decisionLedgerExhaustions": 0,
+        "decisionStageRequests": 5368,
+        "decisionStageReservations": 33603452665,
+        "decisionStageAbandons": 0,
+        "parallelDuplicateRootEnumerations": 0,
+        "parallelEarlyStops": 673,
+        "dfpnPostponedSiblings": 1,
+        "dfpnDovetailRequeues": 0,
+        "decisionMemoryLiveReserved": 0,
+        "decisionMemoryPeakReserved": 10311102736,
+        "decisionMemoryReleased": 33580314896,
+        "forkProbeCandidatesExamined": 0,
+        "forkProbeSafeCandidates": 0,
+        "forkProbeRiskyCandidates": 0,
+        "forkProbeUnknownCandidates": 0,
+        "forkProbeAvoidedForks": 0,
+        "forkProbeIncompleteDecisions": 0,
+        "opponentGuardEligibleDecisions": 203,
+        "opponentGuardSkippedDisabled": 0,
+        "opponentGuardSkippedImmediateWins": 0,
+        "opponentGuardSkippedVerifiedOwnWins": 38,
+        "opponentGuardSkippedNoResource": 0,
+        "opponentGuardVCFQueries": 508,
+        "opponentGuardVCTQueries": 169,
+        "opponentGuardVCTStructuralSkips": 11,
+        "opponentGuardCandidatesAudited": 576,
+        "opponentGuardCompletedDisproofs": 116,
+        "opponentGuardUnknowns": 140,
+        "opponentGuardVerifiedLosses": 320,
+        "opponentGuardAvoidedVerifiedLosses": 11,
+        "opponentGuardRollbacks": 0,
+        "earlyVCFEligibleDecisions": 241,
+        "earlyVCFSkippedDisabled": 0,
+        "earlyVCFSkippedImmediateWins": 0,
+        "earlyVCFSkippedNoResource": 0,
+        "earlyVCFQueries": 294,
+        "earlyVCFCompletedProofs": 77,
+        "earlyVCFCompletedDisproofs": 171,
+        "earlyVCFUnknowns": 46,
+        "earlyVCFVerifiedLosses": 77,
+        "earlyVCFAvoidedVerifiedLosses": 4,
+        "earlyVCFAdaptiveEscalations": 204,
+        "earlyVCFCacheHits": 68,
+        "earlyVCFFreshNodes": 3310,
+        "earlyVCFFinalGuardOnlyLosses": 39,
+        "earlyVCFDeadlineExhaustions": 46,
+        "earlyVCFRollbacks": 0,
+        "earlyVCFEvidenceMismatches": 0,
+        "doubleThreeScans": 126,
+        "doubleThreeCompleteScans": 104,
+        "doubleThreeIncompleteScans": 0,
+        "doubleThreeGains": 20,
+        "doubleThreeCandidatesExamined": 389,
+        "doubleThreeCandidatesEliminated": 273,
+        "doubleThreeStructuralOverrides": 2,
+        "doubleThreeOwnVCFBypasses": 22,
+        "doubleThreeRollbacks": 0,
+        "doubleThreeDeadlineAnomalies": 0
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "status": "pass",
+      "input": "/tmp/five-star-5.8.2-soft40-vs-5.8.1.jsonl",
+      "rawJsonlSha256": "54cbe07e4c3e14e030ca94933d1b1a173f37916c7c2f2c9f72303c93419b4f1a",
+      "masterSeed": "0x0d0b1e3e20260821",
+      "openingIds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "openings": [
+        {
+          "openingId": 0,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              8,
+              4,
+              -1
+            ],
+            [
+              7,
+              5,
+              1
+            ],
+            [
+              6,
+              5,
+              -1
+            ],
+            [
+              6,
+              8,
+              1
+            ],
+            [
+              7,
+              8,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 1,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              5,
+              5,
+              -1
+            ],
+            [
+              9,
+              5,
+              1
+            ],
+            [
+              4,
+              8,
+              -1
+            ],
+            [
+              9,
+              10,
+              1
+            ],
+            [
+              7,
+              9,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 2,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              5,
+              4,
+              -1
+            ],
+            [
+              6,
+              7,
+              1
+            ],
+            [
+              4,
+              5,
+              -1
+            ],
+            [
+              6,
+              9,
+              1
+            ],
+            [
+              9,
+              8,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 3,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              6,
+              7,
+              -1
+            ],
+            [
+              7,
+              4,
+              1
+            ],
+            [
+              8,
+              6,
+              -1
+            ],
+            [
+              4,
+              7,
+              1
+            ],
+            [
+              8,
+              7,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 4,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              7,
+              6,
+              -1
+            ],
+            [
+              6,
+              4,
+              1
+            ],
+            [
+              8,
+              6,
+              -1
+            ],
+            [
+              8,
+              7,
+              1
+            ],
+            [
+              9,
+              5,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 5,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              8,
+              9,
+              -1
+            ],
+            [
+              5,
+              8,
+              1
+            ],
+            [
+              4,
+              6,
+              -1
+            ],
+            [
+              10,
+              6,
+              1
+            ],
+            [
+              7,
+              10,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 6,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              9,
+              9,
+              -1
+            ],
+            [
+              8,
+              6,
+              1
+            ],
+            [
+              6,
+              7,
+              -1
+            ],
+            [
+              7,
+              9,
+              1
+            ],
+            [
+              4,
+              6,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 7,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              10,
+              9,
+              -1
+            ],
+            [
+              7,
+              10,
+              1
+            ],
+            [
+              7,
+              6,
+              -1
+            ],
+            [
+              9,
+              5,
+              1
+            ],
+            [
+              5,
+              9,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 8,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              4,
+              8,
+              -1
+            ],
+            [
+              8,
+              6,
+              1
+            ],
+            [
+              10,
+              7,
+              -1
+            ],
+            [
+              7,
+              5,
+              1
+            ],
+            [
+              9,
+              4,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 9,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              9,
+              4,
+              -1
+            ],
+            [
+              5,
+              10,
+              1
+            ],
+            [
+              7,
+              10,
+              -1
+            ],
+            [
+              6,
+              6,
+              1
+            ],
+            [
+              10,
+              7,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 10,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              4,
+              6,
+              -1
+            ],
+            [
+              9,
+              9,
+              1
+            ],
+            [
+              7,
+              8,
+              -1
+            ],
+            [
+              4,
+              8,
+              1
+            ],
+            [
+              6,
+              10,
+              -1
+            ]
+          ]
+        },
+        {
+          "openingId": 11,
+          "moves": [
+            [
+              7,
+              7,
+              1
+            ],
+            [
+              8,
+              10,
+              -1
+            ],
+            [
+              5,
+              9,
+              1
+            ],
+            [
+              6,
+              10,
+              -1
+            ],
+            [
+              5,
+              5,
+              1
+            ],
+            [
+              10,
+              9,
+              -1
+            ]
+          ]
+        }
+      ],
+      "profiles": {
+        "candidate": "five-star-black-double-three-defense-candidate@5.8.2-black-double-three-soft-40-16g-32c-80ms",
+        "opponent": "five-star-early-micro-vcf@5.8.1-early-micro-vcf-adaptive-16k-80ms-2a"
+      },
+      "games": 24,
+      "movesReplayed": 778,
+      "candidateBlack": {
+        "wins": 9,
+        "draws": 1,
+        "losses": 2,
+        "games": 12
+      },
+      "candidateWhite": {
+        "wins": 2,
+        "draws": 1,
+        "losses": 9,
+        "games": 12
+      },
+      "overall": {
+        "wins": 11,
+        "draws": 2,
+        "losses": 11,
+        "games": 24
+      },
+      "telemetryByCandidateColor": {
+        "1": {
+          "decisions": 162,
+          "gainCount": 21,
+          "positionsWithGains": 21,
+          "safeSelections": 7,
+          "unresolvedSelections": 14,
+          "unknownScans": 0,
+          "incompleteScans": 0,
+          "deadlineAnomalies": 0,
+          "structuralOverrides": 1,
+          "rollbacks": 0,
+          "forcingCertificateClaims": 21
+        },
+        "-1": {
+          "decisions": 155,
+          "gainCount": 0,
+          "positionsWithGains": 0,
+          "safeSelections": 0,
+          "unresolvedSelections": 0,
+          "unknownScans": 0,
+          "incompleteScans": 0,
+          "deadlineAnomalies": 0,
+          "structuralOverrides": 0,
+          "rollbacks": 0,
+          "forcingCertificateClaims": 32
+        }
+      },
+      "latencyByCandidateColor": {
+        "1": {
+          "p50Ms": 220.415,
+          "p95Ms": 4502.937,
+          "maxMs": 4570.514,
+          "meanMs": 1010.2296049382716
+        },
+        "-1": {
+          "p50Ms": 902.442,
+          "p95Ms": 4500.235,
+          "maxMs": 4693.384,
+          "meanMs": 1272.8194387096773
+        }
+      },
+      "latencyByBlackPositionType": {
+        "candidateBlackOrdinary": {
+          "p50Ms": 215.719,
+          "p95Ms": 4502.937,
+          "maxMs": 4570.514,
+          "meanMs": 1015.7687304964539
+        },
+        "candidateBlackDoubleThree": {
+          "p50Ms": 495.566,
+          "p95Ms": 3167.489,
+          "maxMs": 4511.4,
+          "meanMs": 973.0383333333333
+        }
+      },
+      "deadlineAnomalyCount": 0,
+      "incompleteScanCount": 0,
+      "replay": {
+        "boardIntegrity": true,
+        "moveLegality": true,
+        "terminalResults": true,
+        "certificateReplays": {
+          "earlyVCF": 29,
+          "finalGuardVCF": 27,
+          "finalGuardVCT": 4,
+          "ownProof": 22
+        },
+        "certificateReplayTotal": 82,
+        "certificateClaimsRuntimeVerified": 53
+      },
+      "diagnostics": {
+        "boardHashCellVisits": 378735750,
+        "threatCellScans": 83905047,
+        "refutationCellScans": 154146341,
+        "legalityCalls": 38963697183,
+        "legalityBoardCopies": 0,
+        "forbiddenLegalityCachedChecks": 0,
+        "forbiddenLegalityCacheMismatches": 0,
+        "forbiddenLegalityCacheValidationSamples": 0,
+        "forbiddenLegalityCacheMismatchX": 0,
+        "forbiddenLegalityCacheMismatchY": 0,
+        "forbiddenLegalityCacheMismatchSide": 0,
+        "allocations": 12345,
+        "allocatedBytes": 99399441312,
+        "clearedBytes": 30949448608,
+        "incrementalMakes": 2645239,
+        "incrementalUnmakes": 2645110,
+        "proofSessionQueries": 11669,
+        "proofSessionHits": 111278,
+        "proofSessionGlobalTerminations": 837,
+        "mostProvingExpansions": 788252,
+        "proofGraphNodes": 2647675,
+        "proofGraphEdges": 2745191,
+        "proofGraphArenaExhaustions": 0,
+        "completedScopeDisproofs": 10276,
+        "dfpnNoProgressTerminations": 0,
+        "relevanceAllLegalReplies": 123611033,
+        "relevanceZonePoints": 21351469,
+        "relevanceReplyCandidates": 2786031,
+        "relevanceVerifiedOmissions": 120825002,
+        "relevanceUnresolved": 692,
+        "relevanceFallbacks": 0,
+        "relevanceFallbackReplies": 0,
+        "iteratedRelatedZoneIntersections": 58,
+        "iteratedRelatedZoneContinuations": 69460,
+        "iteratedRelatedZonePointsRemoved": 1246,
+        "dependencyCombinations": 12668,
+        "dependencyChainsProposed": 11747,
+        "dependencyMaximumDepth": 811,
+        "threatDependencyPoints": 61536659,
+        "threatFiveWindowPoints": 61498678,
+        "threatLegalityDependencyPoints": 0,
+        "threatCertificateZonePoints": 61536659,
+        "stageImmediateDecisions": 22,
+        "stageMandatoryDefenseDecisions": 78,
+        "stageVCFQueries": 35,
+        "stageVCTQueries": 35,
+        "stageDependencyQueries": 16,
+        "stageQuietQueries": 53,
+        "quietEligibleDecisions": 53,
+        "quietRootsExamined": 136,
+        "quietUnknowns": 8,
+        "parallelBatches": 1486,
+        "parallelWorkersLaunched": 5060,
+        "parallelRootJobs": 11304,
+        "parallelRootJobsCompleted": 7405,
+        "parallelRootWins": 655,
+        "parallelAggregateDisproofs": 713,
+        "parallelFallbacks": 565,
+        "parallelExactDuplicateRoots": 0,
+        "parallelDependencyOverlapPairs": 47644,
+        "parallelFiveWindowOverlapPairs": 46800,
+        "parallelLegalityOverlapPairs": 0,
+        "parallelCertificateOverlapPairs": 47644,
+        "parallelOverlapPairs": 47644,
+        "parallelOverlapGroups": 1670,
+        "parallelLargestOverlapGroup": 4924,
+        "parallelGroupedRootJobs": 11466,
+        "parallelBudgetTokens": 1853676,
+        "parallelMaxConcurrentWorkers": 2020,
+        "parallelIndependentDispatches": 1486,
+        "parallelMultiRootSingleWorkerFallbacks": 0,
+        "parallelPoolDispatches": 0,
+        "parallelPoolWorkersReused": 0,
+        "parallelPoolFallbacks": 0,
+        "parallelTokenBlockClaims": 0,
+        "parallelTokenBlockTokens": 0,
+        "parallelTokenBlockReturns": 0,
+        "branchFirstPreviewBranches": 0,
+        "branchFirstAdvancedFourPreviews": 0,
+        "branchFirstAdvancedThreePreviews": 0,
+        "branchFirstPreviewIncomplete": 0,
+        "branchFirstWaves": 0,
+        "branchFirstWorkersLaunched": 0,
+        "branchFirstJobs": 0,
+        "branchFirstJobsCompleted": 0,
+        "branchFirstVerifiedJobs": 0,
+        "branchFirstUsefulJobs": 0,
+        "branchFirstMergeFailures": 0,
+        "branchFirstUnknownJobs": 0,
+        "branchFirstMaxConcurrentWorkers": 0,
+        "branchFirstDispatchFallbacks": 0,
+        "branchFirstSerialFallbacks": 0,
+        "branchFirstDepthExtensions": 0,
+        "branchFirstAdvancedFourDepthExtensions": 0,
+        "branchFirstAdvancedThreeDepthExtensions": 0,
+        "branchFirstMaxChildDepth": 0,
+        "branchFirstDeadlineStops": 0,
+        "parallelEscapeBatches": 20,
+        "parallelEscapeWorkersLaunched": 80,
+        "parallelEscapeJobs": 238,
+        "parallelEscapeJobsCompleted": 160,
+        "parallelEscapeMaxConcurrentWorkers": 80,
+        "parallelEscapeBudgetExhausted": 2,
+        "decisionCount": 634,
+        "decisionUnknowns": 604,
+        "decisionFallbacks": 22,
+        "decisionNoLegalMoves": 0,
+        "decisionVerifiedWins": 22,
+        "decisionVerifiedLosses": 44,
+        "decisionLedgerExhaustions": 0,
+        "decisionStageRequests": 14773,
+        "decisionStageReservations": 97043079989,
+        "decisionStageAbandons": 0,
+        "parallelDuplicateRootEnumerations": 0,
+        "parallelEarlyStops": 1883,
+        "dfpnPostponedSiblings": 3,
+        "dfpnDovetailRequeues": 0,
+        "decisionMemoryLiveReserved": 0,
+        "decisionMemoryPeakReserved": 28733021088,
+        "decisionMemoryReleased": 96982211488,
+        "forkProbeCandidatesExamined": 0,
+        "forkProbeSafeCandidates": 0,
+        "forkProbeRiskyCandidates": 0,
+        "forkProbeUnknownCandidates": 0,
+        "forkProbeAvoidedForks": 0,
+        "forkProbeIncompleteDecisions": 0,
+        "opponentGuardEligibleDecisions": 568,
+        "opponentGuardSkippedDisabled": 0,
+        "opponentGuardSkippedImmediateWins": 22,
+        "opponentGuardSkippedVerifiedOwnWins": 44,
+        "opponentGuardSkippedNoResource": 0,
+        "opponentGuardVCFQueries": 1137,
+        "opponentGuardVCTQueries": 462,
+        "opponentGuardVCTStructuralSkips": 28,
+        "opponentGuardCandidatesAudited": 1292,
+        "opponentGuardCompletedDisproofs": 341,
+        "opponentGuardUnknowns": 319,
+        "opponentGuardVerifiedLosses": 632,
+        "opponentGuardAvoidedVerifiedLosses": 20,
+        "opponentGuardRollbacks": 0,
+        "earlyVCFEligibleDecisions": 612,
+        "earlyVCFSkippedDisabled": 0,
+        "earlyVCFSkippedImmediateWins": 22,
+        "earlyVCFSkippedNoResource": 0,
+        "earlyVCFQueries": 718,
+        "earlyVCFCompletedProofs": 157,
+        "earlyVCFCompletedDisproofs": 433,
+        "earlyVCFUnknowns": 128,
+        "earlyVCFVerifiedLosses": 157,
+        "earlyVCFAvoidedVerifiedLosses": 4,
+        "earlyVCFAdaptiveEscalations": 523,
+        "earlyVCFCacheHits": 155,
+        "earlyVCFFreshNodes": 10851,
+        "earlyVCFFinalGuardOnlyLosses": 82,
+        "earlyVCFDeadlineExhaustions": 128,
+        "earlyVCFRollbacks": 0,
+        "earlyVCFEvidenceMismatches": 0,
+        "doubleThreeScans": 162,
+        "doubleThreeCompleteScans": 139,
+        "doubleThreeIncompleteScans": 0,
+        "doubleThreeGains": 21,
+        "doubleThreeCandidatesExamined": 515,
+        "doubleThreeCandidatesEliminated": 383,
+        "doubleThreeStructuralOverrides": 1,
+        "doubleThreeOwnVCFBypasses": 23,
+        "doubleThreeRollbacks": 0,
+        "doubleThreeDeadlineAnomalies": 0
+      }
+    }
+  ],
+  "sourceHashes": {
+    "rawJsonl": [
+      "cba7c4ec11ec0ba9d27e30e03843e5a39cbd28b739b5bb341aa0aff125acf644",
+      "54cbe07e4c3e14e030ca94933d1b1a173f37916c7c2f2c9f72303c93419b4f1a"
+    ],
+    "library": "b2e84fad815ba814bf5f548821fb0d72704351541a69bc2d3b7a1a636b5c58dc"
+  }
+}

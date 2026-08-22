@@ -93,7 +93,7 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DUV-Wh-MjS">
+                            <button opaque="NO" hidden="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DUV-Wh-MjS">
                                 <rect key="frame" x="255" y="531" width="42" height="42"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" red="0.0" green="0.56031829119999998" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -156,6 +156,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="c3y-GR-efm"/>
                     <connections>
+                        <outlet property="bottom_toolbar" destination="ef6-9T-BKM" id="Y4L-Qd-2jN"/>
                         <outlet property="ban_choice" destination="Poj-xz-z90" id="0Uh-pX-sUO"/>
                         <outlet property="banbar" destination="Poj-xz-z90" id="97i-xN-puD"/>
                         <outlet property="difficulty_choice_seg" destination="zNj-iM-gNI" id="GFh-GA-8xi"/>

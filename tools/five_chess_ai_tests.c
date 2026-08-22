@@ -1862,6 +1862,490 @@ static void test_crossing_duplicate_and_forbidden_symmetries(void)
     }
 }
 
+static const FCDoubleThreeGain *find_double_three_gain(
+    const FCDoubleThreeGain *gains,
+    int count,
+    int x,
+    int y)
+{
+    for (int i = 0; i < count; i++) {
+        if (gains[i].x == x && gains[i].y == y) return &gains[i];
+    }
+    return NULL;
+}
+
+static FCAIProfile black_double_three_test_profile(void)
+{
+    FCAIProfile profile =
+        fc_profile_five_star_black_double_three_candidate();
+    profile.parallelProofEnabled = false;
+    profile.proofWorkerCount = 1;
+    profile.proofEnabled = false;
+    profile.proofCandidateStagesEnabled = false;
+    profile.openingBookEnabled = false;
+    profile.eliteCorpusEnabled = false;
+    profile.earlyVCFSentinelEnabled = false;
+    profile.opponentGuardEnabled = false;
+    profile.quietThreatEnabled = false;
+    profile.lossAwareEnabled = false;
+    profile.forkFirstRecoveryEnabled = false;
+    profile.maxDepth = 0;
+    profile.quiescenceDepth = 0;
+    profile.decisionTimeBudgetMs = 1200;
+    profile.blackDoubleThreeTimeBudgetMs = 200;
+    return profile;
+}
+
+static void test_black_double_three_scan_and_preemption(void)
+{
+    int crossing[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
+    crossing[5][7] = crossing[6][7] = -1;
+    crossing[7][5] = crossing[7][6] = -1;
+    FCDoubleThreeGain gains[FC_MAX_CANDIDATES];
+    bool complete = false;
+    int count = fc_enumerate_white_double_three_gains(
+        (const int (*)[FC_BOARD_SIZE])crossing, false,
+        gains, FC_MAX_CANDIDATES, &complete);
+    assert(complete);
+    const FCDoubleThreeGain *center = find_double_three_gain(
+        gains, count, 7, 7);
+    assert(center != NULL);
+    assert((center->directionMask & 0x03U) == 0x03U);
+
+    for (int transform = 0; transform < 8; transform++) {
+        int board[FC_BOARD_SIZE][FC_BOARD_SIZE];
+        transform_board(crossing, transform, board);
+        int expectedX = 0;
+        int expectedY = 0;
+        fc_transform_point(transform, 7, 7, &expectedX, &expectedY);
+        bool transformedComplete = false;
+        int transformedCount = fc_enumerate_white_double_three_gains(
+            (const int (*)[FC_BOARD_SIZE])board, false,
+            gains, FC_MAX_CANDIDATES, &transformedComplete);
+        assert(transformedComplete);
+        assert(find_double_three_gain(
+            gains, transformedCount, expectedX, expectedY) != NULL);
+    }
+
+    int single[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
+    single[5][7] = single[6][7] = -1;
+    count = fc_enumerate_white_double_three_gains(
+        (const int (*)[FC_BOARD_SIZE])single, false,
+        gains, FC_MAX_CANDIDATES, &complete);
+    assert(complete);
+    assert(find_double_three_gain(gains, count, 7, 7) == NULL);
+
+    int edge[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
+    edge[0][7] = edge[1][7] = -1;
+    count = fc_enumerate_white_double_three_gains(
+        (const int (*)[FC_BOARD_SIZE])edge, false,
+        gains, FC_MAX_CANDIDATES, &complete);
+    assert(complete);
+    assert(find_double_three_gain(gains, count, 2, 7) == NULL);
+
+    int blocked[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
+    blocked[5][7] = blocked[6][7] = -1;
+    blocked[7][5] = blocked[7][6] = -1;
+    blocked[4][7] = 1;
+    count = fc_enumerate_white_double_three_gains(
+        (const int (*)[FC_BOARD_SIZE])blocked, false,
+        gains, FC_MAX_CANDIDATES, &complete);
+    assert(complete);
+    assert(find_double_three_gain(gains, count, 7, 7) == NULL);
+
+    int multiple[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
+    multiple[5][7] = multiple[6][7] = -1;
+    multiple[7][5] = multiple[7][6] = -1;
+    multiple[9][11] = multiple[10][11] = -1;
+    multiple[11][9] = multiple[11][10] = -1;
+    for (int forbidden = 0; forbidden <= 1; forbidden++) {
+        bool multipleComplete = false;
+        int multipleCount = fc_enumerate_white_double_three_gains(
+            (const int (*)[FC_BOARD_SIZE])multiple,
+            forbidden != 0, gains, FC_MAX_CANDIDATES,
+            &multipleComplete);
+        assert(multipleComplete);
+        assert(multipleCount >= 2);
+        assert(find_double_three_gain(
+            gains, multipleCount, 7, 7) != NULL);
+        assert(find_double_three_gain(
+            gains, multipleCount, 11, 11) != NULL);
+
+        FCDoubleThreeGain limited[1];
+        bool limitedComplete = true;
+        int limitedCount = fc_enumerate_white_double_three_gains(
+            (const int (*)[FC_BOARD_SIZE])multiple,
+            forbidden != 0, limited, 1, &limitedComplete);
+        assert(limitedCount == 1);
+        assert(!limitedComplete);
+    }
+
+    FCAIProfile profile = black_double_three_test_profile();
+    assert(profile.blackDoubleThreeDefenseEnabled);
+    assert(strcmp(profile.version,
+                  "5.8.2-black-double-three-soft-40-16g-32c-80ms") == 0);
+    assert(profile.blackDoubleThreeDefenseWeight == 40);
+    profile.parallelProofEnabled = false;
+    profile.proofWorkerCount = 1;
+    profile.eliteCorpusEnabled = false;
+    profile.decisionTimeBudgetMs = 1200;
+    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
+    memcpy(before, crossing, sizeof(before));
+    FCAnalysisResult result;
+    fc_proof_diagnostics_reset();
+    assert(fc_analyze_five_star_profile_with_hint(
+        (const int (*)[FC_BOARD_SIZE])crossing, 1, false, &profile,
+        UINT64_C(0x443354455354), FC_RANDOM_EVALUATION,
+        7, 7, &result));
+    assert(result.doubleThreeScanComplete);
+    assert(result.doubleThreeGainCount >= 1);
+    assert(result.doubleThreeStatus == FC_DOUBLE_THREE_STATUS_COMPLETE_SAFE ||
+           result.doubleThreeStatus == FC_DOUBLE_THREE_STATUS_COMPLETE_UNRESOLVED);
+    if (result.doubleThreeStatus == FC_DOUBLE_THREE_STATUS_COMPLETE_SAFE)
+        assert(result.doubleThreeSelectedResidualCount == 0);
+    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])crossing,
+                            result.x, result.y, 1, false));
+    assert(memcmp(before, crossing, sizeof(before)) == 0);
+    FCProofDiagnostics diagnostics = fc_proof_diagnostics_get();
+    assert(diagnostics.doubleThreeScans == 1);
+    assert(diagnostics.doubleThreeGains >= 1);
+}
+
+static void test_black_double_three_integration_contracts(void)
+{
+    int ownWin[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
+    for (int x = 5; x <= 8; x++) ownWin[x][7] = 1;
+    FCAIProfile profile = black_double_three_test_profile();
+    FCAnalysisResult result;
+    fc_proof_diagnostics_reset();
+    assert(fc_analyze_five_star_profile_with_hint(
+        (const int (*)[FC_BOARD_SIZE])ownWin, 1, false, &profile,
+        UINT64_C(0x4454485245454259), FC_RANDOM_EVALUATION,
+        0, 0, &result));
+    assert(result.tacticalClass == FC_TACTICAL_IMMEDIATE_WIN);
+    assert(result.doubleThreeStatus == FC_DOUBLE_THREE_STATUS_BYPASSED);
+    assert(result.doubleThreeOwnVCFBypass);
+    assert(!result.doubleThreeStructuralOverride);
+    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])ownWin,
+                            result.x, result.y, 1, false));
+
+    int multiple[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
+    multiple[5][7] = multiple[6][7] = -1;
+    multiple[7][5] = multiple[7][6] = -1;
+    multiple[9][11] = multiple[10][11] = -1;
+    multiple[11][9] = multiple[11][10] = -1;
+
+    FCAIProfile unresolvedProfile = black_double_three_test_profile();
+    FCAnalysisResult unresolved;
+    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
+    memcpy(before, multiple, sizeof(before));
+    fc_proof_diagnostics_reset();
+    assert(fc_analyze_five_star_profile_with_hint(
+        (const int (*)[FC_BOARD_SIZE])multiple, 1, false,
+        &unresolvedProfile, UINT64_C(0x554e5245534f4c56),
+        FC_RANDOM_EVALUATION, 7, 7, &unresolved));
+    assert(unresolved.doubleThreeScanComplete);
+    assert(unresolved.doubleThreeGainCount >= 2);
+    assert(unresolved.doubleThreeStatus ==
+               FC_DOUBLE_THREE_STATUS_COMPLETE_UNRESOLVED);
+    assert(unresolved.doubleThreeSelectedResidualCount >= 1);
+    assert(!unresolved.doubleThreeStructuralOverride);
+    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])multiple,
+                            unresolved.x, unresolved.y, 1, false));
+    assert(memcmp(before, multiple, sizeof(before)) == 0);
+    FCAnalysisResult unresolvedAgain;
+    assert(fc_analyze_five_star_profile_with_hint(
+        (const int (*)[FC_BOARD_SIZE])multiple, 1, false,
+        &unresolvedProfile, UINT64_C(0x554e5245534f4c56),
+        FC_RANDOM_EVALUATION, 7, 7, &unresolvedAgain));
+    assert(unresolvedAgain.x == unresolved.x &&
+           unresolvedAgain.y == unresolved.y);
+    assert(unresolvedAgain.doubleThreeStatus ==
+           unresolved.doubleThreeStatus);
+    assert(unresolvedAgain.doubleThreeGainCount ==
+           unresolved.doubleThreeGainCount);
+    assert(unresolvedAgain.doubleThreeSelectedResidualCount ==
+           unresolved.doubleThreeSelectedResidualCount);
+    assert(memcmp(before, multiple, sizeof(before)) == 0);
+
+    FCAIProfile overflowProfile = black_double_three_test_profile();
+    overflowProfile.blackDoubleThreeMaxGains = 1;
+    FCAnalysisResult overflow;
+    assert(fc_analyze_five_star_profile_with_hint(
+        (const int (*)[FC_BOARD_SIZE])multiple, 1, false,
+        &overflowProfile, UINT64_C(0x4f564552464c4f57),
+        FC_RANDOM_EVALUATION, 7, 7, &overflow));
+    assert(!overflow.doubleThreeScanComplete);
+    assert(overflow.doubleThreeScanOverflow);
+    assert(overflow.doubleThreeStatus == FC_DOUBLE_THREE_STATUS_UNKNOWN);
+    assert(!overflow.doubleThreeStructuralOverride);
+    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])multiple,
+                            overflow.x, overflow.y, 1, false));
+
+    FCAIProfile deadlineProfile = black_double_three_test_profile();
+    deadlineProfile.decisionTimeBudgetMs = 1;
+    deadlineProfile.blackDoubleThreeTimeBudgetMs = 1;
+    FCAnalysisResult deadline;
+    fc_proof_diagnostics_reset();
+    assert(fc_analyze_five_star_profile_with_hint(
+        (const int (*)[FC_BOARD_SIZE])multiple, 1, false,
+        &deadlineProfile, UINT64_C(0x444541444c494e45),
+        FC_RANDOM_EVALUATION, 7, 7, &deadline));
+    assert(deadline.doubleThreeStatus == FC_DOUBLE_THREE_STATUS_UNKNOWN);
+    assert(deadline.doubleThreeDeadlineAnomaly);
+    assert(!deadline.doubleThreeStructuralOverride);
+    assert(fc_proof_diagnostics_get().doubleThreeDeadlineAnomalies >= 1);
+    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])multiple,
+                            deadline.x, deadline.y, 1, false));
+
+    int unresolvedOpponent[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
+    unresolvedOpponent[5][7] = unresolvedOpponent[6][7] = -1;
+    unresolvedOpponent[7][5] = unresolvedOpponent[7][6] = -1;
+    unresolvedOpponent[9][11] = unresolvedOpponent[10][11] = -1;
+    unresolvedOpponent[11][9] = unresolvedOpponent[11][10] = -1;
+    FCAIProfile guardProfile = black_double_three_test_profile();
+    guardProfile.opponentGuardEnabled = true;
+    guardProfile.opponentGuardVCFNodeBudget = 0;
+    guardProfile.opponentGuardVCFTimeBudgetMs = 0;
+    guardProfile.opponentGuardVCTNodeBudget = 0;
+    guardProfile.opponentGuardVCTTimeBudgetMs = 0;
+    guardProfile.opponentGuardMaxAlternatives = 0;
+    FCAnalysisResult guarded;
+    assert(fc_analyze_five_star_profile_with_hint(
+        (const int (*)[FC_BOARD_SIZE])unresolvedOpponent, 1, false,
+        &guardProfile, UINT64_C(0x554e5245534f4c56),
+        FC_RANDOM_EVALUATION, 7, 7, &guarded));
+    assert(guarded.doubleThreeScanComplete);
+    assert(guarded.doubleThreeGainCount >= 1);
+    assert(guarded.doubleThreeStatus ==
+               FC_DOUBLE_THREE_STATUS_COMPLETE_SAFE ||
+           guarded.doubleThreeStatus ==
+               FC_DOUBLE_THREE_STATUS_COMPLETE_UNRESOLVED);
+    assert(guarded.opponentGuardEligible);
+    assert(guarded.opponentGuardVCFStatus == FC_PROOF_UNKNOWN);
+    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])unresolvedOpponent,
+                            guarded.x, guarded.y, 1, false));
+}
+
+static void test_black_double_three_soft_weight_regression(void)
+{
+    /* This is the first degraded 5.8.2-vs-5.8.1 candidate-black position:
+     * the old hard preemption moved from (8,7) to a remote safe blocker even
+     * though the surrounding 5.8.1 line was the better continuation. */
+    static const int moves[][3] = {
+        {7, 7, 1}, {8, 4, -1}, {7, 5, 1}, {6, 5, -1},
+        {6, 8, 1}, {7, 8, -1}, {8, 6, 1}, {9, 5, -1},
+        {9, 7, 1}, {6, 4, -1}
+    };
+    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
+    for (size_t i = 0; i < sizeof(moves) / sizeof(moves[0]); i++)
+        board[moves[i][0]][moves[i][1]] = moves[i][2];
+
+    FCAIProfile soft = black_double_three_test_profile();
+    FCAIProfile control = soft;
+    control.blackDoubleThreeDefenseEnabled = false;
+    FCAnalysisResult softResult;
+    FCAnalysisResult controlResult;
+    uint64_t seed = UINT64_C(0x59b999d9c562ad58);
+    assert(fc_analyze_five_star_profile_with_hint(
+        (const int (*)[FC_BOARD_SIZE])board, 1, false, &soft, seed,
+        FC_RANDOM_EVALUATION, 8, 7, &softResult));
+    assert(fc_analyze_five_star_profile_with_hint(
+        (const int (*)[FC_BOARD_SIZE])board, 1, false, &control, seed,
+        FC_RANDOM_EVALUATION, 8, 7, &controlResult));
+    assert(softResult.x == controlResult.x);
+    assert(softResult.y == controlResult.y);
+    assert(softResult.doubleThreeScanComplete);
+    assert(softResult.doubleThreeGainCount == 1);
+    assert(softResult.doubleThreeStatus ==
+           FC_DOUBLE_THREE_STATUS_COMPLETE_UNRESOLVED);
+    assert(softResult.doubleThreeProvisionalResidualCount == 1);
+    assert(softResult.doubleThreeSelectedResidualCount == 1);
+    assert(!softResult.doubleThreeStructuralOverride);
+}
+
+static void test_black_defense_recovery_regressions(void)
+{
+    /* Opening-9 final position from the soft-40 degradation: structural
+     * preemption selected (12,7), while the retained handoff blocker (9,10)
+     * removes the only current white winning point. */
+    static const int opening9[][3] = {
+        {7, 7, 1}, {9, 4, -1}, {5, 10, 1}, {7, 10, -1},
+        {6, 6, 1}, {10, 7, -1}, {5, 5, 1}, {8, 8, -1},
+        {5, 7, 1}, {9, 8, -1}, {8, 9, 1}, {10, 8, -1},
+        {7, 8, 1}, {10, 9, -1}, {10, 10, 1}, {11, 8, -1},
+        {12, 8, 1}, {9, 6, -1}, {4, 4, 1}, {3, 3, -1},
+        {12, 9, 1}, {7, 4, -1}, {8, 5, 1}, {9, 7, -1},
+        {9, 5, 1}, {9, 9, -1}
+    };
+    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
+    for (size_t i = 0; i < sizeof(opening9) / sizeof(opening9[0]); i++)
+        assert(fc_make_move(board, opening9[i][0], opening9[i][1],
+                            opening9[i][2], false));
+    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
+    memcpy(before, board, sizeof(before));
+
+    FCAIProfile profile =
+        fc_profile_five_star_black_defense_recovery_candidate();
+    profile.parallelProofEnabled = false;
+    profile.proofWorkerCount = 1;
+    profile.eliteCorpusEnabled = false;
+    profile.decisionTimeBudgetMs = 2400;
+    profile.decisionHardLimitMs = 2600;
+    profile.opponentGuardReservedTimeMs = 1200;
+    profile.opponentGuardRecoveryReservedTimeMs = 1200;
+    profile.opponentGuardForkTimeBudgetMs = 40;
+    profile.opponentGuardForkNodeBudget = 50000;
+    FCAnalysisResult result;
+    assert(fc_analyze_five_star_profile_with_hint(
+        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
+        UINT64_C(0x5245434f56455239), FC_RANDOM_EVALUATION,
+        9, 10, &result));
+    assert(result.x == 9 && result.y == 10);
+    assert(result.recoverySource == FC_RECOVERY_SOURCE_IMMEDIATE_BLOCK ||
+           result.recoverySource == FC_RECOVERY_SOURCE_BASELINE ||
+           result.recoverySource == FC_RECOVERY_SOURCE_DEFAULT);
+    assert(result.recoveryImmediateWinCount == 0);
+    assert(result.recoveryFinalCandidateConsistent);
+    assert(result.opponentGuardSelectedX == result.x &&
+           result.opponentGuardSelectedY == result.y);
+    assert(memcmp(before, board, sizeof(before)) == 0);
+
+    FCAnalysisResult repeated;
+    assert(fc_analyze_five_star_profile_with_hint(
+        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
+        UINT64_C(0x5245434f56455239), FC_RANDOM_EVALUATION,
+        9, 10, &repeated));
+    assert(repeated.x == result.x && repeated.y == result.y);
+    assert(repeated.recoverySource == result.recoverySource);
+    assert(repeated.recoveryForkRisk == result.recoveryForkRisk);
+    assert(memcmp(before, board, sizeof(before)) == 0);
+}
+
+static void test_black_recovery_two_step_fork_probe(void)
+{
+    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
+    board[5][7] = board[6][7] = board[7][7] = -1;
+    FCAIProfile profile =
+        fc_profile_five_star_black_defense_recovery_candidate();
+    profile.opponentGuardVCFNodeBudget = 0;
+    profile.opponentGuardVCFTimeBudgetMs = 0;
+    profile.opponentGuardVCTNodeBudget = 0;
+    profile.opponentGuardVCTTimeBudgetMs = 0;
+    profile.opponentGuardVCTOnUnknownEnabled = false;
+    profile.opponentGuardForkTimeBudgetMs = 400;
+    profile.opponentGuardForkNodeBudget = 120000;
+    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
+    memcpy(before, board, sizeof(before));
+
+    FCOpponentGuardAudit forkRisk;
+    assert(fc_audit_opponent_after_move(
+        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
+        0, 0, &forkRisk));
+    assert(forkRisk.opponentImmediateWinCount == 0);
+    assert(forkRisk.forkProbeComplete);
+    assert(forkRisk.forkRisk == FC_FORK_RISK_FORK);
+    assert(forkRisk.boardRestored);
+    assert(memcmp(before, board, sizeof(before)) == 0);
+
+    FCOpponentGuardAudit noFork;
+    assert(fc_audit_opponent_after_move(
+        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
+        4, 7, &noFork));
+    assert(noFork.opponentImmediateWinCount == 0);
+    assert(noFork.forkProbeComplete);
+    assert(noFork.forkRisk != FC_FORK_RISK_FORK);
+    assert(noFork.boardRestored);
+    assert(memcmp(before, board, sizeof(before)) == 0);
+
+    profile.opponentGuardForkTimeBudgetMs = 1;
+    profile.opponentGuardForkNodeBudget = 1;
+    FCOpponentGuardAudit incomplete;
+    assert(fc_audit_opponent_after_move(
+        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
+        0, 0, &incomplete));
+    assert(!incomplete.forkProbeComplete);
+    assert(incomplete.forkRisk == FC_FORK_RISK_UNKNOWN);
+    assert(incomplete.boardRestored);
+    assert(memcmp(before, board, sizeof(before)) == 0);
+}
+
+static void assert_recovery_loss_predecessor(
+    const int moves[][3],
+    size_t moveCount,
+    int candidateX,
+    int candidateY)
+{
+    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
+    for (size_t i = 0; i < moveCount; i++)
+        assert(fc_make_move(board, moves[i][0], moves[i][1], moves[i][2],
+                            false));
+    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
+    memcpy(before, board, sizeof(before));
+    FCAIProfile profile =
+        fc_profile_five_star_black_defense_recovery_candidate();
+    profile.opponentGuardTwoStepForkEnabled = false;
+    profile.opponentGuardVCTOnUnknownEnabled = false;
+    profile.opponentGuardVCFNodeBudget = 0;
+    profile.opponentGuardVCFTimeBudgetMs = 0;
+    profile.opponentGuardVCTNodeBudget = 0;
+    profile.opponentGuardVCTTimeBudgetMs = 0;
+    FCOpponentGuardAudit audit;
+    assert(fc_audit_opponent_after_move(
+        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
+        candidateX, candidateY, &audit));
+    assert(audit.opponentImmediateWinCount >= 1);
+    assert(audit.boardRestored);
+    assert(memcmp(before, board, sizeof(before)) == 0);
+}
+
+static void test_black_recovery_loss_predecessor_fixtures(void)
+{
+    /* The following are the opening-0, opening-3 and opening-10 predecessor
+     * boards from the soft-40 candidate-black losses.  They are kept as
+     * compact fixed fixtures so the immediate-block contract stays tied to
+     * the measured regressions. */
+    static const int opening0[][3] = {
+        {7, 7, 1}, {8, 4, -1}, {7, 5, 1}, {6, 5, -1},
+        {6, 8, 1}, {7, 8, -1}, {8, 6, 1}, {9, 5, -1},
+        {9, 7, 1}, {6, 4, -1}, {8, 7, 1}, {6, 7, -1},
+        {10, 8, 1}, {11, 9, -1}, {11, 7, 1}, {10, 7, -1},
+        {5, 9, 1}, {4, 10, -1}, {10, 6, 1}, {7, 4, -1},
+        {9, 4, 1}, {4, 4, -1}, {5, 4, 1}, {6, 6, -1},
+        {6, 3, 1}, {5, 6, -1}, {11, 5, 1}, {4, 5, -1}
+    };
+    static const int opening3[][3] = {
+        {7, 7, 1}, {6, 7, -1}, {7, 4, 1}, {8, 6, -1},
+        {4, 7, 1}, {8, 7, -1}, {6, 5, 1}, {5, 6, -1},
+        {7, 6, 1}, {7, 8, -1}, {8, 9, 1}, {6, 9, -1},
+        {9, 6, 1}, {8, 5, -1}, {8, 4, 1}, {6, 8, -1},
+        {6, 6, 1}, {7, 5, -1}, {8, 8, 1}, {5, 5, -1},
+        {5, 4, 1}, {6, 4, -1}, {9, 7, 1}, {9, 5, -1},
+        {9, 8, 1}, {9, 9, -1}, {6, 10, 1}, {7, 9, -1},
+        {4, 6, 1}, {8, 10, -1}, {9, 11, 1}, {7, 10, -1},
+        {7, 11, 1}, {4, 5, -1}, {3, 4, 1}, {8, 11, -1},
+        {9, 12, 1}, {9, 10, -1}, {8, 12, 1}, {5, 9, -1},
+        {7, 12, 1}, {6, 12, -1}, {3, 5, 1}, {3, 2, -1},
+        {3, 7, 1}, {3, 8, -1}, {5, 10, 1}, {5, 8, -1}
+    };
+    static const int opening10[][3] = {
+        {7, 7, 1}, {4, 6, -1}, {9, 9, 1}, {7, 8, -1},
+        {4, 8, 1}, {6, 10, -1}, {6, 6, 1}, {8, 8, -1},
+        {5, 7, 1}, {3, 9, -1}, {6, 7, 1}, {8, 7, -1},
+        {6, 8, 1}, {6, 9, -1}, {9, 6, 1}, {8, 6, -1},
+        {8, 4, 1}, {7, 5, -1}, {8, 10, 1}, {9, 7, -1},
+        {6, 4, 1}, {6, 5, -1}, {7, 9, 1}, {9, 11, -1},
+        {4, 7, 1}, {3, 7, -1}, {8, 9, 1}, {3, 10, -1},
+        {11, 9, 1}, {10, 9, -1}, {4, 10, 1}, {3, 8, -1}
+    };
+    assert_recovery_loss_predecessor(
+        opening0, sizeof(opening0) / sizeof(opening0[0]), 4, 7);
+    assert_recovery_loss_predecessor(
+        opening3, sizeof(opening3) / sizeof(opening3[0]), 0, 0);
+    assert_recovery_loss_predecessor(
+        opening10, sizeof(opening10) / sizeof(opening10[0]), 0, 0);
+}
+
 static void test_vct_proof_and_integration_gates(void)
 {
     int crossing[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
@@ -2968,6 +3452,12 @@ int main(void)
     test_dependency_dag_proposes_verified_search_order();
     test_candidate_stage_order_and_obligation_skips();
     test_crossing_duplicate_and_forbidden_symmetries();
+    test_black_double_three_scan_and_preemption();
+    test_black_double_three_integration_contracts();
+    test_black_double_three_soft_weight_regression();
+    test_black_defense_recovery_regressions();
+    test_black_recovery_two_step_fork_probe();
+    test_black_recovery_loss_predecessor_fixtures();
     test_vct_proof_and_integration_gates();
     test_elite_corpus_lookup_and_fail_closed_five_star();
     test_elite_local_lookup_survives_natural_deviation_and_partitions_rules();
