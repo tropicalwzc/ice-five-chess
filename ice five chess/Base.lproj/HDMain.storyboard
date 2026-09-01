@@ -93,14 +93,6 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
-                            <button opaque="NO" hidden="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DUV-Wh-MjS">
-                                <rect key="frame" x="255" y="531" width="42" height="42"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" red="0.0" green="0.56031829119999998" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <connections>
-                                    <action selector="sure_here:" destination="BYZ-38-t0r" eventType="touchUpInside" id="C1p-Me-rMH"/>
-                                </connections>
-                            </button>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pYp-Ni-UvM">
                                 <rect key="frame" x="0.0" y="50" width="1024" height="50"/>
                                 <items>
@@ -162,7 +154,6 @@
                         <outlet property="difficulty_choice_seg" destination="zNj-iM-gNI" id="GFh-GA-8xi"/>
                         <outlet property="player_chess_choice" destination="wjl-RO-x7e" id="U8K-f5-QtT"/>
                         <outlet property="player_choice_seg" destination="5D8-WM-Ocr" id="DWl-yj-xgN"/>
-                        <outlet property="player_sure_btn" destination="DUV-Wh-MjS" id="KuY-fV-Uhy"/>
                         <outlet property="rotater" destination="PFb-Dz-WCB" id="Jhp-N2-TVt"/>
                         <outlet property="sudoback" destination="0xW-n5-bsL" id="wsV-ff-XkR"/>
                         <outlet property="tech_texter" destination="Nb0-Eo-Lq7" id="SXH-Ix-pZS"/>

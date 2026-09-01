@@ -32,7 +32,6 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *player_choice_seg;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *difficulty_choice_seg;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *banbar;
-@property (weak, nonatomic) IBOutlet UIButton *player_sure_btn;
 @property (weak, nonatomic) IBOutlet UILabel *tech_texter;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *ban_choice;
 @property (weak, nonatomic) IBOutlet UILabel *sudoback;
@@ -248,8 +247,6 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
     }
 
     if (geometryChanged) {
-        _player_sure_btn.hidden = YES;
-        _player_sure_btn.userInteractionEnabled = NO;
         [self flush_chess_map_according_to:map_state];
         if (focus_has_been_selected && focus_x >= 0 && focus_x < 15 && focus_y >= 0 && focus_y < 15) {
             [self set_op_focus_sign];
@@ -674,8 +671,6 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
     }
     player_prefer_difficulty=0;
     _difficulty_choice_seg.selectedSegmentIndex=fc_segment_for_difficulty(player_prefer_difficulty);
-    _player_sure_btn.tag=1001;
-    _player_sure_btn.hidden=YES;
 }
 -(NSString*) usr_lang
 {
@@ -963,8 +958,6 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
     self.analysis_request_id += 1;
     think_flag=0;
     focus_has_been_selected=false;
-    _player_sure_btn.hidden=YES;
-    _player_sure_btn.userInteractionEnabled=NO;
     [self hide_analysis_loading];
 }
 -(void) paint_chess_map_with_x:(long)x y:(long)y val:(int)val
@@ -1396,9 +1389,6 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
     _player_choice_seg.selectedSegmentIndex = (player_chess_id == 1 ? 0 : 1);
     [self restart_funct];
 }
-- (IBAction)sure_here:(UIButton *)sender {
-    [self focus_click:chess_map[focus_x][focus_y]];
-}
 - (IBAction)undo_act:(UIBarButtonItem *)sender {
     if (think_flag == 1) {
         return;
@@ -1407,53 +1397,5 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
     [ice_fiver export_current_board:map_state];
     _tech_texter.text=@"😠😡😤";
     [self flush_chess_map_according_to:map_state];
-}
--(void) following_act_with_x:(int)x y:(int)y
-{
-    _player_sure_btn.hidden=YES;
-    _player_sure_btn.userInteractionEnabled=NO;
-    if(x < 0 || x >= 15 || y < 0 || y >= 15 || map_state[x][y]!=0)
-        return;
-
-    NSInteger targetX = x;
-    NSInteger targetY = y;
-    UIImage *directionImage = nil;
-    if(y > 0 && map_state[x][y-1] == 0)
-    {
-        targetY = y - 1;
-        directionImage = [UIImage imageNamed:@"d_downer"];
-    }
-    else if(y < 14 && map_state[x][y+1] == 0)
-    {
-        targetY = y + 1;
-        directionImage = [UIImage imageNamed:@"d_upper"];
-    }
-    else if(x < 14 && map_state[x+1][y] == 0)
-    {
-        targetX = x + 1;
-        directionImage = [UIImage imageNamed:@"d_lefter"];
-    }
-    else if(x > 0 && map_state[x-1][y] == 0)
-    {
-        targetX = x - 1;
-        directionImage = [UIImage imageNamed:@"d_righter"];
-    }
-
-    if (directionImage == nil) {
-        return;
-    }
-
-    CGRect gridFrame = [self board_grid_frame];
-    CGFloat side = MIN(44.0, MAX(32.0, self.board_cell_size * 0.90));
-    CGPoint targetCenter = CGPointMake(CGRectGetMinX(gridFrame) + (targetX + 0.5) * self.board_cell_size,
-                                       CGRectGetMinY(gridFrame) + (targetY + 0.5) * self.board_cell_size);
-    _player_sure_btn.frame = CGRectMake(targetCenter.x - side * 0.5,
-                                        targetCenter.y - side * 0.5,
-                                        side,
-                                        side);
-    [_player_sure_btn setImage:directionImage forState:UIControlStateNormal];
-    _player_sure_btn.hidden=NO;
-    _player_sure_btn.userInteractionEnabled=YES;
-    [self.view addSubview:_player_sure_btn];
 }
 @end

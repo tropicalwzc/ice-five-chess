@@ -1056,6 +1056,7 @@ bool fc_prove_forced_win_candidate_session(
     const FCAIProfile *profile,
     FCProofResult *result);
 
+#if defined(FC_ENABLE_TEST_API)
 bool fc_test_candidate_proof_session_reuse(
     const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     int attacker,
@@ -1086,6 +1087,7 @@ bool fc_test_parallel_root_proof(
     int searchClass,
     const FCAIProfile *profile,
     FCProofResult *result);
+#endif
 
 bool fc_verify_proof(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
                      int attacker,
@@ -1105,9 +1107,11 @@ bool fc_audit_opponent_after_move(
     int x,
     int y,
     FCOpponentGuardAudit *audit);
+#if defined(FC_ENABLE_TEST_API)
 bool fc_test_opponent_guard_audit_better(
     const FCOpponentGuardAudit *candidate,
     const FCOpponentGuardAudit *current);
+#endif
 
 bool fc_opening_book_lookup(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
                             int side,

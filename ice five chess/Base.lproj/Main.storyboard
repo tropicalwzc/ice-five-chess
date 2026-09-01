@@ -129,14 +129,6 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DUV-Wh-MjS">
-                                <rect key="frame" x="116" y="193" width="42" height="42"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" red="0.0" green="0.56031829119999998" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <connections>
-                                    <action selector="sure_here:" destination="BYZ-38-t0r" eventType="touchUpInside" id="C1p-Me-rMH"/>
-                                </connections>
-                            </button>
                             <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0aT-aD-mtd">
                                 <rect key="frame" x="0.0" y="459" width="320" height="44"/>
                                 <items>
@@ -200,7 +192,6 @@
                         <outlet property="db_texter" destination="uBN-s2-2vu" id="uFa-Hm-cmN"/>
                         <outlet property="difficulty_choice_seg" destination="ixI-KZ-1we" id="ewB-16-EWr"/>
                         <outlet property="player_choice_seg" destination="5D8-WM-Ocr" id="Kdg-YU-4ol"/>
-                        <outlet property="player_sure_btn" destination="DUV-Wh-MjS" id="KuY-fV-Uhy"/>
                         <outlet property="rotater" destination="M8f-wq-cUF" id="S3u-pA-skA"/>
                         <outlet property="sudoback" destination="5xD-gQ-39w" id="aiE-4f-Yv8"/>
                     </connections>

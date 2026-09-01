@@ -29,7 +29,6 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
 
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UISegmentedControl *player_choice_seg;
-@property (weak, nonatomic) IBOutlet UIButton *player_sure_btn;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *difficulty_choice_seg;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *banbar;
 @property (weak, nonatomic) IBOutlet UILabel *db_texter;
@@ -587,7 +586,6 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
     }
 
     
-    _player_sure_btn.tag=1001;
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -1343,9 +1341,6 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
 - (IBAction)restart_act:(UIBarButtonItem *)sender {
     [self restart_funct];
 }
-- (IBAction)sure_here:(UIButton *)sender {
-    [self focus_click:chess_map[focus_x][focus_y]];
-}
 - (IBAction)undo_act:(UIBarButtonItem *)sender {
     if (think_flag == 1) {
         return;
@@ -1354,43 +1349,5 @@ static const NSInteger FCRecentMoveRingTag = 0x5FC2;
     [ice_fiver export_current_board:map_state];
     _db_texter.text=@"😠😡😤";
     [self flush_chess_map_according_to:map_state];
-}
--(void) following_act_with_x:(int)x y:(int)y
-{
-
-    _player_sure_btn.frame=CGRectMake(2000, 1000, 40, 40);
-    if(x>90 || map_state[x][y]!=0)
-        return;
-    
-    if(y>1 && map_state[x][y-1]==0)
-    {
-        [ _player_sure_btn setImage :[UIImage imageNamed:@"d_downer"] forState:UIControlStateNormal];
-        float px = x*perwidth-perwidth/3+5;
-        float py = ScreenHeight/2+(y-9.1)*perheight+5;
-        _player_sure_btn.frame=CGRectMake(px, py, 30, 30);
-    }
-    else if(y<14 && map_state[x][y+1]==0)
-    {
-        [ _player_sure_btn setImage :[UIImage imageNamed:@"d_upper"] forState:UIControlStateNormal];
-        float px = x*perwidth-perwidth/3+5;
-        float py = ScreenHeight/2+(y-6.9)*perheight+5;
-        _player_sure_btn.frame=CGRectMake(px, py, 30, 30);
-    }
-    else if(x<14&& map_state[x+1][y]==0)
-    {
-        [ _player_sure_btn setImage :[UIImage imageNamed:@"d_lefter"] forState:UIControlStateNormal];
-        float px = x*perwidth-perwidth/3+perwidth*1.1+5;
-        float py = ScreenHeight/2+(y-8)*perheight+5;
-        _player_sure_btn.frame=CGRectMake(px, py, 30, 30);
-    }
-    else if(x>1&& map_state[x-1][y]==0)
-    {
-        [ _player_sure_btn setImage :[UIImage imageNamed:@"d_righter"] forState:UIControlStateNormal];
-        float px = x*perwidth-perwidth/3-perwidth*1.1+5;
-        float py = ScreenHeight/2+(y-8)*perheight+5;
-        _player_sure_btn.frame=CGRectMake(px, py, 40, 40);
-    }
-    
-    [self.view addSubview:_player_sure_btn];
 }
 @end

@@ -5148,6 +5148,7 @@ static void fc_dfpn_search(FCProofContext *context,
     }
 }
 
+#if defined(FC_ENABLE_TEST_API)
 bool fc_test_dfpn_stalled_graph_respects_deadline(double *elapsedMilliseconds)
 {
     FCProofSession session;
@@ -5196,6 +5197,7 @@ bool fc_test_dfpn_stalled_graph_respects_deadline(double *elapsedMilliseconds)
            elapsed < 250.0 &&
            board[7][7] == 0;
 }
+#endif
 
 static bool fc_dfpn_build_certificate(FCProofContext *context,
                                       int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
@@ -6696,6 +6698,7 @@ bool fc_prove_forced_win_candidate_session(
     return proven;
 }
 
+#if defined(FC_ENABLE_TEST_API)
 bool fc_test_candidate_proof_session_reuse(
     const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     int attacker,
@@ -6726,6 +6729,7 @@ bool fc_test_candidate_proof_session_reuse(
            first->searchClass == second->searchClass &&
            first->distance == second->distance;
 }
+#endif
 
 typedef struct FCParallelProofBatch FCParallelProofBatch;
 
@@ -7325,6 +7329,7 @@ static bool fc_parallel_prove_forced_win(
     return proven;
 }
 
+#if defined(FC_ENABLE_TEST_API)
 bool fc_test_parallel_root_proof(
     const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     int attacker,
@@ -7342,6 +7347,7 @@ bool fc_test_parallel_root_proof(
         profile->proofMaxDepth, budget, profile->proofTimeBudgetMs,
         profile, result);
 }
+#endif
 
 static bool fc_move_is_safe(int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
                             int x,
@@ -10233,6 +10239,7 @@ static bool fc_guard_audit_better(const FCOpponentGuardAudit *candidate,
     return false;
 }
 
+#if defined(FC_ENABLE_TEST_API)
 bool fc_test_opponent_guard_audit_better(
     const FCOpponentGuardAudit *candidate,
     const FCOpponentGuardAudit *current)
@@ -10240,6 +10247,7 @@ bool fc_test_opponent_guard_audit_better(
     if (candidate == NULL || current == NULL) return false;
     return fc_guard_audit_better(candidate, current);
 }
+#endif
 
 static bool fc_guard_audit_matches_or_exceeds(
     const FCOpponentGuardAudit *candidate,
@@ -11013,6 +11021,7 @@ static bool fc_corpus_random_equivalent(
         abs(alternativeScore - bestScore) <= 10;
 }
 
+#if defined(FC_ENABLE_TEST_API)
 bool fc_test_corpus_random_equivalent(
     const FCCorpusCandidateTelemetry *best,
     int bestScore,
@@ -11043,6 +11052,7 @@ int fc_test_select_corpus_random_equivalent(
     fc_random_seed(&random, seed ^ UINT64_C(0x454c495445524e44));
     return equivalent[fc_random_next(&random) % (uint64_t)equivalentCount];
 }
+#endif
 
 static void fc_apply_candidate_own_win(
     const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],

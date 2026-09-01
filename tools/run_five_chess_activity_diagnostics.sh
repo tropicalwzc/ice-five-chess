@@ -6,6 +6,7 @@ OUTPUT_DIR="${TMPDIR:-/tmp}/five-chess-activity-diagnostics"
 mkdir -p "$OUTPUT_DIR"
 
 clang -std=c11 -O2 -Wall -Wextra -Werror -pedantic \
+  -DFC_ENABLE_TEST_API=1 \
   "$ROOT_DIR/ice five chess/FiveChessAI.c" \
   "$ROOT_DIR/tools/five_chess_activity_diagnostics.c" \
   -lm \

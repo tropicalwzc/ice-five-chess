@@ -3450,70 +3450,10 @@
 {
     return now_tech;
 }
--(void)set_ai_random_seed:(uint64_t)seed
-{
-    ai_random_seed=seed==0?0x6963656669766563ULL:seed;
-    ai_decision_sequence=0;
-}
 -(void)set_legacy_random_seed:(uint64_t)seed
 {
     legacy_random_isolated=YES;
     legacy_random_state=(uint32_t)(seed^(seed>>32));
-}
--(void)enable_optimized_path_depths
-{
-    harsh_four_depth=10;
-    harsh_double_three_depth=10;
-    harsh_forcing_depth=12;
-}
--(void)set_proof_guided_ai_enabled:(BOOL)enabled opening_book:(BOOL)openingBook
-{
-    production_ai_profile=enabled
-        ? fc_profile_proof_guided(openingBook)
-        : fc_profile_production();
-}
--(NSDictionary*)last_ai_analysis_summary
-{
-    return @{
-        @"x":@(last_ai_analysis.x),
-        @"y":@(last_ai_analysis.y),
-        @"score":@(last_ai_analysis.score),
-        @"tacticalClass":@(last_ai_analysis.tacticalClass),
-        @"tacticalName":[NSString stringWithUTF8String:fc_tactical_name(last_ai_analysis.tacticalClass)],
-        @"candidateCount":@(last_ai_analysis.candidateCount),
-        @"seed":@(last_ai_analysis.seed),
-        @"nodes":@(last_ai_analysis.stats.nodes),
-        @"transpositionHits":@(last_ai_analysis.stats.transpositionHits),
-        @"cutoffs":@(last_ai_analysis.stats.cutoffs),
-        @"completedDepth":@(last_ai_analysis.stats.completedDepth),
-        @"budgetExhausted":@(last_ai_analysis.stats.budgetExhausted),
-        @"elapsedMilliseconds":@(last_ai_analysis.stats.elapsedMilliseconds)
-        ,@"defaultSource":@(last_ai_analysis.defaultSource)
-        ,@"defaultX":@(last_ai_analysis.defaultX)
-        ,@"defaultY":@(last_ai_analysis.defaultY)
-        ,@"overrideReason":@(last_ai_analysis.overrideReason)
-        ,@"overrideName":[NSString stringWithUTF8String:fc_override_reason_name(last_ai_analysis.overrideReason)]
-        ,@"bookId":@(last_ai_analysis.bookId)
-        ,@"bookPly":@(last_ai_analysis.bookPly)
-        ,@"proofStatus":@(last_ai_analysis.proofStatus)
-        ,@"proofStatusName":[NSString stringWithUTF8String:fc_proof_status_name(last_ai_analysis.proofStatus)]
-        ,@"proofSearchClass":@(last_ai_analysis.proofSearchClass)
-        ,@"proofDistance":@(last_ai_analysis.proofDistance)
-        ,@"proofCertificateId":@(last_ai_analysis.proofCertificateId)
-        ,@"proofCertificateVerified":@(last_ai_analysis.proofCertificateVerified)
-        ,@"proofNodes":@(last_ai_analysis.proofNodes)
-        ,@"proofNumber":@(last_ai_analysis.proofNumber)
-        ,@"disproofNumber":@(last_ai_analysis.disproofNumber)
-        ,@"randomMode":@(last_ai_analysis.randomMode)
-        ,@"randomCandidateCount":@(last_ai_analysis.randomCandidateCount)
-        ,@"randomSelectionUsed":@(last_ai_analysis.randomSelectionUsed)
-    };
-}
--(NSString*)production_ai_profile_snapshot
-{
-    char buffer[8192]={};
-    fc_profile_snapshot(&production_ai_profile,buffer,sizeof(buffer));
-    return [NSString stringWithUTF8String:buffer];
 }
 -(void) teaching_current_step:(int[15][15])paint_map
 {

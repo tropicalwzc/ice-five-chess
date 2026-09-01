@@ -99,12 +99,7 @@
 -(void) update_border;
 -(void) clear_all_data;
 -(NSString*)get_now_tech;
--(void)set_ai_random_seed:(uint64_t)seed;
 -(void)set_legacy_random_seed:(uint64_t)seed;
--(void)enable_optimized_path_depths;
--(void)set_proof_guided_ai_enabled:(BOOL)enabled opening_book:(BOOL)openingBook;
--(NSDictionary*)last_ai_analysis_summary;
--(NSString*)production_ai_profile_snapshot;
 
 @end
 
