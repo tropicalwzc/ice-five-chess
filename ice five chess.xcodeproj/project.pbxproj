@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FC2000010000000000000001 /* ChessApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2000020000000000000001; };
+		FC2000010000000000000002 /* ChessBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2000020000000000000002; };
+		FC2000010000000000000003 /* ChessEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = FC2000020000000000000003; };
 		B41B33EB238BAF2C004C9908 /* opmenu.m in Sources */ = {isa = PBXBuildFile; fileRef = B41B33EA238BAF2C004C9908 /* opmenu.m */; };
 		B41B33ED238BB531004C9908 /* HDAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B41B33EC238BB531004C9908 /* HDAssets.xcassets */; };
 		B43C430A2286A38100871DD1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B43C43092286A38100871DD1 /* AppDelegate.m */; };
@@ -46,6 +49,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FC2000020000000000000001 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessApp.swift; sourceTree = "<group>"; };
+		FC2000020000000000000002 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessBoard.swift; sourceTree = "<group>"; };
+		FC2000020000000000000003 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChessEngine.m; sourceTree = "<group>"; };
+		FC2000020000000000000004 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChessEngine.h; sourceTree = "<group>"; };
+		FC2000020000000000000005 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Chess-Bridging-Header.h"; sourceTree = "<group>"; };
 		B41B33E9238BAF2C004C9908 /* opmenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opmenu.h; sourceTree = "<group>"; };
 		B41B33EA238BAF2C004C9908 /* opmenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = opmenu.m; sourceTree = "<group>"; };
 		B41B33EC238BB531004C9908 /* HDAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = HDAssets.xcassets; sourceTree = "<group>"; };
@@ -130,6 +138,11 @@
 		B43C43072286A38100871DD1 /* ice five chess */ = {
 			isa = PBXGroup;
 			children = (
+				FC2000020000000000000001,
+				FC2000020000000000000002,
+				FC2000020000000000000003,
+				FC2000020000000000000004,
+				FC2000020000000000000005,
 				B41B33EC238BB531004C9908 /* HDAssets.xcassets */,
 				B43C43492288281600871DD1 /* Assets.xcassets */,
 				B498B87422965D3E003D25A4 /* numbers.xcassets */,
@@ -285,9 +298,7 @@
 				B498B87522965D3F003D25A4 /* numbers.xcassets in Resources */,
 				B43C43182286A38200871DD1 /* LaunchScreen.storyboard in Resources */,
 				B43C434A2288281600871DD1 /* Assets.xcassets in Resources */,
-				B43C43102286A38100871DD1 /* Main.storyboard in Resources */,
 				B41B33ED238BB531004C9908 /* HDAssets.xcassets in Resources */,
-				B4D021DF238B810700A48508 /* HDMain.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,17 +323,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B4D021E4238B81D800A48508 /* HDViewController.m in Sources */,
-				B41B33EB238BAF2C004C9908 /* opmenu.m in Sources */,
-				B43C43132286A38100871DD1 /* ice_five_chess.xcdatamodeld in Sources */,
-				B499A9562290272A000D59CD /* file.m in Sources */,
-				B43C4356228848B300871DD1 /* smallwindow.m in Sources */,
+				FC2000010000000000000001 /* ChessApp.swift in Sources */,
+				FC2000010000000000000002 /* ChessBoard.swift in Sources */,
+				FC2000010000000000000003 /* ChessEngine.m in Sources */,
 				B43C433F2286A43700871DD1 /* doublethree.m in Sources */,
 				FA1000012F00000100000001 /* FiveChessAI.c in Sources */,
-				B43C430D2286A38100871DD1 /* ViewController.m in Sources */,
-				B43C431B2286A38200871DD1 /* main.m in Sources */,
-				B43C430A2286A38100871DD1 /* AppDelegate.m in Sources */,
-				B4D021E5238B81D800A48508 /* HDsmallwindow.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -515,6 +520,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "Tropical-fish.ice-five-chess";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+				SWIFT_OBJC_BRIDGING_HEADER = "ice five chess/Chess-Bridging-Header.h";
+				ENABLE_PREVIEWS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -537,6 +545,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "Tropical-fish.ice-five-chess";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+				SWIFT_OBJC_BRIDGING_HEADER = "ice five chess/Chess-Bridging-Header.h";
+				ENABLE_PREVIEWS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
