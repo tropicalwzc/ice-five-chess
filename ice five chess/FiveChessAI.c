@@ -158,7 +158,6 @@ static _Thread_local FCProofSession *fcActiveProofSession;
 static _Thread_local FCEarlyVCFDecisionCache *fcActiveEarlyVCFCache;
 static _Thread_local uint32_t fcProofGeneration;
 static _Thread_local double fcActiveDecisionDeadlineMilliseconds;
-static _Thread_local const FCAIProfile *fcActiveBranchFirstProfile;
 static _Thread_local int fcProofRootFilterX = -1;
 static _Thread_local int fcProofRootFilterY = -1;
 /* A parallel root job carries one immutable, coordinator-enumerated gain.
@@ -178,134 +177,6 @@ static _Thread_local uint64_t fcActiveParallelNodeBudget;
 static _Thread_local FCDecisionLedger *fcActiveDecisionLedger;
 static _Thread_local uint64_t fcParallelNodeTokensRemaining;
 static _Thread_local uint64_t fcDecisionLedgerNodeTokensRemaining;
-static _Thread_local uint32_t fcActiveParallelNodeBlockSize;
-static _Thread_local bool fcActiveParallelTokenBlocksEnabled;
-static _Thread_local bool fcWorkerPoolTaskActive;
-
-typedef void (*FCWorkerPoolTask)(void *context, int workerSlot);
-
-typedef struct {
-    pthread_mutex_t mutex;
-    pthread_cond_t workAvailable;
-    pthread_cond_t workComplete;
-    pthread_t threads[FC_PARALLEL_MAX_WORKERS];
-    int threadCount;
-    bool initialized;
-    bool shuttingDown;
-    bool taskActive;
-    uint64_t generation;
-    FCWorkerPoolTask task;
-    void *taskContext;
-    int requestedWorkers;
-    int completedWorkers;
-} FCWorkerPool;
-
-typedef struct {
-    FCWorkerPool *pool;
-    int workerSlot;
-} FCWorkerPoolSlot;
-
-static FCWorkerPool fcWorkerPool;
-static FCWorkerPoolSlot fcWorkerPoolSlots[FC_PARALLEL_MAX_WORKERS];
-static pthread_once_t fcWorkerPoolOnce = PTHREAD_ONCE_INIT;
-
-static void *fc_worker_pool_main(void *opaque)
-{
-    FCWorkerPoolSlot *slot = opaque;
-    FCWorkerPool *pool = slot->pool;
-    uint64_t seenGeneration = 0;
-    for (;;) {
-        pthread_mutex_lock(&pool->mutex);
-        while (!pool->shuttingDown &&
-               (!pool->taskActive ||
-                pool->generation == seenGeneration ||
-                slot->workerSlot >= pool->requestedWorkers)) {
-            (void)pthread_cond_wait(&pool->workAvailable, &pool->mutex);
-        }
-        if (pool->shuttingDown) {
-            pthread_mutex_unlock(&pool->mutex);
-            return NULL;
-        }
-        seenGeneration = pool->generation;
-        FCWorkerPoolTask task = pool->task;
-        void *context = pool->taskContext;
-        pthread_mutex_unlock(&pool->mutex);
-
-        fcWorkerPoolTaskActive = true;
-        if (task != NULL) task(context, slot->workerSlot);
-        fcWorkerPoolTaskActive = false;
-
-        pthread_mutex_lock(&pool->mutex);
-        pool->completedWorkers++;
-        if (pool->completedWorkers >= pool->requestedWorkers)
-            (void)pthread_cond_signal(&pool->workComplete);
-        pthread_mutex_unlock(&pool->mutex);
-    }
-}
-
-static void fc_worker_pool_bootstrap(void)
-{
-    if (pthread_mutex_init(&fcWorkerPool.mutex, NULL) != 0) return;
-    if (pthread_cond_init(&fcWorkerPool.workAvailable, NULL) != 0) return;
-    if (pthread_cond_init(&fcWorkerPool.workComplete, NULL) != 0) return;
-    fcWorkerPool.initialized = true;
-    for (int i = 0; i < FC_PARALLEL_MAX_WORKERS; i++) {
-        fcWorkerPoolSlots[i].pool = &fcWorkerPool;
-        fcWorkerPoolSlots[i].workerSlot = i;
-        if (pthread_create(&fcWorkerPool.threads[i], NULL,
-                           fc_worker_pool_main, &fcWorkerPoolSlots[i]) != 0)
-            break;
-        fcWorkerPool.threadCount++;
-    }
-    if (fcWorkerPool.threadCount == 0)
-        fcWorkerPool.initialized = false;
-}
-
-static bool fc_worker_pool_ensure(void)
-{
-    (void)pthread_once(&fcWorkerPoolOnce, fc_worker_pool_bootstrap);
-    return fcWorkerPool.initialized && fcWorkerPool.threadCount > 0;
-}
-
-/* Returns the number of pool slots that completed this batch.  A zero return
- * is deliberately a safe signal to use the legacy direct/threaded fallback. */
-static int fc_worker_pool_dispatch(FCWorkerPoolTask task,
-                                   void *context,
-                                   int requestedWorkers)
-{
-    if (task == NULL || requestedWorkers <= 0 || fcWorkerPoolTaskActive ||
-        !fc_worker_pool_ensure()) return 0;
-    pthread_mutex_lock(&fcWorkerPool.mutex);
-    if (fcWorkerPool.taskActive || fcWorkerPool.threadCount <= 0) {
-        pthread_mutex_unlock(&fcWorkerPool.mutex);
-        return 0;
-    }
-    int workers = requestedWorkers < fcWorkerPool.threadCount
-        ? requestedWorkers : fcWorkerPool.threadCount;
-    if (workers <= 0) {
-        pthread_mutex_unlock(&fcWorkerPool.mutex);
-        return 0;
-    }
-    fcWorkerPool.generation++;
-    if (fcWorkerPool.generation == 0) fcWorkerPool.generation++;
-    fcWorkerPool.task = task;
-    fcWorkerPool.taskContext = context;
-    fcWorkerPool.requestedWorkers = workers;
-    fcWorkerPool.completedWorkers = 0;
-    fcWorkerPool.taskActive = true;
-    (void)pthread_cond_broadcast(&fcWorkerPool.workAvailable);
-    while (fcWorkerPool.completedWorkers < workers)
-        (void)pthread_cond_wait(&fcWorkerPool.workComplete,
-                                &fcWorkerPool.mutex);
-    fcWorkerPool.taskActive = false;
-    fcWorkerPool.task = NULL;
-    fcWorkerPool.taskContext = NULL;
-    fcWorkerPool.requestedWorkers = 0;
-    fcWorkerPool.completedWorkers = 0;
-    (void)pthread_cond_broadcast(&fcWorkerPool.workAvailable);
-    pthread_mutex_unlock(&fcWorkerPool.mutex);
-    return workers;
-}
 
 typedef struct {
     int attacker;
@@ -333,12 +204,7 @@ typedef struct {
     FCPostponedEdge postponedEdges[FC_DFPN_POSTPONED_CAPACITY];
     int postponedCount;
     uint64_t postponedInsertionIndex;
-    bool branchFirstEnabled;
-    int branchFirstMinRemainingDepth;
-    int branchFirstMinBranchCount;
-    int branchFirstMaxBranches;
-    int branchFirstPreviewDepth;
-    bool branchWaveDispatched;
+
 } FCProofContext;
 
 typedef struct {
@@ -349,23 +215,6 @@ typedef struct {
     uint64_t edgeProof;
     uint64_t edgeDisproof;
 } FCBranchWaveSummary;
-
-static void fc_branch_first_order_threats(
-    FCProofContext *context,
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    FCThreat *threats,
-    int threatCount,
-    int *order);
-
-static bool fc_branch_first_try_wave(
-    FCProofContext *context,
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    const FCPoint *refutations,
-    int refutationCount,
-    int childDepth,
-    int attackNode,
-    int attackSeverity,
-    FCBranchWaveSummary *summary);
 
 #define FC_PROOF_INFINITY (UINT64_MAX / 4ULL)
 #define FC_PROOF_ALGORITHM_VERSION UINT64_C(0x0005000300010001)
@@ -398,51 +247,13 @@ static const int fcDirections[4][2] = {
 
 static _Thread_local FCProofDiagnostics fcProofDiagnostics;
 
-static uint32_t fc_parallel_token_block_size(void)
-{
-    return fcActiveParallelNodeBlockSize > 0
-        ? fcActiveParallelNodeBlockSize
-        : FC_PARALLEL_TOKEN_BLOCK_DEFAULT;
-}
 
-static bool fc_claim_token_block(_Atomic uint64_t *counter,
-                                 uint64_t limit,
-                                 uint64_t *remaining)
-{
-    if (counter == NULL || remaining == NULL || limit == 0) return false;
-    uint64_t prior = atomic_load_explicit(counter, memory_order_relaxed);
-    uint64_t block = fc_parallel_token_block_size();
-    for (;;) {
-        if (prior >= limit) return false;
-        uint64_t available = limit - prior;
-        uint64_t claim = available < (uint64_t)block
-            ? available : (uint64_t)block;
-        uint64_t next = prior + claim;
-        if (atomic_compare_exchange_weak_explicit(
-                counter, &prior, next, memory_order_acq_rel,
-                memory_order_relaxed)) {
-            *remaining = claim;
-            fcProofDiagnostics.parallelTokenBlockClaims++;
-            fcProofDiagnostics.parallelTokenBlockTokens += claim;
-            return true;
-        }
-    }
-}
 
 static bool fc_parallel_node_token_take(void)
 {
     if (fcActiveParallelNodeCounter == NULL ||
         fcActiveParallelNodeBudget == 0) return true;
-    if (fcActiveParallelTokenBlocksEnabled) {
-        if (fcParallelNodeTokensRemaining == 0 &&
-            !fc_claim_token_block(fcActiveParallelNodeCounter,
-                                  fcActiveParallelNodeBudget,
-                                  &fcParallelNodeTokensRemaining))
-            return false;
-        fcParallelNodeTokensRemaining--;
-        fcProofDiagnostics.parallelBudgetTokens++;
-        return true;
-    }
+
     uint64_t prior = atomic_fetch_add_explicit(
         fcActiveParallelNodeCounter, 1, memory_order_relaxed);
     if (prior >= fcActiveParallelNodeBudget) {
@@ -455,34 +266,11 @@ static bool fc_parallel_node_token_take(void)
 }
 
 static void fc_parallel_node_token_return_one(void)
-{
-    if (fcActiveParallelTokenBlocksEnabled &&
-        fcParallelNodeTokensRemaining < UINT64_MAX)
-        fcParallelNodeTokensRemaining++;
-}
+{}
 
 static void fc_parallel_node_token_flush(void)
 {
-    if (fcActiveParallelTokenBlocksEnabled &&
-        fcActiveParallelNodeCounter != NULL &&
-        fcParallelNodeTokensRemaining > 0) {
-        atomic_fetch_sub_explicit(fcActiveParallelNodeCounter,
-                                  fcParallelNodeTokensRemaining,
-                                  memory_order_acq_rel);
-        fcProofDiagnostics.parallelTokenBlockReturns +=
-            fcParallelNodeTokensRemaining;
-        fcParallelNodeTokensRemaining = 0;
-    }
-    if (fcActiveParallelTokenBlocksEnabled &&
-        fcActiveDecisionLedger != NULL &&
-        fcDecisionLedgerNodeTokensRemaining > 0) {
-        atomic_fetch_sub_explicit(
-            &fcActiveDecisionLedger->nodesConsumed,
-            fcDecisionLedgerNodeTokensRemaining, memory_order_acq_rel);
-        fcProofDiagnostics.parallelTokenBlockReturns +=
-            fcDecisionLedgerNodeTokensRemaining;
-        fcDecisionLedgerNodeTokensRemaining = 0;
-    }
+
 }
 
 static void fc_proof_diagnostics_merge(FCProofDiagnostics *destination,
@@ -782,24 +570,7 @@ bool fc_decision_ledger_consume_node(FCDecisionLedger *ledger)
             return false;
         }
     }
-    if (!guardPhase && fcActiveParallelTokenBlocksEnabled &&
-        fcActiveDecisionLedger == ledger) {
-        uint64_t ordinaryBudget = guardReserved
-            ? ledger->nodeBudget - ledger->guardNodeReservation
-            : ledger->nodeBudget;
-        if (fcDecisionLedgerNodeTokensRemaining == 0 &&
-            !fc_claim_token_block(&ledger->nodesConsumed,
-                                  ordinaryBudget,
-                                  &fcDecisionLedgerNodeTokensRemaining)) {
-            if (!guardReserved)
-                atomic_store_explicit(&ledger->exhausted, true,
-                                      memory_order_release);
-            fcProofDiagnostics.decisionLedgerExhaustions++;
-            return false;
-        }
-        fcDecisionLedgerNodeTokensRemaining--;
-        return true;
-    }
+
     uint64_t prior = atomic_fetch_add_explicit(
         &ledger->nodesConsumed, 1, memory_order_relaxed);
     uint64_t limit = !guardPhase && guardReserved
@@ -1088,44 +859,21 @@ FCAIProfile fc_profile_frozen_four_star_control(void)
     return profile;
 }
 
-FCAIProfile fc_profile_five_star(void)
+FCAIProfile fc_profile_five_star_early_micro_vcf_candidate(void)
 {
+    /* Frozen production 5.8.1: explicitly includes the required proof engine
+     * and final opponent guard; no retired five-star factory is inherited. */
     FCAIProfile profile = fc_profile_proof_guided(false);
-    profile.name = "five-star-curated-opening-advisor";
-    profile.version = "5.1.0-elite-rule-partitioned-local-v2";
+    profile.name = "five-star-early-micro-vcf-sentinel-candidate";
+    profile.version = "5.8.1-early-micro-vcf-adaptive-16k-80ms-2a";
     profile.eliteCorpusEnabled = true;
     profile.corpusScoreMargin = -80;
     profile.corpusMinGames = 2;
     profile.corpusMinEvents = 1;
     profile.proofMaxDepth = 12;
     profile.proofNodeBudget = 36000;
-    profile.proofTimeBudgetMs = 320;
+    profile.proofTimeBudgetMs = 1200;
     profile.proofTranspositionCapacity = 65536;
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_loss_aware_candidate(void)
-{
-    FCAIProfile profile = fc_profile_five_star();
-    profile.name = "five-star-loss-aware-candidate";
-    profile.version = "5.2.1-certificate-dependency-widening";
-    profile.proofCandidateStagesEnabled = true;
-    profile.lossAwareEnabled = true;
-    profile.quietThreatEnabled = true;
-    /* Zero means progressively inspect every legal escape until the frozen
-     * emergency wall budget expires.  Certificate dependencies remain first,
-     * so this is wider without turning the search into an untargeted scan. */
-    profile.proofEscapeCandidateLimit = 0;
-    profile.proofQuietRootLimit = 3;
-    profile.proofEmergencyTimeBudgetMs = 1100;
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_proof_engine_candidate(void)
-{
-    FCAIProfile profile = fc_profile_five_star();
-    profile.name = "five-star-incremental-dfpn-candidate";
-    profile.version = "5.4.1-transactional-deadline-root-parallel-5s";
     profile.proofEngineCandidate = true;
     profile.proofCandidateStagesEnabled = true;
     profile.parallelProofEnabled = true;
@@ -1133,23 +881,10 @@ FCAIProfile fc_profile_five_star_proof_engine_candidate(void)
     profile.quietThreatEnabled = true;
     profile.proofEscapeCandidateLimit = 8;
     profile.proofQuietRootLimit = 3;
-    /* This is a single-decision safety ceiling, not a fresh allowance for
-     * each candidate.  The session implementation enforces the shared cap. */
-    profile.proofParallelNodeBudget = 288000;
-    profile.proofWorkerCount = 8;
-    profile.proofTimeBudgetMs = 1200;
+    profile.proofParallelNodeBudget = 192000;
+    profile.proofWorkerCount = 4;
     profile.proofEmergencyTimeBudgetMs = 4200;
-    /* Stop search with a small result-finalization reserve so the complete
-     * player-visible decision remains below the five-second hard limit. */
     profile.decisionTimeBudgetMs = 4500;
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_opponent_guard_candidate(void)
-{
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
-    profile.name = "five-star-opponent-forcing-guard-candidate";
-    profile.version = "5.8.0-vcf-first-opponent-guard-4w";
     profile.opponentGuardEnabled = true;
     profile.opponentGuardVCFMaxDepth = 9;
     profile.opponentGuardVCFNodeBudget = 48000;
@@ -1161,19 +896,9 @@ FCAIProfile fc_profile_five_star_opponent_guard_candidate(void)
     profile.opponentGuardReservedTimeMs = 1400;
     profile.opponentGuardStructuralVCTEnabled = true;
     profile.opponentGuardMaxAlternatives = 8;
-    profile.proofWorkerCount = 4;
-    profile.proofParallelNodeBudget = 192000;
     profile.decisionHardLimitMs = 5000;
     profile.decisionLedgerVersion = 2;
     profile.decisionNodeBudget = 288000;
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_early_micro_vcf_candidate(void)
-{
-    FCAIProfile profile = fc_profile_five_star_opponent_guard_candidate();
-    profile.name = "five-star-early-micro-vcf-sentinel-candidate";
-    profile.version = "5.8.1-early-micro-vcf-adaptive-16k-80ms-2a";
     profile.earlyVCFSentinelEnabled = true;
     profile.earlyVCFSentinelPolicy = FC_EARLY_VCF_POLICY_ADAPTIVE;
     profile.earlyVCFBaseDepth = 5;
@@ -1181,182 +906,6 @@ FCAIProfile fc_profile_five_star_early_micro_vcf_candidate(void)
     profile.earlyVCFNodeBudget = 16000;
     profile.earlyVCFTimeBudgetMs = 80;
     profile.earlyVCFMaxAlternatives = 2;
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_black_double_three_candidate(void)
-{
-    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
-    profile.name = "five-star-black-double-three-defense-candidate";
-    profile.blackDoubleThreeDefenseEnabled = true;
-    profile.blackDoubleThreeMaxGains = 16;
-    profile.blackDoubleThreeMaxCandidates = 32;
-    profile.blackDoubleThreeTimeBudgetMs = 80;
-    profile.blackDoubleThreeDefenseWeight = 40;
-    profile.version = "5.8.2-black-double-three-soft-40-16g-32c-80ms";
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_black_defense_recovery_candidate(void)
-{
-    FCAIProfile profile = fc_profile_five_star_black_double_three_candidate();
-    profile.name = "five-star-black-defense-recovery-candidate";
-    profile.version =
-        "5.8.2-black-defense-recovery-v1-baseline-block-fork-vct";
-    profile.opponentGuardImmediateBlockEnabled = true;
-    profile.opponentGuardTwoStepForkEnabled = true;
-    profile.opponentGuardForkMaxReplies = FC_BOARD_SIZE * FC_BOARD_SIZE;
-    profile.opponentGuardForkNodeBudget = 120000;
-    profile.opponentGuardForkTimeBudgetMs = 150;
-    profile.opponentGuardVCTOnUnknownEnabled = true;
-    profile.opponentGuardRecoveryReservedNodes = 112000;
-    profile.opponentGuardRecoveryReservedTimeMs = 1600;
-    profile.opponentGuardReservedNodes = 112000;
-    profile.opponentGuardReservedTimeMs = 1600;
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_v541_thread_scheduler_candidate(void)
-{
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
-    profile.name = "five-star-v541-persistent-thread-scheduler";
-    profile.version = "5.4.2-v541-persistent-pool-token-blocks-8w-5s";
-    profile.persistentWorkerPoolEnabled = true;
-    profile.parallelTokenBlockEnabled = true;
-    /* The v5.7 fixed-position scan found 64 to be the best measured
-     * amortization point for this scheduler on the current machine. */
-    profile.parallelTokenBlockSize = 64;
-    /* Persistent workers still need to close private DFPN arenas after the
-     * internal deadline.  Leave a bounded finalization slice so a heavy root
-     * batch cannot cross the player-visible five-second gate. */
-    profile.proofEmergencyTimeBudgetMs = 3800;
-    /* The persistent-pool coordinator has a larger join/merge tail than the
-     * historical per-decision path; reserve 300 ms for that finalization. */
-    profile.decisionTimeBudgetMs = 4200;
-    /* Keep the original 5.4.1 resource semantics.  The scheduler study is
-     * intended to isolate pool/session/token overhead; importing v5.7's
-     * ledger and recovery layers would measure extra policy work instead. */
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_color_hybrid_candidate(void)
-{
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
-    profile.name = "five-star-color-specialized-hybrid-candidate";
-    profile.version = "5.5.1-white-proof-engine-black-v51-stochastic-5s";
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_v521_serial_hybrid_control(void)
-{
-    FCAIProfile profile = fc_profile_five_star_loss_aware_candidate();
-    profile.name = "five-star-v521-serial-black-hybrid-control";
-    profile.version = "5.6.2-white-v541-black-v521-serial1-active-proof-5s";
-    profile.parallelProofEnabled = false;
-    profile.proofWorkerCount = 1;
-    profile.proofParallelNodeBudget = profile.proofNodeBudget;
-    profile.decisionTimeBudgetMs = 4500;
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_v521_parallel_hybrid_candidate(void)
-{
-    FCAIProfile profile = fc_profile_five_star_loss_aware_candidate();
-    profile.name = "five-star-v521-parallel-black-hybrid-candidate";
-    profile.version = "5.6.2-white-v541-black-v521-overlap-aware-parallel8-5s";
-    profile.parallelProofEnabled = true;
-    profile.proofWorkerCount = 8;
-    profile.proofParallelNodeBudget = profile.proofNodeBudget * UINT64_C(8);
-    profile.decisionTimeBudgetMs = 4500;
-    profile.decisionHardLimitMs = 5000;
-    profile.decisionLedgerVersion = 1;
-    profile.decisionNodeBudget = profile.proofParallelNodeBudget;
-    profile.decisionCorpusQueryBudget = FC_MAX_CORPUS_CANDIDATES * 2;
-    profile.incrementalLegalityEnabled = true;
-    profile.validateLegalityCache = true;
-    profile.recoverySearchEnabled = true;
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_v57_hybrid_candidate(void)
-{
-    /* 5.7 keeps the color-specialized search contract that was measured in
-     * 5.6, but gives the candidate an independent identity.  The black
-     * component is still the loss-aware v5.2.1 search; the improvement in
-     * this change is its root/escape dispatcher and legality cache rather
-     * than a silent rewrite of the historical profile. */
-    FCAIProfile profile = fc_profile_five_star_v521_parallel_hybrid_candidate();
-    profile.name = "five-star-v57-white-v541-black-v521";
-    profile.version = "5.7.0-white-v541-black-v521-independent-root-parallel8-5s";
-    profile.parallelProofEnabled = true;
-    profile.proofWorkerCount = 8;
-    profile.proofParallelNodeBudget = profile.proofNodeBudget * UINT64_C(8);
-    profile.decisionTimeBudgetMs = 4500;
-    profile.decisionHardLimitMs = 5000;
-    profile.decisionLedgerVersion = 1;
-    profile.decisionNodeBudget = profile.proofParallelNodeBudget;
-    profile.decisionMemoryBudgetBytes = 256U * 1024U * 1024U;
-    profile.decisionCorpusQueryBudget = FC_MAX_CORPUS_CANDIDATES * 2;
-    profile.incrementalLegalityEnabled = true;
-    profile.validateLegalityCache = true;
-    profile.recoverySearchEnabled = true;
-    profile.forkFirstRecoveryEnabled = false;
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_v57_fork_recovery_candidate(void)
-{
-    FCAIProfile profile = fc_profile_five_star_v57_hybrid_candidate();
-    profile.name = "five-star-v57-fork-recovery-opt-in";
-    profile.version = "5.7.0-fork-recovery-ledger-opt-in";
-    profile.forkFirstRecoveryEnabled = true;
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_v57_thread_scheduler_candidate(void)
-{
-    FCAIProfile profile = fc_profile_five_star_v57_hybrid_candidate();
-    profile.name = "five-star-v57-persistent-thread-scheduler";
-    profile.version = "5.7.1-persistent-pool-token-blocks-8w";
-    profile.persistentWorkerPoolEnabled = true;
-    profile.parallelTokenBlockEnabled = true;
-    profile.parallelTokenBlockSize = 16;
-    return profile;
-}
-
-FCAIProfile fc_profile_five_star_v57_branch_first_candidate(void)
-{
-    FCAIProfile profile = fc_profile_five_star_v57_hybrid_candidate();
-    profile.name = "five-star-v57-branch-first-recursive";
-    profile.version = "5.7.2-branch-first-preview-recursive-pool-14d-5s";
-    /* Root obligations are intentionally serial.  The worker pool is used
-     * only by the long-recursion branch wave below the root. */
-    profile.parallelProofEnabled = false;
-    profile.persistentWorkerPoolEnabled = true;
-    profile.parallelTokenBlockEnabled = true;
-    profile.parallelTokenBlockSize = 16;
-    profile.proofWorkerCount = 8;
-    profile.proofMaxDepth = 14;
-    profile.proofNodeBudget = 72000;
-    profile.proofParallelNodeBudget = profile.proofNodeBudget * UINT64_C(8);
-    profile.proofTimeBudgetMs = 1300;
-    profile.proofEmergencyTimeBudgetMs = 4200;
-    profile.decisionTimeBudgetMs = 4500;
-    profile.decisionHardLimitMs = 5000;
-    profile.decisionLedgerVersion = 1;
-    profile.decisionNodeBudget = profile.proofParallelNodeBudget;
-    profile.decisionMemoryBudgetBytes = 256U * 1024U * 1024U;
-    profile.branchFirstSearchEnabled = true;
-    profile.branchFirstMinRemainingDepth = 10;
-    profile.branchFirstMinBranchCount = 2;
-    profile.branchFirstMaxBranches = 32;
-    profile.branchFirstPreviewDepth = 2;
-    /* Spend the branch pool's extra headroom on forcing continuations.  The
-     * base proof horizon remains 14; only an eligible recursive wave may
-     * reach the tactical cap, and all work still uses the shared ledger. */
-    profile.branchFirstAdvancedFourDepthBonus = 2;
-    profile.branchFirstAdvancedThreeDepthBonus = 1;
-    profile.branchFirstTacticalDepthCap = 16;
     return profile;
 }
 
@@ -2565,160 +2114,10 @@ static bool fc_has_neighbor(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     return false;
 }
 
-typedef struct {
-    int count;
-    int examined;
-    bool complete;
-    bool overflow;
-    bool deadline;
-    double elapsedMilliseconds;
-} FCDoubleThreeScanResult;
-
-static bool fc_double_three_scan_expired(double startedMilliseconds,
-                                         uint32_t timeBudgetMs)
-{
-    if (fc_decision_deadline_reached()) return true;
-    return timeBudgetMs > 0 &&
-        fc_now_milliseconds() - startedMilliseconds >=
-            (double)timeBudgetMs;
-}
-
 /* A direction is an open three only when one four-cell window containing the
  * tested move has exactly three stones and one empty cell, and both exterior
  * cells are on-board and empty.  This deliberately counts directions, not
  * the number of continuation points generated by a threat search. */
-static uint8_t fc_double_three_direction_mask(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int moveX,
-    int moveY,
-    int side)
-{
-    uint8_t mask = 0;
-    for (int direction = 0; direction < 4; direction++) {
-        int dx = fcDirections[direction][0];
-        int dy = fcDirections[direction][1];
-        for (int startOffset = -3; startOffset <= 0; startOffset++) {
-            int startX = moveX + startOffset * dx;
-            int startY = moveY + startOffset * dy;
-            int endX = startX + 3 * dx;
-            int endY = startY + 3 * dy;
-            if (!fc_inside(startX - dx, startY - dy) ||
-                !fc_inside(endX + dx, endY + dy)) continue;
-            bool containsMove = false;
-            int stones = 0;
-            int empties = 0;
-            bool blocked = false;
-            for (int step = 0; step < 4; step++) {
-                int x = startX + step * dx;
-                int y = startY + step * dy;
-                if (x == moveX && y == moveY) containsMove = true;
-                if (board[x][y] == side) stones++;
-                else if (board[x][y] == 0) empties++;
-                else blocked = true;
-            }
-            if (!containsMove || blocked || stones != 3 || empties != 1)
-                continue;
-            if (board[startX - dx][startY - dy] != 0 ||
-                board[endX + dx][endY + dy] != 0) continue;
-            mask |= (uint8_t)(1U << direction);
-            break;
-        }
-    }
-    return mask;
-}
-
-static int fc_scan_white_double_three_gains_bounded(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    bool forbiddenBlack,
-    int maxGains,
-    uint32_t timeBudgetMs,
-    FCDoubleThreeGain *out,
-    int capacity,
-    FCDoubleThreeScanResult *scan)
-{
-    if (scan != NULL) {
-        *scan = (FCDoubleThreeScanResult){
-            .complete = true
-        };
-    }
-    if (board == NULL || out == NULL || capacity <= 0 ||
-        maxGains <= 0 || scan == NULL) {
-        if (scan != NULL) scan->complete = false;
-        return 0;
-    }
-    double started = fc_now_milliseconds();
-    int mutableBoard[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(mutableBoard, board, sizeof(mutableBoard));
-    bool hasStone = false;
-    for (int x = 0; x < FC_BOARD_SIZE && !hasStone; x++) {
-        for (int y = 0; y < FC_BOARD_SIZE; y++) {
-            if (board[x][y] != 0) {
-                hasStone = true;
-                break;
-            }
-        }
-    }
-    if (!hasStone) {
-        scan->elapsedMilliseconds = fc_now_milliseconds() - started;
-        return 0;
-    }
-
-    int count = 0;
-    for (int x = 0; x < FC_BOARD_SIZE; x++) {
-        for (int y = 0; y < FC_BOARD_SIZE; y++) {
-            if (fc_double_three_scan_expired(started, timeBudgetMs)) {
-                scan->complete = false;
-                scan->deadline = true;
-                goto finished;
-            }
-            if (board[x][y] != 0 ||
-                !fc_has_neighbor((const int (*)[FC_BOARD_SIZE])board,
-                                 x, y, 4)) continue;
-            if (!fc_is_legal_move(
-                    (const int (*)[FC_BOARD_SIZE])mutableBoard,
-                    x, y, -1, forbiddenBlack)) continue;
-            scan->examined++;
-            mutableBoard[x][y] = -1;
-            uint8_t directionMask = fc_has_five(
-                (const int (*)[FC_BOARD_SIZE])mutableBoard, x, y, -1)
-                ? 0 : fc_double_three_direction_mask(
-                    (const int (*)[FC_BOARD_SIZE])mutableBoard,
-                    x, y, -1);
-            mutableBoard[x][y] = 0;
-            int directionCount = 0;
-            for (int bit = 0; bit < 4; bit++)
-                directionCount +=
-                    (directionMask & (uint8_t)(1U << bit)) != 0;
-            if (directionMask == 0 || directionCount < 2)
-                continue;
-            if (count >= capacity || count >= maxGains) {
-                scan->complete = false;
-                scan->overflow = true;
-                goto finished;
-            }
-            out[count++] = (FCDoubleThreeGain){x, y, directionMask};
-        }
-    }
-
-finished:
-    scan->count = count;
-    scan->elapsedMilliseconds = fc_now_milliseconds() - started;
-    return count;
-}
-
-int fc_enumerate_white_double_three_gains(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    bool forbiddenBlack,
-    FCDoubleThreeGain *out,
-    int capacity,
-    bool *complete)
-{
-    FCDoubleThreeScanResult scan;
-    int count = fc_scan_white_double_three_gains_bounded(
-        board, forbiddenBlack, capacity, 0, out, capacity, &scan);
-    if (complete != NULL) *complete = scan.complete;
-    return count;
-}
 
 static int fc_compare_candidate(const void *left, const void *right)
 {
@@ -2805,434 +2204,6 @@ static bool fc_add_point(FCPoint *points,
     }
     if (*count >= capacity) return false;
     points[(*count)++] = point;
-    return true;
-}
-
-static int fc_double_three_bit_count(uint8_t mask)
-{
-    int count = 0;
-    for (int bit = 0; bit < 4; bit++)
-        count += (mask & (uint8_t)(1U << bit)) != 0;
-    return count;
-}
-
-static int fc_double_three_residual_count_after_black_move(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int x,
-    int y,
-    bool forbiddenBlack,
-    const FCDoubleThreeGain *gains,
-    int gainCount)
-{
-    int after[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(after, board, sizeof(after));
-    if (!fc_make_move(after, x, y, 1, forbiddenBlack)) return INT_MAX;
-    int residual = 0;
-    for (int i = 0; i < gainCount; i++) {
-        FCDoubleThreeGain gain = gains[i];
-        if (!fc_is_legal_move(
-                (const int (*)[FC_BOARD_SIZE])after,
-                gain.x, gain.y, -1, forbiddenBlack)) continue;
-        after[gain.x][gain.y] = -1;
-        bool remains = !fc_has_five(
-            (const int (*)[FC_BOARD_SIZE])after, gain.x, gain.y, -1) &&
-            fc_double_three_bit_count(
-                fc_double_three_direction_mask(
-                    (const int (*)[FC_BOARD_SIZE])after,
-                    gain.x, gain.y, -1)) >= 2;
-        after[gain.x][gain.y] = 0;
-        if (remains) residual++;
-    }
-    return residual;
-}
-
-static bool fc_double_three_append_pool_candidate(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    const FCAIProfile *profile,
-    FCCandidate *pool,
-    int *count,
-    int capacity,
-    int x,
-    int y,
-    bool *overflow)
-{
-    if (pool == NULL || count == NULL || profile == NULL) return false;
-    if (!fc_is_legal_move(board, x, y, side, forbiddenBlack)) return true;
-    for (int i = 0; i < *count; i++) {
-        if (pool[i].x == x && pool[i].y == y) return true;
-    }
-    if (*count >= capacity) {
-        if (overflow != NULL) *overflow = true;
-        return false;
-    }
-    bool ownWin = fc_wins_if_placed((int (*)[FC_BOARD_SIZE])board,
-                                    x, y, side);
-    pool[*count] = (FCCandidate){
-        .x = x,
-        .y = y,
-        .score = ownWin
-            ? FC_WIN_SCORE
-            : FC_WIN_SCORE / 2 + fc_move_heuristic(
-                (int (*)[FC_BOARD_SIZE])board, x, y, side, profile),
-        .tacticalClass = ownWin ? FC_TACTICAL_IMMEDIATE_WIN
-                                : FC_TACTICAL_MUST_DEFEND,
-        .safe = true,
-        .probability = 0.0,
-        .opponentImmediateWinCount = 0,
-        .forkRisk = ownWin ? FC_FORK_RISK_OWN_WIN : FC_FORK_RISK_UNKNOWN,
-        .forkProbeComplete = ownWin
-    };
-    (*count)++;
-    return true;
-}
-
-static int fc_double_three_defense_weight(const FCAIProfile *profile)
-{
-    if (profile == NULL) return 100;
-    if (profile->blackDoubleThreeDefenseWeight < 0) return 0;
-    if (profile->blackDoubleThreeDefenseWeight > 100) return 100;
-    return profile->blackDoubleThreeDefenseWeight;
-}
-
-static int fc_double_three_manhattan_distance(
-    int firstX,
-    int firstY,
-    int secondX,
-    int secondY)
-{
-    int dx = firstX - secondX;
-    int dy = firstY - secondY;
-    if (dx < 0) dx = -dx;
-    if (dy < 0) dy = -dy;
-    return dx + dy;
-}
-
-static long long fc_double_three_soft_switch_value(
-    const FCAIProfile *profile,
-    const FCCandidate *candidate,
-    int baselineX,
-    int baselineY)
-{
-    if (candidate == NULL) return LLONG_MIN;
-    int weight = fc_double_three_defense_weight(profile);
-    int distance = fc_double_three_manhattan_distance(
-        candidate->x, candidate->y, baselineX, baselineY);
-    /* Candidate scores are intentionally kept in their existing scale.  A
-     * 350-point unit per percentage point makes the 40% profile charge about
-     * 21k per grid step, which is large enough to avoid the measured remote
-     * switches while still allowing a nearby, high-value blocker through. */
-    long long distancePenalty = (long long)distance *
-        (long long)(100 - weight) * 350LL;
-    return (long long)candidate->score - distancePenalty;
-}
-
-static void fc_double_three_prepend_generated_candidate(
-    FCCandidate *generated,
-    int *generatedCount,
-    const FCCandidate *candidate)
-{
-    if (generated == NULL || generatedCount == NULL || candidate == NULL)
-        return;
-    for (int i = 0; i < *generatedCount; i++) {
-        if (generated[i].x == candidate->x &&
-            generated[i].y == candidate->y) return;
-    }
-    int count = *generatedCount;
-    if (count < FC_MAX_CANDIDATES) {
-        memmove(&generated[1], &generated[0],
-                (size_t)count * sizeof(generated[0]));
-        count++;
-    } else {
-        memmove(&generated[1], &generated[0],
-                (size_t)(FC_MAX_CANDIDATES - 1) * sizeof(generated[0]));
-        count = FC_MAX_CANDIDATES;
-    }
-    generated[0] = *candidate;
-    *generatedCount = count;
-}
-
-static void fc_recovery_merge_guard_portfolio(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    const FCAnalysisResult *snapshot,
-    const FCCandidate *handoffCandidates,
-    int handoffCount,
-    FCCandidate *generatedCandidates,
-    int *generatedCount)
-{
-    if (snapshot == NULL || generatedCandidates == NULL ||
-        generatedCount == NULL) return;
-    for (int i = 0; i < handoffCount; i++)
-        fc_double_three_prepend_generated_candidate(
-            generatedCandidates, generatedCount, &handoffCandidates[i]);
-
-    const int coordinates[][2] = {
-        {snapshot->recoveryHandoffX, snapshot->recoveryHandoffY},
-        {snapshot->recoveryDefaultX, snapshot->recoveryDefaultY},
-        {snapshot->recoveryBaselineX, snapshot->recoveryBaselineY}
-    };
-    for (size_t i = 0; i < sizeof(coordinates) / sizeof(coordinates[0]); i++) {
-        int x = coordinates[i][0];
-        int y = coordinates[i][1];
-        if (!fc_is_legal_move(board, x, y, side, forbiddenBlack)) continue;
-        FCCandidate candidate = {
-            .x = x,
-            .y = y,
-            .score = snapshot->score,
-            .tacticalClass = FC_TACTICAL_NORMAL,
-            .safe = true,
-            .probability = 0.0,
-            .opponentImmediateWinCount = -1,
-            .forkRisk = FC_FORK_RISK_UNKNOWN,
-            .forkProbeComplete = false
-        };
-        fc_double_three_prepend_generated_candidate(
-            generatedCandidates, generatedCount, &candidate);
-    }
-}
-
-static bool fc_apply_black_double_three_preemption(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    const FCAIProfile *profile,
-    FCCandidate *generatedCandidates,
-    int *generatedCount,
-    FCAnalysisResult *baseline)
-{
-    if (baseline == NULL || profile == NULL ||
-        !profile->blackDoubleThreeDefenseEnabled || side != 1)
-        return true;
-
-    baseline->doubleThreeStatus = FC_DOUBLE_THREE_STATUS_NONE;
-    baseline->doubleThreeScanComplete = false;
-    baseline->doubleThreeScanOverflow = false;
-    baseline->doubleThreeGainCount = 0;
-    baseline->doubleThreeProvisionalResidualCount = -1;
-    baseline->doubleThreeSelectedResidualCount = -1;
-    baseline->doubleThreeCandidatesExamined = 0;
-    baseline->doubleThreeCandidatesEliminated = 0;
-    baseline->doubleThreeOwnVCFBypass = false;
-    baseline->doubleThreeStructuralOverride = false;
-    baseline->doubleThreeRollback = false;
-    baseline->doubleThreeDeadlineAnomaly = false;
-    fcProofDiagnostics.doubleThreeScans++;
-
-    bool immediateWin = baseline->tacticalClass == FC_TACTICAL_IMMEDIATE_WIN &&
-        fc_is_legal_move(board, baseline->x, baseline->y, side,
-                         forbiddenBlack);
-    bool ownVCF = baseline->tacticalClass == FC_TACTICAL_FORCED_ATTACK &&
-        baseline->proofStatus == FC_PROOF_PROVEN_WIN &&
-        baseline->proofSearchClass == FC_PROOF_SEARCH_VCF &&
-        baseline->proofCertificateVerified;
-    if (immediateWin || ownVCF) {
-        baseline->doubleThreeStatus = FC_DOUBLE_THREE_STATUS_BYPASSED;
-        baseline->doubleThreeOwnVCFBypass = true;
-        fcProofDiagnostics.doubleThreeOwnVCFBypasses++;
-        return true;
-    }
-
-    int maxGains = profile->blackDoubleThreeMaxGains;
-    int maxCandidates = profile->blackDoubleThreeMaxCandidates;
-    if (maxGains <= 0) maxGains = FC_MAX_CANDIDATES;
-    if (maxCandidates <= 0) maxCandidates = FC_MAX_CANDIDATES;
-    if (maxGains > FC_MAX_CANDIDATES) maxGains = FC_MAX_CANDIDATES;
-    if (maxCandidates > FC_MAX_CANDIDATES * 4)
-        maxCandidates = FC_MAX_CANDIDATES * 4;
-
-    FCDoubleThreeGain gains[FC_MAX_CANDIDATES];
-    FCDoubleThreeScanResult scan;
-    int gainCount = fc_scan_white_double_three_gains_bounded(
-        board, forbiddenBlack, maxGains,
-        profile->blackDoubleThreeTimeBudgetMs,
-        gains, FC_MAX_CANDIDATES, &scan);
-    baseline->doubleThreeScanComplete = scan.complete;
-    baseline->doubleThreeScanOverflow = scan.overflow;
-    baseline->doubleThreeGainCount = gainCount;
-    baseline->doubleThreeDeadlineAnomaly = scan.deadline;
-    fcProofDiagnostics.doubleThreeGains += (uint64_t)gainCount;
-    if (scan.deadline)
-        fcProofDiagnostics.doubleThreeDeadlineAnomalies++;
-    if (!scan.complete) {
-        baseline->doubleThreeStatus = FC_DOUBLE_THREE_STATUS_UNKNOWN;
-        fcProofDiagnostics.doubleThreeIncompleteScans++;
-        return true;
-    }
-    fcProofDiagnostics.doubleThreeCompleteScans++;
-    if (gainCount == 0) {
-        baseline->doubleThreeStatus =
-            FC_DOUBLE_THREE_STATUS_COMPLETE_NO_GAINS;
-        return true;
-    }
-
-    int poolCapacity = FC_MAX_CANDIDATES * 4;
-    FCCandidate pool[FC_MAX_CANDIDATES * 4];
-    int poolCount = 0;
-    bool poolOverflow = false;
-    (void)fc_double_three_append_pool_candidate(
-        board, side, forbiddenBlack, profile, pool, &poolCount,
-        poolCapacity, baseline->x, baseline->y, &poolOverflow);
-
-    int targetEnd = poolCount;
-    for (int i = 0; i < gainCount; i++) {
-        FCDoubleThreeGain gain = gains[i];
-        (void)fc_double_three_append_pool_candidate(
-            board, side, forbiddenBlack, profile, pool, &poolCount,
-            poolCapacity, gain.x, gain.y, &poolOverflow);
-        for (int direction = 0; direction < 4; direction++) {
-            if ((gain.directionMask & (uint8_t)(1U << direction)) == 0)
-                continue;
-            int dx = fcDirections[direction][0];
-            int dy = fcDirections[direction][1];
-            for (int offset = -4; offset <= 4; offset++) {
-                if (offset == 0) continue;
-                (void)fc_double_three_append_pool_candidate(
-                    board, side, forbiddenBlack, profile, pool,
-                    &poolCount, poolCapacity,
-                    gain.x + offset * dx, gain.y + offset * dy,
-                    &poolOverflow);
-            }
-        }
-    }
-    targetEnd = poolCount;
-    for (int i = 0; i < baseline->candidateCount; i++) {
-        (void)fc_double_three_append_pool_candidate(
-            board, side, forbiddenBlack, profile, pool, &poolCount,
-            poolCapacity, baseline->candidates[i].x,
-            baseline->candidates[i].y, &poolOverflow);
-    }
-    for (int i = 0; i < (generatedCount != NULL ? *generatedCount : 0); i++) {
-        (void)fc_double_three_append_pool_candidate(
-            board, side, forbiddenBlack, profile, pool, &poolCount,
-            poolCapacity, generatedCandidates[i].x,
-            generatedCandidates[i].y, &poolOverflow);
-    }
-
-    /* Make the targeted portfolio available to the existing opponent guard
-     * as well.  The guard still owns proof status; this only changes its
-     * deterministic candidate frontier. */
-    if (generatedCandidates != NULL && generatedCount != NULL) {
-        for (int i = 1; i < targetEnd; i++)
-            fc_double_three_prepend_generated_candidate(
-                generatedCandidates, generatedCount, &pool[i]);
-    }
-
-    if (poolOverflow || poolCount > maxCandidates) {
-        baseline->doubleThreeScanOverflow = true;
-        baseline->doubleThreeStatus = FC_DOUBLE_THREE_STATUS_UNKNOWN;
-        fcProofDiagnostics.doubleThreeIncompleteScans++;
-        return true;
-    }
-
-    uint64_t beforeHash = fc_board_key(
-        board, side, forbiddenBlack, FC_PROOF_SEARCH_NONE, 0);
-    int beforeStones = fc_board_stone_count(board);
-    baseline->doubleThreeProvisionalResidualCount =
-        fc_double_three_residual_count_after_black_move(
-            board, baseline->x, baseline->y, forbiddenBlack,
-            gains, gainCount);
-    int bestIndex = -1;
-    int bestResidual = INT_MAX;
-    for (int i = 0; i < poolCount; i++) {
-        if (fc_decision_deadline_reached()) {
-            baseline->doubleThreeStatus = FC_DOUBLE_THREE_STATUS_UNKNOWN;
-            baseline->doubleThreeScanOverflow = true;
-            baseline->doubleThreeDeadlineAnomaly = true;
-            fcProofDiagnostics.doubleThreeDeadlineAnomalies++;
-            fcProofDiagnostics.doubleThreeIncompleteScans++;
-            return true;
-        }
-        int residual = fc_double_three_residual_count_after_black_move(
-            board, pool[i].x, pool[i].y, forbiddenBlack, gains, gainCount);
-        if (residual == INT_MAX) continue;
-        baseline->doubleThreeCandidatesExamined++;
-        fcProofDiagnostics.doubleThreeCandidatesExamined++;
-        if (residual > 0) {
-            baseline->doubleThreeCandidatesEliminated++;
-            fcProofDiagnostics.doubleThreeCandidatesEliminated++;
-        }
-        if (bestIndex < 0 || residual < bestResidual ||
-            (residual == bestResidual &&
-             fc_compare_candidate(&pool[i], &pool[bestIndex]) < 0)) {
-            bestIndex = i;
-            bestResidual = residual;
-        }
-    }
-    if (bestIndex < 0) {
-        baseline->doubleThreeStatus = FC_DOUBLE_THREE_STATUS_UNKNOWN;
-        fcProofDiagnostics.doubleThreeIncompleteScans++;
-        return true;
-    }
-
-    int baselineIndex = -1;
-    for (int i = 0; i < poolCount; i++) {
-        if (pool[i].x == baseline->x && pool[i].y == baseline->y) {
-            baselineIndex = i;
-            break;
-        }
-    }
-
-    uint64_t afterHash = fc_board_key(
-        board, side, forbiddenBlack, FC_PROOF_SEARCH_NONE, 0);
-    bool restored = beforeHash == afterHash &&
-        beforeStones == fc_board_stone_count(board);
-    if (!restored) {
-        baseline->doubleThreeRollback = true;
-        baseline->doubleThreeStatus = FC_DOUBLE_THREE_STATUS_UNKNOWN;
-        fcProofDiagnostics.doubleThreeRollbacks++;
-        return true;
-    }
-
-    /* A profile with a reduced defense weight must not rewrite a move when
-     * the existing move already removes every scanned gain.  For a single
-     * double-three gain, the safe blocker also has to overcome a distance
-     * cost before it can structurally preempt the existing move.  Multiple
-     * independent gains retain the strict residual-first behavior. */
-    if (baselineIndex >= 0 &&
-        baseline->doubleThreeProvisionalResidualCount == 0) {
-        bestIndex = baselineIndex;
-        bestResidual = 0;
-    } else if (baselineIndex >= 0 && gainCount == 1 &&
-               baseline->doubleThreeProvisionalResidualCount > 0 &&
-               bestResidual == 0 &&
-               fc_double_three_defense_weight(profile) < 100) {
-        long long baselineValue = fc_double_three_soft_switch_value(
-            profile, &pool[baselineIndex], baseline->x, baseline->y);
-        long long defenseValue = fc_double_three_soft_switch_value(
-            profile, &pool[bestIndex], baseline->x, baseline->y);
-        if (defenseValue <= baselineValue) {
-            bestIndex = baselineIndex;
-            bestResidual = baseline->doubleThreeProvisionalResidualCount;
-        }
-    }
-
-    baseline->doubleThreeSelectedResidualCount = bestResidual;
-    baseline->candidateCount = poolCount < FC_MAX_CANDIDATES
-        ? poolCount : FC_MAX_CANDIDATES;
-    memcpy(baseline->candidates, pool,
-           (size_t)baseline->candidateCount * sizeof(pool[0]));
-    if (bestResidual == 0) {
-        baseline->doubleThreeStatus = FC_DOUBLE_THREE_STATUS_COMPLETE_SAFE;
-        baseline->tacticalClass = FC_TACTICAL_MUST_DEFEND;
-    } else {
-        baseline->doubleThreeStatus =
-            FC_DOUBLE_THREE_STATUS_COMPLETE_UNRESOLVED;
-    }
-    if (pool[bestIndex].x != baseline->x ||
-        pool[bestIndex].y != baseline->y) {
-        baseline->x = pool[bestIndex].x;
-        baseline->y = pool[bestIndex].y;
-        baseline->score = pool[bestIndex].score;
-        baseline->tacticalClass = bestResidual == 0
-            ? FC_TACTICAL_MUST_DEFEND : pool[bestIndex].tacticalClass;
-        baseline->overrideReason = FC_OVERRIDE_DOUBLE_THREE_PREEMPTION;
-        baseline->doubleThreeStructuralOverride = bestResidual == 0;
-        if (baseline->doubleThreeStructuralOverride)
-            fcProofDiagnostics.doubleThreeStructuralOverrides++;
-    }
     return true;
 }
 
@@ -3957,12 +2928,7 @@ static bool fc_proof_session_begin(
             &session->position, rootBoard, forbiddenBlack);
         session->positionBasedOnRoot = session->rootPositionReady;
         if (!session->rootPositionReady) return false;
-        if (profile->validateLegalityCache &&
-            !fc_incremental_validate_legality_cache(&session->position)) {
-            /* Keep the position usable, but force all subsequent legality
-             * queries through the reference oracle for this decision. */
-            session->position.forbiddenLegalityCacheValid = false;
-        }
+
     }
     if (session->tableCapacity > 0) {
         session->graphNodeCapacity = profile->proofGraphNodeCapacity > 0
@@ -4105,10 +3071,6 @@ static bool fc_proof_session_reset_for_query(
         session->rootPositionReady = true;
         session->positionBasedOnRoot = true;
         session->forbiddenBlack = forbiddenBlack;
-    }
-    if (profile->validateLegalityCache &&
-        !fc_incremental_validate_legality_cache(&session->position)) {
-        session->position.forbiddenLegalityCacheValid = false;
     }
 
     session->nodesUsed = 0;
@@ -5436,10 +4398,7 @@ static int fc_proof_search_attacker(int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     uint64_t rootProof = FC_PROOF_INFINITY;
     uint64_t rootDisproof = 0;
     int threatOrder[FC_MAX_THREATS];
-    if (context->branchFirstEnabled && parent == -1) {
-        fc_branch_first_order_threats(
-            context, board, threats, threatCount, threatOrder);
-    } else {
+    {
         fc_order_threats_by_dependency(
             threats, threatCount,
             context->session != NULL ? context->searchClass
@@ -5494,46 +4453,7 @@ static int fc_proof_search_attacker(int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
             context->aborted = true;
             return FC_PROOF_UNKNOWN;
         }
-        bool branchWaveEligible = context->branchFirstEnabled &&
-            !context->branchWaveDispatched && parent != -1 &&
-            remainingDepth >= context->branchFirstMinRemainingDepth &&
-            refutationCount >= context->branchFirstMinBranchCount &&
-            (context->branchFirstMaxBranches <= 0 ||
-             refutationCount <= context->branchFirstMaxBranches) &&
-            fc_effective_worker_count(fcActiveBranchFirstProfile) > 1 &&
-            !fcWorkerPoolTaskActive && !fc_decision_deadline_reached();
-        if (branchWaveEligible) {
-            FCBranchWaveSummary branchSummary;
-            memset(&branchSummary, 0, sizeof(branchSummary));
-            context->branchWaveDispatched = true;
-            if (fc_branch_first_try_wave(
-                    context, board, refutations, refutationCount,
-                    remainingDepth - 2, attackNode, threat->severity,
-                    &branchSummary)) {
-                if (branchSummary.allProven) {
-                    bestDistance = refutationCount == 0 ? 3
-                        : branchSummary.maximumChildDistance + 2;
-                    fc_proof_unmake_move(context, board,
-                                         threat->gain.x, threat->gain.y);
-                    if (distance != NULL) *distance = bestDistance;
-                    if (proofNumber != NULL) *proofNumber = 0;
-                    if (disproofNumber != NULL)
-                        *disproofNumber = FC_PROOF_INFINITY;
-                    return FC_PROOF_PROVEN_WIN;
-                }
-                rootProof = branchSummary.edgeProof < rootProof
-                    ? branchSummary.edgeProof : rootProof;
-                rootDisproof = fc_proof_saturated_add(
-                    rootDisproof, branchSummary.edgeDisproof);
-                sawUnknown = sawUnknown || branchSummary.sawUnknown;
-                fc_proof_unmake_move(context, board,
-                                     threat->gain.x, threat->gain.y);
-                context->certificateCount = checkpoint;
-                if (context->aborted || context->certificateOverflow)
-                    return FC_PROOF_UNKNOWN;
-                continue;
-            }
-        }
+
         bool allProven = true;
         int maximumChildDistance = 0;
         uint64_t edgeProof = 0;
@@ -5631,636 +4551,6 @@ static int fc_proof_search_attacker(int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     }
     return sawUnknown || context->aborted
         ? FC_PROOF_UNKNOWN : FC_PROOF_NO_FORCED_WIN_IN_SCOPE;
-}
-
-static int fc_branch_first_preview_score(
-    FCProofContext *context,
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    const FCThreat *threat,
-    bool *complete)
-{
-    if (complete != NULL) *complete = true;
-    if (context == NULL || board == NULL || threat == NULL) {
-        if (complete != NULL) *complete = false;
-        return INT_MIN;
-    }
-    if (fc_global_proof_deadline_reached()) {
-        if (complete != NULL) *complete = false;
-        return INT_MIN;
-    }
-    int preview[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(preview, board, sizeof(preview));
-    if (!fc_is_legal_move((const int (*)[FC_BOARD_SIZE])preview,
-                          threat->gain.x, threat->gain.y,
-                          context->attacker, context->forbiddenBlack)) {
-        if (complete != NULL) *complete = false;
-        return INT_MIN;
-    }
-    preview[threat->gain.x][threat->gain.y] = context->attacker;
-    int ownImmediate = fc_count_local_immediate_wins(
-        preview, threat->gain.x, threat->gain.y, context->attacker,
-        context->forbiddenBlack, NULL, 0);
-    int advancedThree = fc_count_local_open_four_creators(
-        preview, threat->gain.x, threat->gain.y, context->attacker,
-        context->forbiddenBlack, NULL, FC_MAX_THREAT_POINTS, NULL);
-    int opponentImmediate = fc_count_immediate_wins(
-        preview, -context->attacker, context->forbiddenBlack, NULL, 0);
-    int dependencyPoints = (int)fc_threat_mask_count(
-        threat->certificateZoneMask);
-    int score = threat->severity * 1000000;
-    score += ownImmediate * 20000;
-    score += threat->costCount * 4000;
-    score += advancedThree * 2500;
-    score += threat->restCount * 1000;
-    score += dependencyPoints * 8;
-    score -= opponentImmediate * 16000;
-    if (context->branchFirstPreviewDepth > 1) {
-        int shallowReplies = fc_count_local_immediate_wins(
-            preview, threat->gain.x, threat->gain.y, -context->attacker,
-            context->forbiddenBlack, NULL, 0);
-        score -= shallowReplies * 1200;
-    }
-    if (fc_global_proof_deadline_reached() && complete != NULL)
-        *complete = false;
-    return score;
-}
-
-static void fc_branch_first_order_threats(
-    FCProofContext *context,
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    FCThreat *threats,
-    int threatCount,
-    int *order)
-{
-    if (order == NULL || threatCount <= 0) return;
-    fc_order_threats_by_dependency(
-        threats, threatCount, context != NULL ? context->searchClass
-                                              : FC_PROOF_SEARCH_NONE,
-        order);
-    if (context == NULL || !context->branchFirstEnabled) return;
-    int scores[FC_MAX_THREATS];
-    bool complete = true;
-    for (int index = 0; index < threatCount; index++) {
-        int threatIndex = order[index];
-        bool previewComplete = true;
-        scores[threatIndex] = fc_branch_first_preview_score(
-            context, board, &threats[threatIndex], &previewComplete);
-        fcProofDiagnostics.branchFirstPreviewBranches++;
-        if (threats[threatIndex].severity == FC_THREAT_FOUR_THREE ||
-            threats[threatIndex].severity == FC_THREAT_OPEN_FOUR ||
-            threats[threatIndex].severity == FC_THREAT_FOUR)
-            fcProofDiagnostics.branchFirstAdvancedFourPreviews++;
-        if (threats[threatIndex].severity == FC_THREAT_OPEN_THREE)
-            fcProofDiagnostics.branchFirstAdvancedThreePreviews++;
-        if (!previewComplete) complete = false;
-        if (!complete) break;
-    }
-    if (!complete) {
-        fcProofDiagnostics.branchFirstPreviewIncomplete++;
-        return;
-    }
-    /* The dependency order is already canonical.  Stable insertion sorting
-     * keeps equal preview scores reproducible without coordinate races. */
-    for (int i = 1; i < threatCount; i++) {
-        int value = order[i];
-        int j = i;
-        while (j > 0 && scores[order[j - 1]] < scores[value]) {
-            order[j] = order[j - 1];
-            j--;
-        }
-        order[j] = value;
-    }
-}
-
-static bool fc_branch_first_is_advanced_four(int severity)
-{
-    return severity == FC_THREAT_FOUR_THREE ||
-           severity == FC_THREAT_FOUR ||
-           severity == FC_THREAT_OPEN_FOUR;
-}
-
-static bool fc_branch_first_is_advanced_three(int severity)
-{
-    return severity == FC_THREAT_OPEN_THREE;
-}
-
-static int fc_branch_first_child_depth(
-    const FCAIProfile *profile,
-    int baseDepth,
-    int attackSeverity)
-{
-    if (profile == NULL || baseDepth <= 0) return baseDepth;
-    int bonus = fc_branch_first_is_advanced_four(attackSeverity)
-        ? profile->branchFirstAdvancedFourDepthBonus
-        : fc_branch_first_is_advanced_three(attackSeverity)
-        ? profile->branchFirstAdvancedThreeDepthBonus : 0;
-    if (bonus <= 0) return baseDepth;
-    int depth = baseDepth;
-    if (bonus > INT_MAX - depth) depth = INT_MAX;
-    else depth += bonus;
-    int cap = profile->branchFirstTacticalDepthCap;
-    if (cap > baseDepth && depth > cap) depth = cap;
-    return depth;
-}
-
-typedef struct FCBranchFirstBatch FCBranchFirstBatch;
-
-typedef struct {
-    FCBranchFirstBatch *batch;
-    FCProofDiagnostics diagnostics;
-} FCBranchFirstWorker;
-
-struct FCBranchFirstBatch {
-    const int (*board)[FC_BOARD_SIZE];
-    int attacker;
-    bool forbiddenBlack;
-    int searchClass;
-    int childDepth;
-    uint64_t perJobNodeBudget;
-    uint64_t aggregateNodeBudget;
-    uint32_t perJobTimeBudgetMs;
-    size_t transpositionCapacity;
-    FCAIProfile profile;
-    FCDecisionLedger *ledger;
-    const FCPoint *replies;
-    int replyCount;
-    FCProofResult *results;
-    bool *completed;
-    _Atomic int nextJob;
-    _Atomic int completedJobs;
-    _Atomic int activeWorkers;
-    _Atomic int maxConcurrentWorkers;
-    _Atomic uint64_t consumedNodeTokens;
-    double absoluteDeadlineMilliseconds;
-};
-
-static void fc_branch_first_initialize_unknown(
-    FCProofResult *result,
-    int searchClass,
-    int childDepth)
-{
-    if (result == NULL) return;
-    memset(result, 0, sizeof(*result));
-    result->x = -1;
-    result->y = -1;
-    result->status = FC_PROOF_UNKNOWN;
-    result->searchClass = searchClass;
-    result->completedDepth = childDepth;
-    result->budgetExhausted = true;
-}
-
-static void *fc_branch_first_worker_main(void *opaque)
-{
-    FCBranchFirstWorker *worker = opaque;
-    if (worker == NULL || worker->batch == NULL) return NULL;
-    FCBranchFirstBatch *batch = worker->batch;
-    double priorDeadline = fcActiveDecisionDeadlineMilliseconds;
-    const FCAIProfile *priorBranchProfile = fcActiveBranchFirstProfile;
-    int priorFilterX = fcProofRootFilterX;
-    int priorFilterY = fcProofRootFilterY;
-    const FCThreat *priorRootThreat = fcActiveRootThreat;
-    FCDecisionLedger *priorLedger = fcActiveDecisionLedger;
-    _Atomic uint64_t *priorParallelCounter = fcActiveParallelNodeCounter;
-    uint64_t priorParallelBudget = fcActiveParallelNodeBudget;
-    uint64_t priorParallelTokens = fcParallelNodeTokensRemaining;
-    uint64_t priorLedgerTokens = fcDecisionLedgerNodeTokensRemaining;
-    uint32_t priorBlockSize = fcActiveParallelNodeBlockSize;
-    bool priorBlocksEnabled = fcActiveParallelTokenBlocksEnabled;
-    FCProofSession *priorSession = fcActiveProofSession;
-    fc_proof_diagnostics_reset();
-    fcActiveBranchFirstProfile = NULL;
-    fcProofRootFilterX = -1;
-    fcProofRootFilterY = -1;
-    fcActiveRootThreat = NULL;
-    fcActiveDecisionDeadlineMilliseconds = batch->absoluteDeadlineMilliseconds;
-    fcActiveDecisionLedger = batch->ledger;
-    fcActiveParallelNodeCounter = &batch->consumedNodeTokens;
-    fcActiveParallelNodeBudget = batch->aggregateNodeBudget;
-    fcParallelNodeTokensRemaining = 0;
-    fcDecisionLedgerNodeTokensRemaining = 0;
-    fcActiveParallelNodeBlockSize = batch->profile.parallelTokenBlockSize;
-    fcActiveParallelTokenBlocksEnabled =
-        batch->profile.parallelTokenBlockEnabled;
-    int active = atomic_fetch_add_explicit(
-        &batch->activeWorkers, 1, memory_order_acq_rel) + 1;
-    int observed = atomic_load_explicit(
-        &batch->maxConcurrentWorkers, memory_order_relaxed);
-    while (active > observed &&
-           !atomic_compare_exchange_weak_explicit(
-               &batch->maxConcurrentWorkers, &observed, active,
-               memory_order_relaxed, memory_order_relaxed)) {
-        /* The failed compare-exchange refreshes observed. */
-    }
-
-    FCAIProfile jobProfile = batch->profile;
-    jobProfile.parallelProofEnabled = false;
-    jobProfile.persistentWorkerPoolEnabled = false;
-    jobProfile.branchFirstSearchEnabled = false;
-    jobProfile.proofWorkerCount = 1;
-    jobProfile.proofParallelNodeBudget = 0;
-    jobProfile.proofMaxDepth = batch->childDepth;
-    jobProfile.proofNodeBudget = batch->perJobNodeBudget;
-    jobProfile.proofTimeBudgetMs = batch->perJobTimeBudgetMs;
-    jobProfile.proofEmergencyTimeBudgetMs = batch->perJobTimeBudgetMs;
-    FCProofSession session;
-    FCProofSession *previousSession = fcActiveProofSession;
-    bool sessionReady = fc_proof_session_begin(
-        &session, &jobProfile, batch->board, batch->forbiddenBlack);
-    if (!sessionReady) {
-        for (;;) {
-            int index = atomic_fetch_add_explicit(
-                &batch->nextJob, 1, memory_order_relaxed);
-            if (index >= batch->replyCount) break;
-            fc_branch_first_initialize_unknown(
-                &batch->results[index], batch->searchClass,
-                batch->childDepth);
-            batch->completed[index] = true;
-            atomic_fetch_add_explicit(
-                &batch->completedJobs, 1, memory_order_relaxed);
-        }
-    } else {
-        for (;;) {
-            if (fc_decision_deadline_reached()) {
-                fcProofDiagnostics.branchFirstDeadlineStops++;
-                break;
-            }
-            int index = atomic_fetch_add_explicit(
-                &batch->nextJob, 1, memory_order_relaxed);
-            if (index >= batch->replyCount) break;
-            FCProofResult *result = &batch->results[index];
-            fc_branch_first_initialize_unknown(
-                result, batch->searchClass, batch->childDepth);
-            int alternative[FC_BOARD_SIZE][FC_BOARD_SIZE];
-            memcpy(alternative, batch->board, sizeof(alternative));
-            if (!fc_make_move(alternative, batch->replies[index].x,
-                              batch->replies[index].y,
-                              -batch->attacker, batch->forbiddenBlack)) {
-                batch->completed[index] = true;
-                atomic_fetch_add_explicit(
-                    &batch->completedJobs, 1, memory_order_relaxed);
-                continue;
-            }
-            if (fc_has_five(
-                    (const int (*)[FC_BOARD_SIZE])alternative,
-                    batch->replies[index].x, batch->replies[index].y,
-                    -batch->attacker)) {
-                result->status = FC_PROOF_NO_FORCED_WIN_IN_SCOPE;
-                result->proofNumber = FC_PROOF_INFINITY;
-                result->disproofNumber = 0;
-                result->budgetExhausted = false;
-                batch->completed[index] = true;
-                atomic_fetch_add_explicit(
-                    &batch->completedJobs, 1, memory_order_relaxed);
-                continue;
-            }
-            if (!fc_proof_session_reset_for_query(
-                    &session, &jobProfile,
-                    (const int (*)[FC_BOARD_SIZE])alternative,
-                    batch->forbiddenBlack)) {
-                fcProofDiagnostics.branchFirstDeadlineStops++;
-                break;
-            }
-            session.nodeBudget = batch->perJobNodeBudget;
-            (void)fc_prove_forced_win(
-                (const int (*)[FC_BOARD_SIZE])alternative,
-                batch->attacker, batch->forbiddenBlack,
-                batch->searchClass, batch->childDepth,
-                batch->perJobNodeBudget, batch->perJobTimeBudgetMs,
-                batch->transpositionCapacity, result);
-            fc_parallel_node_token_flush();
-            batch->completed[index] = true;
-            atomic_fetch_add_explicit(
-                &batch->completedJobs, 1, memory_order_relaxed);
-        }
-        fc_proof_session_end(&session, previousSession);
-    }
-    fc_parallel_node_token_flush();
-    worker->diagnostics = fc_proof_diagnostics_get();
-    fcActiveProofSession = priorSession;
-    fcActiveBranchFirstProfile = priorBranchProfile;
-    fcProofRootFilterX = priorFilterX;
-    fcProofRootFilterY = priorFilterY;
-    fcActiveRootThreat = priorRootThreat;
-    fcActiveDecisionDeadlineMilliseconds = priorDeadline;
-    fcActiveParallelNodeCounter = priorParallelCounter;
-    fcActiveParallelNodeBudget = priorParallelBudget;
-    fcActiveDecisionLedger = priorLedger;
-    fcParallelNodeTokensRemaining = priorParallelTokens;
-    fcDecisionLedgerNodeTokensRemaining = priorLedgerTokens;
-    fcActiveParallelNodeBlockSize = priorBlockSize;
-    fcActiveParallelTokenBlocksEnabled = priorBlocksEnabled;
-    atomic_fetch_sub_explicit(&batch->activeWorkers, 1, memory_order_acq_rel);
-    return NULL;
-}
-
-typedef struct {
-    FCBranchFirstBatch *batch;
-    FCBranchFirstWorker *workers;
-} FCBranchFirstPoolTask;
-
-static void fc_branch_first_pool_task(void *opaque, int workerSlot)
-{
-    FCBranchFirstPoolTask *task = opaque;
-    if (task == NULL || task->batch == NULL || task->workers == NULL ||
-        workerSlot < 0 || workerSlot >= FC_PARALLEL_MAX_WORKERS) return;
-    task->workers[workerSlot].batch = task->batch;
-    (void)fc_branch_first_worker_main(&task->workers[workerSlot]);
-}
-
-static bool fc_branch_first_merge_certificate(
-    FCProofContext *context,
-    const FCProofResult *result,
-    int defenseNode,
-    const int branchBoard[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    uint64_t outRelatedZone[FC_POSITION_BITSET_WORDS])
-{
-    if (context == NULL || result == NULL ||
-        branchBoard == NULL ||
-        result->certificateNodeCount <= 0 ||
-        result->certificateNodeCount > FC_MAX_PROOF_NODES ||
-        !result->certificateVerified) return false;
-    int remap[FC_MAX_PROOF_NODES];
-    memset(remap, 0xff, sizeof(remap));
-    for (int i = 0; i < result->certificateNodeCount; i++) {
-        const FCProofNode *source = &result->certificate[i];
-        int parent = source->parent < 0 ? defenseNode
-                    : source->parent < result->certificateNodeCount
-                    ? remap[source->parent] : -1;
-        if (parent < defenseNode ||
-            (source->parent >= 0 && remap[source->parent] < defenseNode))
-            return false;
-        /* Worker certificates are hashed with their private child depth.
-         * The merged certificate is verified with the coordinator's root
-         * depth, so replay the source path and normalize every hash to the
-         * parent context instead of weakening the verifier. */
-        int path[FC_MAX_PROOF_NODES];
-        int pathCount = 0;
-        int current = i;
-        while (current >= 0 && current < result->certificateNodeCount &&
-               pathCount < FC_MAX_PROOF_NODES) {
-            path[pathCount++] = current;
-            int next = result->certificate[current].parent;
-            if (next >= current) return false;
-            current = next;
-        }
-        if (current >= 0 || pathCount <= 0) return false;
-        int replay[FC_BOARD_SIZE][FC_BOARD_SIZE];
-        memcpy(replay, branchBoard, sizeof(replay));
-        for (int pathIndex = pathCount - 1; pathIndex >= 0; pathIndex--) {
-            const FCProofNode *pathNode =
-                &result->certificate[path[pathIndex]];
-            if (!fc_make_move(replay, pathNode->x, pathNode->y,
-                              pathNode->side, context->forbiddenBlack))
-                return false;
-        }
-        memcpy(replay, branchBoard, sizeof(replay));
-        for (int pathIndex = pathCount - 1; pathIndex >= 0; pathIndex--) {
-            const FCProofNode *pathNode =
-                &result->certificate[path[pathIndex]];
-            uint64_t boardHash = fc_board_key(
-                (const int (*)[FC_BOARD_SIZE])replay, pathNode->side,
-                context->forbiddenBlack, context->searchClass,
-                fc_proof_key_version(context->maxDepth));
-            if (!fc_make_move(replay, pathNode->x, pathNode->y,
-                              pathNode->side, context->forbiddenBlack))
-                return false;
-            if (path[pathIndex] == i) {
-                /* The node's pre-move board is the state at this point. */
-                source = &result->certificate[i];
-                int index = fc_proof_append(
-                    context, boardHash, parent,
-                    source->x, source->y, source->side,
-                    source->terminalWin);
-                if (index < 0) return false;
-                context->certificate[index] = *source;
-                context->certificate[index].boardHash = boardHash;
-                context->certificate[index].parent = parent;
-                remap[i] = index;
-                break;
-            }
-        }
-    }
-    if (outRelatedZone != NULL) {
-        memcpy(outRelatedZone,
-               result->certificate[0].relatedZoneMask,
-               sizeof(result->certificate[0].relatedZoneMask));
-    }
-    return true;
-}
-
-static bool fc_branch_first_try_wave(
-    FCProofContext *context,
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    const FCPoint *refutations,
-    int refutationCount,
-    int childDepth,
-    int attackNode,
-    int attackSeverity,
-    FCBranchWaveSummary *summary)
-{
-    if (summary != NULL) memset(summary, 0, sizeof(*summary));
-    if (context == NULL || board == NULL || refutations == NULL ||
-        refutationCount <= 0 || summary == NULL ||
-        fcActiveBranchFirstProfile == NULL || fcWorkerPoolTaskActive) {
-        return false;
-    }
-    const FCAIProfile *profile = fcActiveBranchFirstProfile;
-    int workerCount = fc_effective_worker_count(profile);
-    if (workerCount <= 1 || fc_decision_deadline_reached()) {
-        fcProofDiagnostics.branchFirstDispatchFallbacks++;
-        return false;
-    }
-    if (workerCount > refutationCount) workerCount = refutationCount;
-    uint64_t aggregateBudget = profile->proofParallelNodeBudget > 0
-        ? profile->proofParallelNodeBudget : profile->proofNodeBudget;
-    uint64_t perJobBudget = profile->proofNodeBudget > 0
-        ? profile->proofNodeBudget : aggregateBudget;
-    if (aggregateBudget == 0) aggregateBudget = UINT64_MAX;
-    if (perJobBudget == 0 || perJobBudget > aggregateBudget)
-        perJobBudget = aggregateBudget;
-    int effectiveChildDepth = fc_branch_first_child_depth(
-        profile, childDepth, attackSeverity);
-    uint32_t perJobTime = profile->proofTimeBudgetMs;
-    if (perJobTime == 0 && profile->proofEmergencyTimeBudgetMs > 0)
-        perJobTime = profile->proofEmergencyTimeBudgetMs;
-    double deadline = fcActiveDecisionDeadlineMilliseconds;
-    if (deadline <= 0.0 && fcActiveDecisionLedger != NULL)
-        deadline = fcActiveDecisionLedger->internalDeadlineMilliseconds;
-    if (deadline <= 0.0 && perJobTime > 0)
-        deadline = fc_now_milliseconds() + (double)perJobTime;
-
-    FCProofResult *results = calloc(
-        (size_t)refutationCount, sizeof(*results));
-    bool *completed = calloc((size_t)refutationCount, sizeof(*completed));
-    FCBranchFirstWorker *workers = calloc(
-        (size_t)workerCount, sizeof(*workers));
-    if (results == NULL || completed == NULL || workers == NULL) {
-        free(results);
-        free(completed);
-        free(workers);
-        fcProofDiagnostics.branchFirstDispatchFallbacks++;
-        return false;
-    }
-
-    int defenseNodes[FC_BOARD_SIZE * FC_BOARD_SIZE];
-    for (int index = 0; index < refutationCount; index++) {
-        uint64_t replyHash = fc_proof_board_key(
-            context, (const int (*)[FC_BOARD_SIZE])board,
-            -context->attacker);
-        defenseNodes[index] = fc_proof_append(
-            context, replyHash, attackNode,
-            refutations[index].x, refutations[index].y,
-            -context->attacker, false);
-        if (defenseNodes[index] < 0) {
-            free(results);
-            free(completed);
-            free(workers);
-            summary->attempted = true;
-            summary->allProven = false;
-            summary->sawUnknown = true;
-            summary->edgeProof = 1;
-            summary->edgeDisproof = 1;
-            return true;
-        }
-    }
-
-    FCBranchFirstBatch batch;
-    memset(&batch, 0, sizeof(batch));
-    batch.board = (const int (*)[FC_BOARD_SIZE])board;
-    batch.attacker = context->attacker;
-    batch.forbiddenBlack = context->forbiddenBlack;
-    batch.searchClass = context->searchClass;
-    batch.childDepth = effectiveChildDepth;
-    batch.perJobNodeBudget = perJobBudget;
-    batch.aggregateNodeBudget = aggregateBudget;
-    batch.perJobTimeBudgetMs = perJobTime;
-    batch.transpositionCapacity = profile->proofTranspositionCapacity;
-    batch.profile = *profile;
-    batch.ledger = fcActiveDecisionLedger;
-    batch.replies = refutations;
-    batch.replyCount = refutationCount;
-    batch.results = results;
-    batch.completed = completed;
-    atomic_init(&batch.nextJob, 0);
-    atomic_init(&batch.completedJobs, 0);
-    atomic_init(&batch.activeWorkers, 0);
-    atomic_init(&batch.maxConcurrentWorkers, 0);
-    atomic_init(&batch.consumedNodeTokens, 0);
-    batch.absoluteDeadlineMilliseconds = deadline;
-    FCBranchFirstPoolTask poolTask = {.batch = &batch, .workers = workers};
-    int launched = fc_worker_pool_dispatch(
-        fc_branch_first_pool_task, &poolTask, workerCount);
-    if (launched <= 0) {
-        fcProofDiagnostics.branchFirstDispatchFallbacks++;
-        free(results);
-        free(completed);
-        free(workers);
-        return false;
-    }
-    if (effectiveChildDepth > childDepth) {
-        fcProofDiagnostics.branchFirstDepthExtensions++;
-        if (fc_branch_first_is_advanced_four(attackSeverity))
-            fcProofDiagnostics.branchFirstAdvancedFourDepthExtensions++;
-        else if (fc_branch_first_is_advanced_three(attackSeverity))
-            fcProofDiagnostics.branchFirstAdvancedThreeDepthExtensions++;
-    }
-    if ((uint64_t)effectiveChildDepth >
-        fcProofDiagnostics.branchFirstMaxChildDepth)
-        fcProofDiagnostics.branchFirstMaxChildDepth =
-            (uint64_t)effectiveChildDepth;
-    fcProofDiagnostics.branchFirstWaves++;
-    fcProofDiagnostics.branchFirstWorkersLaunched += (uint64_t)launched;
-    fcProofDiagnostics.branchFirstJobs += (uint64_t)refutationCount;
-    fcDecisionWorkersLaunched += launched;
-    fcDecisionParallelJobs += refutationCount;
-    for (int index = 0; index < launched; index++) {
-        fc_proof_diagnostics_merge(
-            &fcProofDiagnostics, &workers[index].diagnostics);
-    }
-    uint64_t maximumConcurrent = (uint64_t)atomic_load_explicit(
-        &batch.maxConcurrentWorkers, memory_order_relaxed);
-    if (maximumConcurrent > fcProofDiagnostics.branchFirstMaxConcurrentWorkers)
-        fcProofDiagnostics.branchFirstMaxConcurrentWorkers = maximumConcurrent;
-    int completedJobs = (int)atomic_load_explicit(
-        &batch.completedJobs, memory_order_relaxed);
-    fcProofDiagnostics.branchFirstJobsCompleted += (uint64_t)completedJobs;
-    fcDecisionParallelJobsCompleted += completedJobs;
-
-    summary->attempted = true;
-    summary->allProven = true;
-    summary->edgeProof = 0;
-    summary->edgeDisproof = FC_PROOF_INFINITY;
-    for (int index = 0; index < refutationCount; index++) {
-        FCProofResult *result = &results[index];
-        if (!completed[index]) {
-            summary->allProven = false;
-            summary->sawUnknown = true;
-            summary->edgeProof = fc_proof_saturated_add(
-                summary->edgeProof, 1);
-            if (summary->edgeDisproof > 1) summary->edgeDisproof = 1;
-            continue;
-        }
-        if (result->status == FC_PROOF_PROVEN_WIN &&
-            result->certificateVerified) {
-            fcProofDiagnostics.branchFirstVerifiedJobs++;
-            uint64_t relatedZone[FC_POSITION_BITSET_WORDS] = {0};
-            int branchBoard[FC_BOARD_SIZE][FC_BOARD_SIZE];
-            memcpy(branchBoard, board, sizeof(branchBoard));
-            if (!fc_make_move(branchBoard, refutations[index].x,
-                              refutations[index].y, -context->attacker,
-                              context->forbiddenBlack)) {
-                fcProofDiagnostics.branchFirstMergeFailures++;
-                summary->allProven = false;
-                summary->sawUnknown = true;
-                summary->edgeProof = fc_proof_saturated_add(
-                    summary->edgeProof, 1);
-                if (summary->edgeDisproof > 1) summary->edgeDisproof = 1;
-                continue;
-            }
-            if (!fc_branch_first_merge_certificate(
-                    context, result, defenseNodes[index],
-                    (const int (*)[FC_BOARD_SIZE])branchBoard,
-                    relatedZone)) {
-                fcProofDiagnostics.branchFirstMergeFailures++;
-                summary->allProven = false;
-                summary->sawUnknown = true;
-                summary->edgeProof = fc_proof_saturated_add(
-                    summary->edgeProof, 1);
-                if (summary->edgeDisproof > 1) summary->edgeDisproof = 1;
-                continue;
-            }
-            fc_bitset_set(context->certificate[attackNode].relatedZoneMask,
-                          refutations[index].x * FC_BOARD_SIZE +
-                          refutations[index].y);
-            fc_threat_mask_or(
-                context->certificate[attackNode].relatedZoneMask,
-                relatedZone);
-            fcProofDiagnostics.branchFirstUsefulJobs++;
-            if (result->distance > summary->maximumChildDistance)
-                summary->maximumChildDistance = result->distance;
-            continue;
-        }
-        summary->allProven = false;
-        fcProofDiagnostics.branchFirstUnknownJobs++;
-        if (result->status == FC_PROOF_UNKNOWN || result->budgetExhausted)
-            summary->sawUnknown = true;
-        uint64_t proof = result->proofNumber > 0
-            ? result->proofNumber : 1;
-        uint64_t disproof = result->disproofNumber > 0
-            ? result->disproofNumber : 1;
-        summary->edgeProof = fc_proof_saturated_add(
-            summary->edgeProof, proof);
-        if (disproof < summary->edgeDisproof)
-            summary->edgeDisproof = disproof;
-    }
-    if (fc_decision_deadline_reached()) {
-        summary->sawUnknown = true;
-        fcProofDiagnostics.branchFirstDeadlineStops++;
-    }
-    free(results);
-    free(completed);
-    free(workers);
-    return true;
 }
 
 static uint64_t fc_certificate_id(const FCProofNode *nodes, int count)
@@ -6517,20 +4807,10 @@ bool fc_prove_forced_win(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     context->startedMilliseconds = fc_now_milliseconds();
     context->session = fcActiveProofSession;
     context->dfpnRoot = -1;
-    context->branchFirstEnabled = fcActiveBranchFirstProfile != NULL &&
-        fcActiveBranchFirstProfile->branchFirstSearchEnabled;
-    context->branchFirstMinRemainingDepth = context->branchFirstEnabled
-        ? fcActiveBranchFirstProfile->branchFirstMinRemainingDepth : 0;
-    context->branchFirstMinBranchCount = context->branchFirstEnabled
-        ? fcActiveBranchFirstProfile->branchFirstMinBranchCount : 0;
-    context->branchFirstMaxBranches = context->branchFirstEnabled
-        ? fcActiveBranchFirstProfile->branchFirstMaxBranches : 0;
-    context->branchFirstPreviewDepth = context->branchFirstEnabled
-        ? fcActiveBranchFirstProfile->branchFirstPreviewDepth : 0;
-    context->branchWaveDispatched = false;
+
     fcProofDiagnostics.proofSessionQueries++;
     bool borrowedTable = context->session != NULL;
-    bool branchRecursive = context->branchFirstEnabled;
+
     if (borrowedTable) {
         context->nodeBudget = context->session->nodeBudget;
         context->tableCapacity = context->session->tableCapacity;
@@ -6540,7 +4820,7 @@ bool fc_prove_forced_win(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
         context->tableCapacity = transpositionCapacity;
         context->generation = 1;
     }
-    if ((!borrowedTable || branchRecursive) && context->tableCapacity > 0) {
+    if ((!borrowedTable) && context->tableCapacity > 0) {
         context->table = calloc(context->tableCapacity,
                                sizeof(FCProofTTEntry));
         fcProofDiagnostics.allocations++;
@@ -6569,7 +4849,7 @@ bool fc_prove_forced_win(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     int distance = 0;
     uint64_t proofNumber = 1;
     uint64_t disproofNumber = 1;
-    int status = borrowedTable && !branchRecursive
+    int status = (borrowedTable)
         ? fc_dfpn_prove(context, mutableBoard, maxDepth, &distance,
                         &proofNumber, &disproofNumber)
         : fc_proof_search_attacker(
@@ -6582,7 +4862,7 @@ bool fc_prove_forced_win(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
         context->certificateCount = 0;
         if (fc_has_vct_root_threat(mutableBoard, attacker,
                                    forbiddenBlack)) {
-            status = borrowedTable && !branchRecursive
+            status = (borrowedTable)
                 ? fc_dfpn_prove(
                     context, mutableBoard, maxDepth, &distance,
                     &proofNumber, &disproofNumber)
@@ -6626,7 +4906,7 @@ bool fc_prove_forced_win(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     if (context->session != NULL) {
         context->session->nodesUsed += context->nodes;
         fcProofDiagnostics.proofSessionHits += context->hits;
-        if (branchRecursive) free(context->table);
+
     } else {
         free(context->table);
     }
@@ -6792,8 +5072,7 @@ static void *fc_parallel_proof_worker_main(void *opaque)
     uint64_t priorParallelBudget = fcActiveParallelNodeBudget;
     uint64_t priorParallelTokens = fcParallelNodeTokensRemaining;
     uint64_t priorLedgerTokens = fcDecisionLedgerNodeTokensRemaining;
-    uint32_t priorBlockSize = fcActiveParallelNodeBlockSize;
-    bool priorBlocksEnabled = fcActiveParallelTokenBlocksEnabled;
+
     fc_proof_diagnostics_reset();
     fcActiveDecisionDeadlineMilliseconds =
         batch->absoluteDeadlineMilliseconds;
@@ -6802,9 +5081,7 @@ static void *fc_parallel_proof_worker_main(void *opaque)
     fcActiveParallelNodeBudget = batch->aggregateNodeBudget;
     fcParallelNodeTokensRemaining = 0;
     fcDecisionLedgerNodeTokensRemaining = 0;
-    fcActiveParallelNodeBlockSize = batch->profile.parallelTokenBlockSize;
-    fcActiveParallelTokenBlocksEnabled =
-        batch->profile.parallelTokenBlockEnabled;
+
     int active = atomic_fetch_add_explicit(
         &batch->activeWorkers, 1, memory_order_acq_rel) + 1;
     int observed = atomic_load_explicit(
@@ -6815,7 +5092,7 @@ static void *fc_parallel_proof_worker_main(void *opaque)
                memory_order_relaxed, memory_order_relaxed)) {
         /* The failed compare-exchange refreshes observed. */
     }
-    bool reuseSession = batch->profile.persistentWorkerPoolEnabled;
+
     FCAIProfile jobProfile = batch->profile;
     jobProfile.parallelProofEnabled = false;
     jobProfile.proofWorkerCount = 1;
@@ -6825,8 +5102,7 @@ static void *fc_parallel_proof_worker_main(void *opaque)
     jobProfile.proofEmergencyTimeBudgetMs = batch->perJobTimeBudgetMs;
     FCProofSession session;
     FCProofSession *previousSession = fcActiveProofSession;
-    bool sessionReady = reuseSession && fc_proof_session_begin(
-        &session, &jobProfile, batch->board, batch->forbiddenBlack);
+    bool sessionReady = 0;
     bool queryUsable = sessionReady;
     bool queryStarted = false;
     for (;;) {
@@ -6848,7 +5124,7 @@ static void *fc_parallel_proof_worker_main(void *opaque)
             groupNodeBudget *= (uint64_t)length;
         if (groupNodeBudget > batch->aggregateNodeBudget)
             groupNodeBudget = batch->aggregateNodeBudget;
-        if (!reuseSession) {
+        {
             jobProfile.proofNodeBudget = groupNodeBudget;
             sessionReady = fc_proof_session_begin(
                 &session, &jobProfile, batch->board,
@@ -6923,13 +5199,12 @@ static void *fc_parallel_proof_worker_main(void *opaque)
                 batch->results[index].budgetExhausted = true;
             }
         }
-        if (!reuseSession && sessionReady) {
+        if (sessionReady) {
             fc_proof_session_end(&session, previousSession);
             sessionReady = false;
         }
     }
-    if (reuseSession && sessionReady)
-        fc_proof_session_end(&session, previousSession);
+
     fc_parallel_node_token_flush();
     worker->diagnostics = fc_proof_diagnostics_get();
     fcProofRootFilterX = priorFilterX;
@@ -6941,24 +5216,9 @@ static void *fc_parallel_proof_worker_main(void *opaque)
     fcActiveParallelNodeBudget = priorParallelBudget;
     fcParallelNodeTokensRemaining = priorParallelTokens;
     fcDecisionLedgerNodeTokensRemaining = priorLedgerTokens;
-    fcActiveParallelNodeBlockSize = priorBlockSize;
-    fcActiveParallelTokenBlocksEnabled = priorBlocksEnabled;
+
     atomic_fetch_sub_explicit(&batch->activeWorkers, 1, memory_order_acq_rel);
     return NULL;
-}
-
-typedef struct {
-    FCParallelProofBatch *batch;
-    FCParallelProofWorker *workers;
-} FCParallelProofPoolTask;
-
-static void fc_parallel_proof_pool_task(void *opaque, int workerSlot)
-{
-    FCParallelProofPoolTask *task = opaque;
-    if (task == NULL || task->batch == NULL || task->workers == NULL ||
-        workerSlot < 0 || workerSlot >= FC_PARALLEL_MAX_WORKERS) return;
-    task->workers[workerSlot].batch = task->batch;
-    (void)fc_parallel_proof_worker_main(&task->workers[workerSlot]);
 }
 
 static bool fc_parallel_prove_forced_win(
@@ -6983,18 +5243,7 @@ static bool fc_parallel_prove_forced_win(
         result->budgetExhausted = true;
         return false;
     }
-    if (profile != NULL && result != NULL &&
-        profile->branchFirstSearchEnabled) {
-        const FCAIProfile *previousBranchProfile =
-            fcActiveBranchFirstProfile;
-        fcActiveBranchFirstProfile = profile;
-        bool proven = fc_prove_forced_win(
-            board, attacker, forbiddenBlack, searchClass, maxDepth,
-            aggregateNodeBudget, timeBudgetMs,
-            profile->proofTranspositionCapacity, result);
-        fcActiveBranchFirstProfile = previousBranchProfile;
-        return proven;
-    }
+
     if (profile == NULL || result == NULL ||
         !profile->parallelProofEnabled || fc_effective_worker_count(profile) <= 1) {
         return fc_prove_forced_win(
@@ -7156,12 +5405,11 @@ static bool fc_parallel_prove_forced_win(
         profile->proofEmergencyTimeBudgetMs > perJobTimeBudgetMs)
         perJobTimeBudgetMs = profile->proofEmergencyTimeBudgetMs;
     FCProofResult *results = calloc((size_t)rootCount, sizeof(*results));
-    pthread_t *threads = profile->persistentWorkerPoolEnabled
-        ? NULL : calloc((size_t)workerCount, sizeof(*threads));
+    pthread_t *threads = (calloc((size_t)workerCount, sizeof(*threads)));
     FCParallelProofWorker *workers = calloc(
         (size_t)workerCount, sizeof(*workers));
     if (results == NULL || workers == NULL ||
-        (!profile->persistentWorkerPoolEnabled && threads == NULL)) {
+        (threads == NULL)) {
         free(results);
         free(threads);
         free(workers);
@@ -7210,22 +5458,7 @@ static bool fc_parallel_prove_forced_win(
             : 0.0;
     batch.results = results;
     int launched = 0;
-    if (profile->persistentWorkerPoolEnabled) {
-        FCParallelProofPoolTask poolTask = {
-            .batch = &batch, .workers = workers
-        };
-        launched = fc_worker_pool_dispatch(
-            fc_parallel_proof_pool_task, &poolTask, workerCount);
-        if (launched > 0) {
-            fcProofDiagnostics.parallelPoolDispatches++;
-            fcProofDiagnostics.parallelPoolWorkersReused +=
-                (uint64_t)launched;
-            if (launched < workerCount)
-                fcProofDiagnostics.parallelPoolFallbacks++;
-        } else {
-            fcProofDiagnostics.parallelPoolFallbacks++;
-        }
-    } else {
+    {
         for (int i = 0; i < workerCount; i++) {
             workers[i].batch = &batch;
             if (pthread_create(&threads[i], NULL,
@@ -7244,7 +5477,7 @@ static bool fc_parallel_prove_forced_win(
             aggregateNodeBudget, timeBudgetMs,
             profile->proofTranspositionCapacity, result);
     }
-    if (!profile->persistentWorkerPoolEnabled) {
+    {
         for (int i = 0; i < launched; i++)
             (void)pthread_join(threads[i], NULL);
     }
@@ -7338,8 +5571,7 @@ bool fc_test_parallel_root_proof(
     const FCAIProfile *profile,
     FCProofResult *result)
 {
-    if (profile == NULL || (!profile->parallelProofEnabled &&
-                            !profile->branchFirstSearchEnabled)) return false;
+    if (profile == NULL || (!profile->parallelProofEnabled)) return false;
     uint64_t budget = profile->proofParallelNodeBudget > 0
         ? profile->proofParallelNodeBudget : profile->proofNodeBudget;
     return fc_parallel_prove_forced_win(
@@ -7538,108 +5770,11 @@ typedef struct {
     bool candidateCoverageComplete;
 } FCForkCandidateSet;
 
-static bool fc_fork_risk_is_nonfork(FCForkRisk risk)
-{
-    return risk == FC_FORK_RISK_SAFE ||
-           risk == FC_FORK_RISK_ONE_REPLY ||
-           risk == FC_FORK_RISK_OWN_WIN;
-}
-
 /* The probe is intentionally separate from fc_immediate_replies_after_move.
  * The latter is a local continuation helper for the side passed to it; this
  * routine first places the candidate side, then scans legal moves for the
  * opponent on that resulting board.  Two replies are sufficient to classify
  * a fork, while zero/one requires a complete scan. */
-static FCForkProbe fc_probe_opponent_replies_after_placement(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int x,
-    int y,
-    int side,
-    bool forbiddenBlack)
-{
-    FCForkProbe probe = {
-        .opponentImmediateWinCount = -1,
-        .risk = FC_FORK_RISK_UNKNOWN,
-        .classificationComplete = false,
-        .boardCoverageComplete = false
-    };
-    if (board == NULL || !fc_is_legal_move(board, x, y, side,
-                                           forbiddenBlack)) return probe;
-
-    int after[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(after, board, sizeof(after));
-    if (!fc_make_move(after, x, y, side, forbiddenBlack)) return probe;
-    if (fc_has_five((const int (*)[FC_BOARD_SIZE])after, x, y, side)) {
-        probe.opponentImmediateWinCount = 0;
-        probe.risk = FC_FORK_RISK_OWN_WIN;
-        probe.classificationComplete = true;
-        probe.boardCoverageComplete = true;
-        return probe;
-    }
-
-    int replies = 0;
-    for (int replyX = 0; replyX < FC_BOARD_SIZE; replyX++) {
-        for (int replyY = 0; replyY < FC_BOARD_SIZE; replyY++) {
-            if (fc_global_proof_deadline_reached()) return probe;
-            if (!fc_is_legal_move(
-                    (const int (*)[FC_BOARD_SIZE])after,
-                    replyX, replyY, -side, forbiddenBlack)) continue;
-            if (!fc_wins_if_placed(after, replyX, replyY, -side)) continue;
-            replies++;
-            if (replies >= 2) {
-                probe.opponentImmediateWinCount = 2;
-                probe.risk = FC_FORK_RISK_FORK;
-                /* We do not claim that every legal reply was enumerated, but
-                 * the fork classification itself is complete once two wins
-                 * are found.  Candidate-universe coverage is tracked by the
-                 * caller separately. */
-                probe.classificationComplete = true;
-                probe.boardCoverageComplete = false;
-                return probe;
-            }
-        }
-    }
-    probe.opponentImmediateWinCount = replies;
-    probe.risk = replies == 0 ? FC_FORK_RISK_SAFE
-                 : FC_FORK_RISK_ONE_REPLY;
-    probe.classificationComplete = true;
-    probe.boardCoverageComplete = true;
-    return probe;
-}
-
-static int fc_fork_candidate_rank(const FCCandidate *candidate)
-{
-    if (candidate == NULL) return 6;
-    if (candidate->tacticalClass == FC_TACTICAL_IMMEDIATE_WIN ||
-        candidate->forkRisk == FC_FORK_RISK_OWN_WIN) return 0;
-    if (candidate->tacticalClass == FC_TACTICAL_MUST_DEFEND) return 1;
-    if (candidate->forkRisk == FC_FORK_RISK_SAFE &&
-        candidate->tacticalClass != FC_TACTICAL_NORMAL) return 2;
-    if (candidate->forkRisk == FC_FORK_RISK_SAFE) return 3;
-    if (candidate->forkRisk == FC_FORK_RISK_ONE_REPLY) return 4;
-    if (candidate->forkRisk == FC_FORK_RISK_FORK) return 5;
-    return 6;
-}
-
-static int fc_compare_fork_candidate(const void *left, const void *right)
-{
-    const FCCandidate *a = (const FCCandidate *)left;
-    const FCCandidate *b = (const FCCandidate *)right;
-    int aRank = fc_fork_candidate_rank(a);
-    int bRank = fc_fork_candidate_rank(b);
-    if (aRank != bRank) return aRank < bRank ? -1 : 1;
-    int aReplies = a->opponentImmediateWinCount < 0
-        ? FC_BOARD_SIZE * FC_BOARD_SIZE + 1
-        : a->opponentImmediateWinCount;
-    int bReplies = b->opponentImmediateWinCount < 0
-        ? FC_BOARD_SIZE * FC_BOARD_SIZE + 1
-        : b->opponentImmediateWinCount;
-    if (aReplies != bReplies) return aReplies < bReplies ? -1 : 1;
-    if (a->score != b->score) return a->score > b->score ? -1 : 1;
-    if (a->x != b->x) return a->x < b->x ? -1 : 1;
-    if (a->y != b->y) return a->y < b->y ? -1 : 1;
-    return 0;
-}
 
 static bool fc_append_fork_candidate(FCForkCandidateSet *set,
                                      FCCandidate candidate)
@@ -7657,231 +5792,10 @@ static bool fc_append_fork_candidate(FCForkCandidateSet *set,
     return true;
 }
 
-static bool fc_append_fork_move(
-    FCForkCandidateSet *set,
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int x,
-    int y,
-    int side,
-    bool forbiddenBlack,
-    const FCAIProfile *profile)
-{
-    if (board == NULL || profile == NULL ||
-        !fc_is_legal_move(board, x, y, side, forbiddenBlack)) return false;
-    int tacticalClass = fc_wins_if_placed(
-        (int (*)[FC_BOARD_SIZE])board, x, y, side)
-        ? FC_TACTICAL_IMMEDIATE_WIN : FC_TACTICAL_NORMAL;
-    FCCandidate candidate = {
-        .x = x,
-        .y = y,
-        .score = fc_move_heuristic((int (*)[FC_BOARD_SIZE])board,
-                                   x, y, side, profile),
-        .tacticalClass = tacticalClass,
-        .safe = true,
-        .probability = 0.0,
-        .opponentImmediateWinCount = -1,
-        .forkRisk = FC_FORK_RISK_UNKNOWN,
-        .forkProbeComplete = false
-    };
-    return fc_append_fork_candidate(set, candidate);
-}
-
-static void fc_annotate_fork_candidate(
-    FCForkCandidateSet *set,
-    FCCandidate *candidate,
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    bool currentOpponentThreat)
-{
-    if (set == NULL || candidate == NULL || board == NULL) return;
-    FCForkProbe probe = fc_probe_opponent_replies_after_placement(
-        board, candidate->x, candidate->y, side, forbiddenBlack);
-    candidate->opponentImmediateWinCount = probe.opponentImmediateWinCount;
-    candidate->forkRisk = probe.risk;
-    candidate->forkProbeComplete = probe.classificationComplete;
-    if (probe.risk == FC_FORK_RISK_OWN_WIN) {
-        candidate->tacticalClass = FC_TACTICAL_IMMEDIATE_WIN;
-        candidate->safe = true;
-    } else if (currentOpponentThreat &&
-               probe.risk == FC_FORK_RISK_SAFE) {
-        candidate->tacticalClass = FC_TACTICAL_MUST_DEFEND;
-        candidate->safe = true;
-    } else {
-        candidate->safe = probe.risk == FC_FORK_RISK_SAFE;
-    }
-    set->candidatesExamined++;
-    fcProofDiagnostics.forkProbeCandidatesExamined++;
-    if (!probe.classificationComplete) {
-        set->unknownCandidates++;
-        fcProofDiagnostics.forkProbeUnknownCandidates++;
-    } else if (fc_fork_risk_is_nonfork(probe.risk)) {
-        set->safeCandidates++;
-        fcProofDiagnostics.forkProbeSafeCandidates++;
-    } else {
-        set->riskyCandidates++;
-        fcProofDiagnostics.forkProbeRiskyCandidates++;
-    }
-}
-
 /* Build a deterministic tactical pool.  The first pass contains generated
  * tactical candidates, both advisory points, and every legal relevance-zone
  * point.  A complete canonical board pass is only attempted when the first
  * pass has no classified non-fork move. */
-static bool fc_apply_fork_candidate_layer(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    const FCAIProfile *profile,
-    FCCandidate *moves,
-    int *ioCount,
-    int capacity,
-    int preferredX,
-    int preferredY,
-    int secondaryX,
-    int secondaryY,
-    FCAnalysisResult *telemetry)
-{
-    if (board == NULL || profile == NULL || moves == NULL || ioCount == NULL ||
-        capacity <= 0 || !profile->forkFirstRecoveryEnabled) return false;
-
-    FCForkCandidateSet set;
-    memset(&set, 0, sizeof(set));
-    for (int i = 0; i < *ioCount; i++)
-        (void)fc_append_fork_candidate(&set, moves[i]);
-    (void)fc_append_fork_move(&set, board, preferredX, preferredY, side,
-                              forbiddenBlack, profile);
-    (void)fc_append_fork_move(&set, board, secondaryX, secondaryY, side,
-                              forbiddenBlack, profile);
-    for (int x = 0; x < FC_BOARD_SIZE; x++) {
-        for (int y = 0; y < FC_BOARD_SIZE; y++) {
-            if (!fc_has_neighbor(board, x, y, 4)) continue;
-            (void)fc_append_fork_move(&set, board, x, y, side,
-                                      forbiddenBlack, profile);
-        }
-    }
-
-    int rivalThreats = fc_count_immediate_wins(
-        (int (*)[FC_BOARD_SIZE])board, -side, forbiddenBlack, NULL, 0);
-    bool currentOpponentThreat = rivalThreats > 0;
-    int initialCount = set.allCount;
-    bool initialComplete = true;
-    for (int i = 0; i < initialCount; i++) {
-        if (fc_decision_deadline_reached()) {
-            initialComplete = false;
-            break;
-        }
-        fc_annotate_fork_candidate(
-            &set, &set.all[i], board, side, forbiddenBlack,
-            currentOpponentThreat);
-    }
-    bool hasNonFork = false;
-    for (int i = 0; i < initialCount; i++) {
-        if (fc_fork_risk_is_nonfork(set.all[i].forkRisk)) {
-            hasNonFork = true;
-            break;
-        }
-    }
-    set.allProbesComplete = initialComplete;
-    set.candidateCoverageComplete = false;
-
-    if (initialComplete && !hasNonFork &&
-        !fc_decision_deadline_reached()) {
-        bool fullComplete = true;
-        for (int x = 0; x < FC_BOARD_SIZE && fullComplete; x++) {
-            for (int y = 0; y < FC_BOARD_SIZE; y++) {
-                if (fc_decision_deadline_reached()) {
-                    fullComplete = false;
-                    break;
-                }
-                if (!fc_is_legal_move(board, x, y, side,
-                                      forbiddenBlack)) continue;
-                bool added = fc_append_fork_move(
-                    &set, board, x, y, side, forbiddenBlack, profile);
-                if (added) {
-                    fc_annotate_fork_candidate(
-                        &set, &set.all[set.allCount - 1], board, side,
-                        forbiddenBlack, currentOpponentThreat);
-                }
-            }
-        }
-        set.allProbesComplete = fullComplete;
-        set.candidateCoverageComplete = fullComplete;
-        if (!fullComplete) fcProofDiagnostics.forkProbeIncompleteDecisions++;
-    } else if (!initialComplete) {
-        fcProofDiagnostics.forkProbeIncompleteDecisions++;
-    }
-
-    qsort(set.all, (size_t)set.allCount, sizeof(set.all[0]),
-          fc_compare_fork_candidate);
-    int outputCount = set.allCount < capacity ? set.allCount : capacity;
-    memcpy(moves, set.all, (size_t)outputCount * sizeof(moves[0]));
-    /* Keep the advisory handoff in the projected result even when the
-     * canonical ranking truncates the candidate list.  The selected move is
-     * allowed to displace a risky advisory point, but telemetry must still be
-     * able to prove that a fork was avoided rather than treating an omitted
-     * handoff as an unobserved candidate. */
-    if (outputCount > 0 && fc_inside(preferredX, preferredY)) {
-        bool preferredPresent = false;
-        int preferredIndex = -1;
-        for (int i = 0; i < set.allCount; i++) {
-            if (set.all[i].x != preferredX || set.all[i].y != preferredY)
-                continue;
-            preferredIndex = i;
-            break;
-        }
-        for (int i = 0; i < outputCount; i++) {
-            if (moves[i].x == preferredX && moves[i].y == preferredY) {
-                preferredPresent = true;
-                break;
-            }
-        }
-        if (!preferredPresent && preferredIndex >= 0) {
-            moves[outputCount - 1] = set.all[preferredIndex];
-            qsort(moves, (size_t)outputCount, sizeof(moves[0]),
-                  fc_compare_fork_candidate);
-        }
-    }
-    *ioCount = outputCount;
-    if (telemetry != NULL) {
-        telemetry->forkCandidatesExamined = set.candidatesExamined;
-        telemetry->forkSafeCandidates = set.safeCandidates;
-        telemetry->forkRiskyCandidates = set.riskyCandidates;
-        telemetry->forkUnknownCandidates = set.unknownCandidates;
-        telemetry->forkProbeComplete = set.allProbesComplete;
-        telemetry->candidateCoverageComplete =
-            set.candidateCoverageComplete;
-    }
-    return outputCount > 0;
-}
-
-static void fc_record_selected_fork_telemetry(FCAnalysisResult *result,
-                                              int preferredX,
-                                              int preferredY)
-{
-    if (result == NULL) return;
-    const FCCandidate *selected = NULL;
-    const FCCandidate *preferred = NULL;
-    for (int i = 0; i < result->candidateCount; i++) {
-        const FCCandidate *candidate = &result->candidates[i];
-        if (candidate->x == result->x && candidate->y == result->y)
-            selected = candidate;
-        if (candidate->x == preferredX && candidate->y == preferredY)
-            preferred = candidate;
-    }
-    if (selected != NULL) {
-        result->forkRiskStatus = selected->forkRisk;
-        result->selectedOpponentImmediateWinCount =
-            selected->opponentImmediateWinCount;
-    }
-    if (selected != NULL && preferred != NULL &&
-        preferred->forkRisk == FC_FORK_RISK_FORK &&
-        fc_fork_risk_is_nonfork(selected->forkRisk) &&
-        !(selected->x == preferred->x && selected->y == preferred->y)) {
-        result->forkAvoidedCount++;
-        fcProofDiagnostics.forkProbeAvoidedForks++;
-    }
-}
 
 /* Recovery must never infer a global loss from a relevance-truncated list.
  * This scan is deliberately canonical (x then y) so a timeout has a stable
@@ -8104,11 +6018,10 @@ static int fc_choose_candidate(FCCandidate *moves,
                                uint64_t seed,
                                FCRandomMode randomMode)
 {
-    bool forkRecovery = profile != NULL && profile->forkFirstRecoveryEnabled;
+
     int firstSafe = -1;
     for (int i = 0; i < count; i++) {
-        if (moves[i].safe ||
-            (forkRecovery && fc_fork_risk_is_nonfork(moves[i].forkRisk))) {
+        if (moves[i].safe) {
             firstSafe = i;
             break;
         }
@@ -8119,10 +6032,7 @@ static int fc_choose_candidate(FCCandidate *moves,
          * fork-ranked order supplies the least-known-risk entry. */
         return count > 0 ? 0 : -1;
     }
-    if (forkRecovery) {
-        moves[firstSafe].probability = 1.0;
-        return firstSafe;
-    }
+
     if (count <= 1 || tacticalClass == FC_TACTICAL_IMMEDIATE_WIN ||
         tacticalClass == FC_TACTICAL_MUST_DEFEND) {
         moves[firstSafe].probability = 1.0;
@@ -8386,8 +6296,7 @@ static void *fc_escape_proof_worker_main(void *opaque)
     FCDecisionLedger *priorLedger = fcActiveDecisionLedger;
     uint64_t priorParallelTokens = fcParallelNodeTokensRemaining;
     uint64_t priorLedgerTokens = fcDecisionLedgerNodeTokensRemaining;
-    uint32_t priorBlockSize = fcActiveParallelNodeBlockSize;
-    bool priorBlocksEnabled = fcActiveParallelTokenBlocksEnabled;
+
     fc_proof_diagnostics_reset();
     fcActiveDecisionDeadlineMilliseconds =
         batch->absoluteDeadlineMilliseconds;
@@ -8396,9 +6305,7 @@ static void *fc_escape_proof_worker_main(void *opaque)
     fcActiveParallelNodeBudget = batch->aggregateNodeBudget;
     fcParallelNodeTokensRemaining = 0;
     fcDecisionLedgerNodeTokensRemaining = 0;
-    fcActiveParallelNodeBlockSize = batch->profile.parallelTokenBlockSize;
-    fcActiveParallelTokenBlocksEnabled =
-        batch->profile.parallelTokenBlockEnabled;
+
     int active = atomic_fetch_add_explicit(
         &batch->activeWorkers, 1, memory_order_acq_rel) + 1;
     int observed = atomic_load_explicit(
@@ -8410,7 +6317,6 @@ static void *fc_escape_proof_worker_main(void *opaque)
         /* The failed compare-exchange refreshes observed. */
     }
 
-    bool reuseSession = batch->profile.persistentWorkerPoolEnabled;
     FCAIProfile jobProfile = batch->profile;
     jobProfile.parallelProofEnabled = false;
     jobProfile.proofWorkerCount = 1;
@@ -8448,19 +6354,12 @@ static void *fc_escape_proof_worker_main(void *opaque)
                 alternative, candidate.x, candidate.y,
                 batch->attacker, batch->forbiddenBlack)) {
             bool queryReady = sessionReady;
-            if (!reuseSession || !sessionReady) {
+            {
                 sessionReady = fc_proof_session_begin(
                     &session, &jobProfile,
                     (const int (*)[FC_BOARD_SIZE])alternative,
                     batch->forbiddenBlack);
                 queryReady = sessionReady;
-            } else if (!fc_proof_session_reset_for_query(
-                           &session, &jobProfile,
-                           (const int (*)[FC_BOARD_SIZE])alternative,
-                           batch->forbiddenBlack)) {
-                fc_proof_session_end(&session, previousSession);
-                sessionReady = false;
-                queryReady = false;
             }
             if (queryReady) {
                 fcProofRootFilterX = -1;
@@ -8487,7 +6386,7 @@ static void *fc_escape_proof_worker_main(void *opaque)
                 batch->results[index].status = FC_PROOF_UNKNOWN;
                 batch->results[index].budgetExhausted = true;
             }
-            if (!reuseSession && sessionReady) {
+            if (sessionReady) {
                 fc_proof_session_end(&session, previousSession);
                 sessionReady = false;
             }
@@ -8500,8 +6399,6 @@ static void *fc_escape_proof_worker_main(void *opaque)
         fc_parallel_node_token_flush();
     }
 
-    if (reuseSession && sessionReady)
-        fc_proof_session_end(&session, previousSession);
     fc_parallel_node_token_flush();
     worker->diagnostics = fc_proof_diagnostics_get();
     fcProofRootFilterX = priorFilterX;
@@ -8512,24 +6409,9 @@ static void *fc_escape_proof_worker_main(void *opaque)
     fcActiveDecisionLedger = priorLedger;
     fcParallelNodeTokensRemaining = priorParallelTokens;
     fcDecisionLedgerNodeTokensRemaining = priorLedgerTokens;
-    fcActiveParallelNodeBlockSize = priorBlockSize;
-    fcActiveParallelTokenBlocksEnabled = priorBlocksEnabled;
+
     atomic_fetch_sub_explicit(&batch->activeWorkers, 1, memory_order_acq_rel);
     return NULL;
-}
-
-typedef struct {
-    FCEscapeProofBatch *batch;
-    FCEscapeProofWorker *workers;
-} FCEscapeProofPoolTask;
-
-static void fc_escape_proof_pool_task(void *opaque, int workerSlot)
-{
-    FCEscapeProofPoolTask *task = opaque;
-    if (task == NULL || task->batch == NULL || task->workers == NULL ||
-        workerSlot < 0 || workerSlot >= FC_PARALLEL_MAX_WORKERS) return;
-    task->workers[workerSlot].batch = task->batch;
-    (void)fc_escape_proof_worker_main(&task->workers[workerSlot]);
 }
 
 static int fc_parallel_escape_search(
@@ -8604,22 +6486,7 @@ static int fc_parallel_escape_search(
     pthread_t threads[FC_PARALLEL_MAX_WORKERS];
     FCEscapeProofWorker workers[FC_PARALLEL_MAX_WORKERS];
     int launched = 0;
-    if (profile->persistentWorkerPoolEnabled) {
-        FCEscapeProofPoolTask poolTask = {
-            .batch = &batch, .workers = workers
-        };
-        launched = fc_worker_pool_dispatch(
-            fc_escape_proof_pool_task, &poolTask, workerCount);
-        if (launched > 0) {
-            fcProofDiagnostics.parallelPoolDispatches++;
-            fcProofDiagnostics.parallelPoolWorkersReused +=
-                (uint64_t)launched;
-            if (launched < workerCount)
-                fcProofDiagnostics.parallelPoolFallbacks++;
-        } else {
-            fcProofDiagnostics.parallelPoolFallbacks++;
-        }
-    } else {
+    {
         for (int i = 0; i < workerCount; i++) {
             workers[i].batch = &batch;
             if (pthread_create(&threads[i], NULL,
@@ -8635,7 +6502,7 @@ static int fc_parallel_escape_search(
         fcProofDiagnostics = priorDiagnostics;
         fc_proof_diagnostics_merge(&fcProofDiagnostics, &workerDiagnostics);
     } else {
-        if (!profile->persistentWorkerPoolEnabled) {
+        {
             for (int i = 0; i < launched; i++)
                 (void)pthread_join(threads[i], NULL);
         }
@@ -8811,7 +6678,6 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     result->randomMode = randomMode;
     result->randomSelectedRank = 0;
     result->randomEligibilityVerified = true;
-    result->hybridComponent = FC_HYBRID_COMPONENT_NONE;
     result->decisionStatus = FC_DECISION_UNKNOWN_OR_DEADLINE;
     result->candidateCoverageComplete = false;
 
@@ -8846,42 +6712,12 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     int count = fc_generate_candidates(mutableBoard, side, forbiddenBlack,
                                        profile, baseMoves,
                                        FC_MAX_CANDIDATES, false);
-    bool forkLayerActive = false;
-    if (count == 0 && profile->forkFirstRecoveryEnabled) {
-        forkLayerActive = fc_apply_fork_candidate_layer(
-            (const int (*)[FC_BOARD_SIZE])mutableBoard, side,
-            forbiddenBlack, profile, baseMoves, &count,
-            FC_MAX_CANDIDATES, hintX, hintY, -1, -1, result);
-    }
+
     if (count == 0) {
         if (proofSessionStarted)
             fc_proof_session_end(&proofSession, previousProofSession);
         free(context.table);
-        if (profile->recoverySearchEnabled) {
-            int fallbackX = -1;
-            int fallbackY = -1;
-            if (fc_find_full_board_legal_fallback(
-                    (const int (*)[FC_BOARD_SIZE])mutableBoard,
-                    side, forbiddenBlack, &fallbackX, &fallbackY)) {
-                result->x = fallbackX;
-                result->y = fallbackY;
-                result->fallbackUsed = true;
-                result->decisionStatus = FC_DECISION_UNKNOWN_OR_DEADLINE;
-                result->lossReason = FC_LOSS_BUDGET_UNKNOWN;
-                result->stats.budgetExhausted = true;
-                result->stats.elapsedMilliseconds =
-                    fc_now_milliseconds() - context.startedMilliseconds;
-                fcProofDiagnostics.decisionUnknowns++;
-                fcProofDiagnostics.decisionFallbacks++;
-                return true;
-            }
-            result->decisionStatus = FC_DECISION_NO_LEGAL_MOVE;
-            result->provenLoss = true;
-            result->tacticalClass = FC_TACTICAL_PROVEN_LOSS;
-            result->lossReason = FC_LOSS_NO_IMMEDIATE_SAFE_GENERATED;
-            fcProofDiagnostics.decisionNoLegalMoves++;
-            return false;
-        }
+
         /* Frozen profiles retain their historical boolean contract. */
         result->decisionStatus = FC_DECISION_VERIFIED_LOSS;
         result->provenLoss = true;
@@ -8952,15 +6788,6 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
         }
     }
 
-    if (profile->forkFirstRecoveryEnabled && !forkLayerActive) {
-        forkLayerActive = fc_apply_fork_candidate_layer(
-            (const int (*)[FC_BOARD_SIZE])mutableBoard, side,
-            forbiddenBlack, profile, baseMoves, &count,
-            FC_MAX_CANDIDATES,
-            useHint ? hintX : -1, useHint ? hintY : -1,
-            hasBook ? bookX : -1, hasBook ? bookY : -1, result);
-    }
-
     int tacticalClass = baseMoves[0].tacticalClass;
     int defaultX = hasBook ? bookX : hintX;
     int defaultY = hasBook ? bookY : hintY;
@@ -8974,11 +6801,7 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     }
     int advisoryDefaultX = defaultX;
     int advisoryDefaultY = defaultY;
-    if (forkLayerActive &&
-        fc_fork_risk_is_nonfork((FCForkRisk)baseMoves[0].forkRisk)) {
-        defaultX = baseMoves[0].x;
-        defaultY = baseMoves[0].y;
-    }
+
     result->defaultSource = defaultSource;
     result->defaultX = advisoryDefaultX;
     result->defaultY = advisoryDefaultY;
@@ -8997,9 +6820,7 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
             ownBudget, profile->proofTimeBudgetMs, profile, &ownProof);
         int selectedX = defaultX;
         int selectedY = defaultY;
-        int overrideReason = forkLayerActive &&
-            (defaultX != advisoryDefaultX || defaultY != advisoryDefaultY)
-            ? FC_OVERRIDE_FORK_SAFE_RECOVERY : FC_OVERRIDE_NONE;
+        int overrideReason = (FC_OVERRIDE_NONE);
         FCProofResult selectedProof = ownProof;
         if (ownWin && ownProof.certificateVerified) {
             selectedX = ownProof.x;
@@ -9187,11 +7008,7 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
         result->y = selectedY;
         result->tacticalClass = tacticalClass;
         result->overrideReason = overrideReason;
-        if (forkLayerActive &&
-            (result->x != advisoryDefaultX || result->y != advisoryDefaultY) &&
-            result->tacticalClass == FC_TACTICAL_NORMAL &&
-            result->overrideReason == FC_OVERRIDE_NONE)
-            result->overrideReason = FC_OVERRIDE_FORK_SAFE_RECOVERY;
+
         result->candidateCount = count;
         memcpy(result->candidates, baseMoves,
                (size_t)count * sizeof(FCCandidate));
@@ -9223,28 +7040,11 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
         if (proofSessionStarted)
             fc_proof_session_end(&proofSession, previousProofSession);
         free(context.table);
-        if (forkLayerActive)
-            fc_record_selected_fork_telemetry(
-                result, advisoryDefaultX, advisoryDefaultY);
+
         bool legal = fc_is_legal_move((const int (*)[FC_BOARD_SIZE])board,
                                       result->x, result->y, side,
                                       forbiddenBlack);
-        if (!legal && profile->recoverySearchEnabled) {
-            if (fc_find_full_board_legal_fallback(
-                    (const int (*)[FC_BOARD_SIZE])board,
-                    side, forbiddenBlack, &result->x, &result->y)) {
-                result->fallbackUsed = true;
-                result->decisionStatus = FC_DECISION_UNKNOWN_OR_DEADLINE;
-                result->provenLoss = false;
-                result->stats.budgetExhausted = true;
-                fcProofDiagnostics.decisionFallbacks++;
-                return true;
-            }
-            result->decisionStatus = FC_DECISION_NO_LEGAL_MOVE;
-            result->provenLoss = true;
-            fcProofDiagnostics.decisionNoLegalMoves++;
-            return false;
-        }
+
         return legal;
     }
     FCCandidate completed[FC_MAX_CANDIDATES];
@@ -9268,13 +7068,9 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     }
 
     qsort(completed, (size_t)count, sizeof(FCCandidate),
-          forkLayerActive ? fc_compare_fork_candidate
-                          : fc_compare_searched_candidate);
+          (fc_compare_searched_candidate));
     for (int i = 0; i < count; i++) {
-        if (forkLayerActive) {
-            completed[i].safe = completed[i].forkRisk == FC_FORK_RISK_SAFE ||
-                                completed[i].forkRisk == FC_FORK_RISK_OWN_WIN;
-        } else {
+        {
             completed[i].safe = fc_move_is_safe(mutableBoard,
                                                 completed[i].x,
                                                 completed[i].y,
@@ -9286,39 +7082,13 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     }
     bool anySafe = false;
     for (int i = 0; i < count; i++) {
-        anySafe = anySafe || completed[i].safe ||
-            (forkLayerActive &&
-             fc_fork_risk_is_nonfork(completed[i].forkRisk));
+        anySafe = (anySafe || completed[i].safe);
     }
-    if (!anySafe && !forkLayerActive) {
+    if (!anySafe) {
         if (proofSessionStarted)
             fc_proof_session_end(&proofSession, previousProofSession);
         free(context.table);
-        if (profile->recoverySearchEnabled) {
-            int fallbackX = -1;
-            int fallbackY = -1;
-            if (fc_find_full_board_legal_fallback(
-                    (const int (*)[FC_BOARD_SIZE])mutableBoard,
-                    side, forbiddenBlack, &fallbackX, &fallbackY)) {
-                result->x = fallbackX;
-                result->y = fallbackY;
-                result->fallbackUsed = true;
-                result->decisionStatus = FC_DECISION_UNKNOWN_OR_DEADLINE;
-                result->lossReason = FC_LOSS_BUDGET_UNKNOWN;
-                result->stats.budgetExhausted = true;
-                result->stats.elapsedMilliseconds =
-                    fc_now_milliseconds() - context.startedMilliseconds;
-                fcProofDiagnostics.decisionUnknowns++;
-                fcProofDiagnostics.decisionFallbacks++;
-                return true;
-            }
-            result->decisionStatus = FC_DECISION_NO_LEGAL_MOVE;
-            result->provenLoss = true;
-            result->tacticalClass = FC_TACTICAL_PROVEN_LOSS;
-            result->lossReason = FC_LOSS_NO_IMMEDIATE_SAFE_GENERATED;
-            fcProofDiagnostics.decisionNoLegalMoves++;
-            return false;
-        }
+
         /* Frozen profiles retain their historical boolean contract. */
         result->decisionStatus = FC_DECISION_VERIFIED_LOSS;
         result->provenLoss = true;
@@ -9339,9 +7109,7 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
         ? FC_OVERRIDE_IMMEDIATE_WIN
         : tacticalClass == FC_TACTICAL_MUST_DEFEND
         ? FC_OVERRIDE_MUST_DEFEND : FC_OVERRIDE_NONE;
-    if (forkLayerActive && result->overrideReason == FC_OVERRIDE_NONE &&
-        (result->x != advisoryDefaultX || result->y != advisoryDefaultY))
-        result->overrideReason = FC_OVERRIDE_FORK_SAFE_RECOVERY;
+
     result->candidateCount = count;
     result->randomCandidateCount = count;
     result->randomSelectionUsed = randomMode == FC_RANDOM_USER_GAME &&
@@ -9356,11 +7124,9 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     result->stats.budgetExhausted = context.aborted;
     result->stats.elapsedMilliseconds = fc_now_milliseconds()
                                             - context.startedMilliseconds;
-    result->candidateCoverageComplete = forkLayerActive
-        ? result->candidateCoverageComplete && !context.aborted
-        : !context.aborted &&
+    result->candidateCoverageComplete = (!context.aborted &&
           (tacticalClass == FC_TACTICAL_IMMEDIATE_WIN ||
-           tacticalClass == FC_TACTICAL_MUST_DEFEND);
+           tacticalClass == FC_TACTICAL_MUST_DEFEND));
     if (tacticalClass == FC_TACTICAL_IMMEDIATE_WIN) {
         result->decisionStatus = FC_DECISION_VERIFIED_WIN;
         fcProofDiagnostics.decisionVerifiedWins++;
@@ -9374,7 +7140,7 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     if (proofSessionStarted)
         fc_proof_session_end(&proofSession, previousProofSession);
     free(context.table);
-    if (!forkLayerActive && (hasBook || useHint) &&
+    if ((hasBook || useHint) &&
         tacticalClass != FC_TACTICAL_IMMEDIATE_WIN &&
         tacticalClass != FC_TACTICAL_MUST_DEFEND) {
         for (int i = 0; i < result->candidateCount; i++) {
@@ -9391,28 +7157,11 @@ static bool fc_analyze_internal(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
             break;
         }
     }
-    if (forkLayerActive)
-        fc_record_selected_fork_telemetry(
-            result, advisoryDefaultX, advisoryDefaultY);
+
     bool legal = fc_inside(result->x, result->y) &&
         fc_is_legal_move((const int (*)[FC_BOARD_SIZE])board,
                          result->x, result->y, side, forbiddenBlack);
-    if (!legal && profile->recoverySearchEnabled) {
-        if (fc_find_full_board_legal_fallback(
-                (const int (*)[FC_BOARD_SIZE])board,
-                side, forbiddenBlack, &result->x, &result->y)) {
-            result->fallbackUsed = true;
-            result->decisionStatus = FC_DECISION_UNKNOWN_OR_DEADLINE;
-            result->provenLoss = false;
-            result->stats.budgetExhausted = true;
-            fcProofDiagnostics.decisionFallbacks++;
-            return true;
-        }
-        result->decisionStatus = FC_DECISION_NO_LEGAL_MOVE;
-        result->provenLoss = true;
-        fcProofDiagnostics.decisionNoLegalMoves++;
-        return false;
-    }
+
     return legal;
 }
 
@@ -9608,177 +7357,10 @@ static bool fc_opponent_guard_vct_signal(
     return false;
 }
 
-typedef struct {
-    int risk;
-    int repliesExamined;
-    bool complete;
-    bool boardRestored;
-} FCRecoveryForkProbe;
-
-static bool fc_recovery_probe_budget_available(
-    double startedMilliseconds,
-    uint64_t consumedNodes,
-    const FCAIProfile *profile)
-{
-    if (profile == NULL || profile->opponentGuardForkNodeBudget == 0 ||
-        profile->opponentGuardForkTimeBudgetMs == 0) return false;
-    if (consumedNodes >= profile->opponentGuardForkNodeBudget) return false;
-    if (fc_now_milliseconds() - startedMilliseconds >=
-        (double)profile->opponentGuardForkTimeBudgetMs) return false;
-    return !fc_decision_deadline_reached();
-}
-
 /* A quiet white move can be harmless at the current ply while creating two
  * winning points on the following white ply.  This probe is deliberately
  * local and bounded: a complete zero/one result is scoped to the enumerated
  * legal replies, while any budget cut is reported as unknown. */
-static FCRecoveryForkProbe fc_probe_two_step_opponent_fork(
-    const int afterBlack[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    const FCAIProfile *profile)
-{
-    FCRecoveryForkProbe probe = {
-        .risk = FC_FORK_RISK_UNKNOWN,
-        .repliesExamined = 0,
-        .complete = false,
-        .boardRestored = false
-    };
-    int replyBoard[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(replyBoard, afterBlack, sizeof(replyBoard));
-    double started = fc_now_milliseconds();
-    uint64_t consumedNodes = 0;
-    int maxReplies = profile != NULL ? profile->opponentGuardForkMaxReplies : 0;
-    if (maxReplies <= 0) {
-        probe.boardRestored = memcmp(replyBoard, afterBlack,
-                                     sizeof(replyBoard)) == 0;
-        return probe;
-    }
-
-    bool sawOneReply = false;
-    bool incomplete = false;
-    bool finishedByFork = false;
-    for (int replyX = 0; replyX < FC_BOARD_SIZE && !incomplete &&
-             !finishedByFork; replyX++) {
-        for (int replyY = 0; replyY < FC_BOARD_SIZE; replyY++) {
-            if (!fc_recovery_probe_budget_available(
-                    started, consumedNodes, profile)) {
-                incomplete = true;
-                break;
-            }
-            consumedNodes++;
-            if (!fc_is_legal_move(
-                    (const int (*)[FC_BOARD_SIZE])replyBoard,
-                    replyX, replyY, -side, forbiddenBlack)) continue;
-            probe.repliesExamined++;
-            if (fc_wins_if_placed(replyBoard, replyX, replyY, -side)) {
-                sawOneReply = true;
-                if (probe.repliesExamined >= maxReplies) {
-                    incomplete = true;
-                    break;
-                }
-                continue;
-            }
-            replyBoard[replyX][replyY] = -side;
-            int immediateWins = 0;
-            for (int winX = 0; winX < FC_BOARD_SIZE && !incomplete;
-                 winX++) {
-                for (int winY = 0; winY < FC_BOARD_SIZE; winY++) {
-                    if (!fc_recovery_probe_budget_available(
-                            started, consumedNodes, profile)) {
-                        incomplete = true;
-                        break;
-                    }
-                    consumedNodes++;
-                    if (!fc_is_legal_move(
-                            (const int (*)[FC_BOARD_SIZE])replyBoard,
-                            winX, winY, -side, forbiddenBlack)) continue;
-                    if (!fc_wins_if_placed(
-                            replyBoard, winX, winY, -side)) continue;
-                    immediateWins++;
-                    if (immediateWins >= 2) {
-                        probe.risk = FC_FORK_RISK_FORK;
-                        probe.complete = true;
-                        finishedByFork = true;
-                        break;
-                    }
-                }
-            }
-            replyBoard[replyX][replyY] = 0;
-            if (finishedByFork || incomplete) break;
-            if (immediateWins == 1) sawOneReply = true;
-            if (probe.repliesExamined >= maxReplies) {
-                incomplete = true;
-                break;
-            }
-        }
-    }
-    if (!probe.complete) {
-        probe.complete = !incomplete;
-        if (probe.complete) {
-            probe.risk = sawOneReply ? FC_FORK_RISK_ONE_REPLY
-                                     : FC_FORK_RISK_SAFE;
-        } else {
-            probe.risk = FC_FORK_RISK_UNKNOWN;
-        }
-    }
-    probe.boardRestored = memcmp(replyBoard, afterBlack,
-                                 sizeof(replyBoard)) == 0;
-    if (!probe.boardRestored) {
-        probe.risk = FC_FORK_RISK_UNKNOWN;
-        probe.complete = false;
-    }
-    return probe;
-}
-
-static int fc_guard_immediate_win_count_after_move(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    int x,
-    int y)
-{
-    int after[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(after, board, sizeof(after));
-    if (!fc_make_move(after, x, y, side, forbiddenBlack)) return -1;
-    int count = fc_count_immediate_wins(after, -side, forbiddenBlack,
-                                        NULL, 0);
-    after[x][y] = 0;
-    return count;
-}
-
-static int fc_build_immediate_block_candidates(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    const FCAIProfile *profile,
-    const FCCandidate *baseMoves,
-    int baseCount,
-    int defaultX,
-    int defaultY,
-    FCEscapeCandidate *out,
-    int capacity)
-{
-    int count = 0;
-    for (int i = 0; i < baseCount; i++) {
-        int x = baseMoves[i].x;
-        int y = baseMoves[i].y;
-        if (!fc_is_legal_move(board, x, y, side, forbiddenBlack)) continue;
-        if (fc_guard_immediate_win_count_after_move(
-                board, side, forbiddenBlack, x, y) != 0) continue;
-        int stage = baseMoves[i].tacticalClass == FC_TACTICAL_NORMAL
-            ? FC_ESCAPE_ORDINARY : FC_ESCAPE_TACTICAL;
-        if (x == defaultX && y == defaultY) stage = FC_ESCAPE_TACTICAL;
-        (void)fc_append_escape_candidate(
-            board, side, forbiddenBlack, x, y, stage,
-            baseMoves[i].score + (profile != NULL
-                ? fc_move_heuristic((int (*)[FC_BOARD_SIZE])board,
-                                    x, y, side, profile) : 0),
-            out, &count, capacity);
-    }
-    qsort(out, (size_t)count, sizeof(out[0]), fc_compare_escape_candidate);
-    return count;
-}
 
 static int fc_recovery_source_for_candidate(
     const FCAnalysisResult *baseline,
@@ -9975,7 +7557,7 @@ bool fc_audit_opponent_micro_vcf_after_move(
     audit->completedClass = FC_GUARD_CLASS_UNKNOWN;
     audit->opponentImmediateWinCount = -1;
     audit->immediateBlockPriorityEnabled =
-        profile->opponentGuardImmediateBlockEnabled;
+        0;
     audit->forkRisk = FC_FORK_RISK_UNKNOWN;
     audit->vcf.x = audit->vcf.y = -1;
     audit->vct.x = audit->vct.y = -1;
@@ -10025,8 +7607,7 @@ bool fc_audit_opponent_micro_vcf_after_move(
     queryProfile.parallelProofEnabled = false;
     queryProfile.proofWorkerCount = 1;
     queryProfile.workerCountOverride = 1;
-    queryProfile.branchFirstSearchEnabled = false;
-    queryProfile.persistentWorkerPoolEnabled = false;
+
     uint64_t nodeBudget = profile->earlyVCFNodeBudget;
     uint32_t timeBudget = profile->earlyVCFTimeBudgetMs;
     if (nodeBudget == 0 || timeBudget == 0) {
@@ -10095,7 +7676,7 @@ bool fc_audit_opponent_after_move(
     audit->completedClass = FC_GUARD_CLASS_UNKNOWN;
     audit->opponentImmediateWinCount = -1;
     audit->immediateBlockPriorityEnabled =
-        profile->opponentGuardImmediateBlockEnabled;
+        0;
     audit->forkRisk = FC_FORK_RISK_UNKNOWN;
     audit->vcf.x = audit->vcf.y = -1;
     audit->vct.x = audit->vct.y = -1;
@@ -10112,25 +7693,7 @@ bool fc_audit_opponent_after_move(
         after, -side, forbiddenBlack, NULL, 0);
     audit->immediatelySafe = audit->ownImmediateWin ||
         audit->opponentImmediateWinCount == 0;
-    if (!audit->ownImmediateWin && side == 1 &&
-        profile->opponentGuardTwoStepForkEnabled &&
-        audit->opponentImmediateWinCount == 0) {
-        FCRecoveryForkProbe forkProbe = fc_probe_two_step_opponent_fork(
-            (const int (*)[FC_BOARD_SIZE])after, side, forbiddenBlack,
-            profile);
-        audit->forkRisk = forkProbe.risk;
-        audit->forkRepliesExamined = forkProbe.repliesExamined;
-        audit->forkProbeComplete = forkProbe.complete;
-        if (forkProbe.complete) {
-            if (forkProbe.risk == FC_FORK_RISK_FORK)
-                fcProofDiagnostics.forkProbeRiskyCandidates++;
-            else
-                fcProofDiagnostics.forkProbeSafeCandidates++;
-        } else {
-            fcProofDiagnostics.forkProbeUnknownCandidates++;
-            fcProofDiagnostics.forkProbeIncompleteDecisions++;
-        }
-    }
+
     if (audit->ownImmediateWin) {
         audit->status = FC_PROOF_NO_FORCED_WIN_IN_SCOPE;
         audit->completedClass = FC_GUARD_CLASS_OWN_VERIFIED_WIN;
@@ -10180,18 +7743,7 @@ bool fc_audit_opponent_after_move(
         audit->completedClass = audit->immediatelySafe
             ? FC_GUARD_CLASS_IMMEDIATELY_SAFE_UNKNOWN
             : FC_GUARD_CLASS_UNKNOWN;
-        bool relevantUnknown = side == 1 &&
-            profile->opponentGuardVCTOnUnknownEnabled &&
-            (audit->forkRisk == FC_FORK_RISK_FORK ||
-             (audit->forkProbeComplete &&
-              audit->forkRisk == FC_FORK_RISK_ONE_REPLY) ||
-             fc_opponent_guard_vct_signal(
-                 (const int (*)[FC_BOARD_SIZE])after, -side,
-                 forbiddenBlack));
-        if (relevantUnknown)
-            fc_run_opponent_guard_vct(
-                (const int (*)[FC_BOARD_SIZE])after, -side,
-                forbiddenBlack, profile, audit, false, true);
+
     }
     after[x][y] = 0;
     audit->boardRestored = memcmp(after, board, sizeof(after)) == 0;
@@ -10281,17 +7833,6 @@ static void fc_guard_count_audit(FCAnalysisResult *result,
     } else {
         result->opponentGuardUnknowns++;
         fcProofDiagnostics.opponentGuardUnknowns++;
-    }
-}
-
-static uint32_t fc_guard_stage_for_escape(int stage)
-{
-    switch (stage) {
-        case FC_ESCAPE_CERTIFICATE: return FC_GUARD_STAGE_CERTIFICATE;
-        case FC_ESCAPE_TACTICAL: return FC_GUARD_STAGE_TACTICAL;
-        case FC_ESCAPE_ORDINARY: return FC_GUARD_STAGE_ORDINARY;
-        case FC_ESCAPE_ALL_LEGAL: return FC_GUARD_STAGE_ALL_LEGAL;
-        default: return FC_GUARD_STAGE_NONE;
     }
 }
 
@@ -10391,6 +7932,17 @@ static void fc_early_vcf_adopt_candidate(
         if (audit == NULL || !audit->ownImmediateWin)
             baseline->tacticalClass = baseMoves[i].tacticalClass;
         break;
+    }
+}
+
+static uint32_t fc_guard_stage_for_escape(int stage)
+{
+    switch (stage) {
+        case FC_ESCAPE_CERTIFICATE: return FC_GUARD_STAGE_CERTIFICATE;
+        case FC_ESCAPE_TACTICAL: return FC_GUARD_STAGE_TACTICAL;
+        case FC_ESCAPE_ORDINARY: return FC_GUARD_STAGE_ORDINARY;
+        case FC_ESCAPE_ALL_LEGAL: return FC_GUARD_STAGE_ALL_LEGAL;
+        default: return FC_GUARD_STAGE_NONE;
     }
 }
 
@@ -10694,33 +8246,6 @@ static FC_NOINLINE bool fc_apply_opponent_guard(
      * audited before structural/tactical/ordinary escape ordering so a
      * structurally attractive move cannot survive while leaving an immediate
      * opponent win available. */
-    if (side == 1 && profile->opponentGuardImmediateBlockEnabled &&
-        maxAlternatives > 0) {
-        FCEscapeCandidate blockers[FC_BOARD_SIZE * FC_BOARD_SIZE];
-        int blockerCount = fc_build_immediate_block_candidates(
-            board, side, forbiddenBlack, profile, baseMoves, baseCount,
-            baseline->defaultX, baseline->defaultY,
-            blockers, FC_BOARD_SIZE * FC_BOARD_SIZE);
-        for (int i = 0; i < blockerCount && alternatives < maxAlternatives;
-             i++) {
-            int x = blockers[i].x;
-            int y = blockers[i].y;
-            if (examined[x][y]) continue;
-            if (!fc_audit_opponent_after_move(
-                    board, side, forbiddenBlack, profile,
-                    x, y, candidateAudit)) continue;
-            examined[x][y] = true;
-            alternatives++;
-            fc_guard_count_audit(baseline, candidateAudit,
-                                 FC_GUARD_STAGE_TACTICAL);
-            if (fc_guard_audit_better(candidateAudit, selectedAudit)) {
-                *selectedAudit = *candidateAudit;
-                selectedX = x;
-                selectedY = y;
-                selectedStage = FC_ESCAPE_TACTICAL;
-            }
-        }
-    }
 
     /* Mandatory blocks are a continuation portfolio, not a one-ply safety
      * assertion. Preserve their generated deterministic tactical order. */
@@ -11229,35 +8754,8 @@ static bool fc_analyze_five_star_profile_with_hint_internal(
         memcpy(handoffCandidates, handoffSeed.all,
                (size_t)handoffCount * sizeof(handoffCandidates[0]));
     }
-    bool forkLayerActive = profile->forkFirstRecoveryEnabled &&
-        fc_apply_fork_candidate_layer(
-            board, side, forbiddenBlack, profile, handoffCandidates,
-            &handoffCount, FC_MAX_CANDIDATES,
-            handoffValid ? fourStar.x : hintX,
-            handoffValid ? fourStar.y : hintY,
-            hintX, hintY, &baseline);
-    if (forkLayerActive && handoffCount > 0) {
-        baseline.candidateCount = handoffCount;
-        memcpy(baseline.candidates, handoffCandidates,
-               (size_t)handoffCount * sizeof(handoffCandidates[0]));
-        baseline.x = handoffCandidates[0].x;
-        baseline.y = handoffCandidates[0].y;
-        baseline.score = handoffCandidates[0].score;
-        baseline.tacticalClass = handoffCandidates[0].tacticalClass;
-        baseline.defaultX = handoffValid ? fourStar.x : hintX;
-        baseline.defaultY = handoffValid ? fourStar.y : hintY;
-        baseline.defaultSource = handoffValid
-            ? FC_DEFAULT_LEGACY : FC_DEFAULT_NONE;
-        if (!handoffValid)
-            baseline.handoffReason = FC_HANDOFF_GENERATED_FALLBACK;
-        if ((baseline.x != baseline.defaultX ||
-             baseline.y != baseline.defaultY) &&
-            baseline.tacticalClass == FC_TACTICAL_NORMAL) {
-            baseline.overrideReason = FC_OVERRIDE_FORK_SAFE_RECOVERY;
-        }
-        fc_record_selected_fork_telemetry(
-            &baseline, baseline.defaultX, baseline.defaultY);
-    } else if (!handoffValid) {
+
+    if (!handoffValid) {
         /* The complete legality scan is reserved for the genuinely empty
          * candidate case.  It is never described as a verified loss. */
         if (!fc_find_full_board_legal_fallback(
@@ -11395,35 +8893,7 @@ static bool fc_analyze_five_star_profile_with_hint_internal(
             baseline.stats.budgetExhausted = true;
         }
     }
-    bool recoveryProfile = profile->opponentGuardImmediateBlockEnabled &&
-        profile->opponentGuardTwoStepForkEnabled && side == 1;
-    if (recoveryProfile) {
-        /* These coordinates are captured before structural preemption.  The
-         * actual merge happens after that stage so the guard sees the final
-         * structural portfolio plus the preserved pre-structural snapshot. */
-        baseline.recoveryBaselineX = baseline.x;
-        baseline.recoveryBaselineY = baseline.y;
-        baseline.recoveryDefaultX = baseline.defaultX;
-        baseline.recoveryDefaultY = baseline.defaultY;
-        baseline.recoveryHandoffX = handoffValid ? fourStar.x : -1;
-        baseline.recoveryHandoffY = handoffValid ? fourStar.y : -1;
-    }
-    if (profile->blackDoubleThreeDefenseEnabled && side == 1) {
-        FCAnalysisResult completedBeforeDoubleThree = baseline;
-        if (!fc_apply_black_double_three_preemption(
-                board, side, forbiddenBlack, profile,
-                generatedCandidates, &generatedCount, &baseline)) {
-            baseline = completedBeforeDoubleThree;
-            baseline.doubleThreeStatus = FC_DOUBLE_THREE_STATUS_UNKNOWN;
-            baseline.doubleThreeRollback = true;
-            fcProofDiagnostics.doubleThreeRollbacks++;
-        }
-    }
-    if (recoveryProfile)
-        fc_recovery_merge_guard_portfolio(
-            board, side, forbiddenBlack, &baseline,
-            handoffCandidates, handoffCount,
-            generatedCandidates, &generatedCount);
+
     if (profile->opponentGuardEnabled) {
         if (profile->earlyVCFSentinelEnabled && proofSessionStarted &&
             !fc_proof_session_reset_for_query(
@@ -11463,9 +8933,7 @@ static bool fc_analyze_five_star_profile_with_hint_internal(
     *result = baseline;
     result->fourStarX = fourStar.x;
     result->fourStarY = fourStar.y;
-    if (forkLayerActive)
-        fc_record_selected_fork_telemetry(
-            result, baseline.defaultX, baseline.defaultY);
+
     result->corpusPositionIndex = -1;
     result->corpusReason = FC_CORPUS_NOT_CHECKED;
     result->corpusMatchType = FC_CORPUS_MATCH_NONE;
@@ -11878,10 +9346,7 @@ static bool fc_analyze_five_star_profile_with_hint_internal(
     result->stats.elapsedMilliseconds = fc_now_milliseconds() - started;
     bool legal = fc_is_legal_move(board, result->x, result->y, side,
                                   forbiddenBlack);
-    if (profile->opponentGuardImmediateBlockEnabled && side == 1)
-        result->recoveryFinalCandidateConsistent = legal &&
-            result->opponentGuardSelectedX == result->x &&
-            result->opponentGuardSelectedY == result->y;
+
     if (proofSessionStarted)
         fc_proof_session_end(&proofSession, previousProofSession);
     return legal;
@@ -11913,8 +9378,7 @@ bool fc_analyze_five_star_profile_with_hint(
     fcDecisionParallelJobs = 0;
     fcDecisionParallelJobsCompleted = 0;
     if (previousLedger == NULL &&
-        (profile->recoverySearchEnabled ||
-         profile->decisionLedgerVersion > 0 ||
+        ((profile->decisionLedgerVersion > 0) ||
          profile->decisionHardLimitMs > 0)) {
         ledgerStarted = fc_decision_ledger_begin(&ledger, profile);
         if (ledgerStarted) {
@@ -11973,8 +9437,7 @@ bool fc_analyze_five_star_profile_with_hint(
     }
     if (result != NULL) {
         result->proofParallelNodes = fcDecisionParallelNodes;
-        result->proofWorkerCap = (profile->parallelProofEnabled ||
-                                  profile->branchFirstSearchEnabled)
+        result->proofWorkerCap = (profile->parallelProofEnabled)
             ? fc_effective_worker_count(profile) : 1;
         if (result->proofWorkerCap < 1) result->proofWorkerCap = 1;
         if (result->proofWorkerCap > 8) result->proofWorkerCap = 8;
@@ -11982,8 +9445,7 @@ bool fc_analyze_five_star_profile_with_hint(
         result->proofParallelJobs = fcDecisionParallelJobs;
         result->proofParallelJobsCompleted =
             fcDecisionParallelJobsCompleted;
-        if (profile->branchFirstSearchEnabled)
-            result->hybridComponent = FC_HYBRID_COMPONENT_V57_BRANCH_FIRST;
+
         if (ledgerStarted) fc_record_decision_ledger(&ledger, result);
         fc_finalize_random_telemetry(result);
     }
@@ -11998,329 +9460,6 @@ bool fc_analyze_five_star_profile_with_hint(
     return found;
 }
 
-bool fc_analyze_five_star_color_hybrid_with_hint(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    uint64_t seed,
-    FCRandomMode randomMode,
-    int hintX,
-    int hintY,
-    FCAnalysisResult *result)
-{
-    if (side != 1 && side != -1) return false;
-    FCAIProfile component = side == -1
-        ? fc_profile_five_star_proof_engine_candidate()
-        : fc_profile_five_star();
-    /* Production v5.1 has no player-visible whole-decision deadline of its
-     * own.  The hybrid preserves its search/profile parameters but adds an
-     * outer reserve so corpus/proof cleanup still returns before 5 seconds. */
-    if (side == 1) component.decisionTimeBudgetMs = 4300;
-    bool found = fc_analyze_five_star_profile_with_hint(
-        board, side, forbiddenBlack, &component, seed, randomMode,
-        hintX, hintY, result);
-    /* Frozen components predate proof-equivalent user randomness and may
-     * occasionally choose a merely score-near baseline alternative.  The
-     * candidate-only hybrid keeps the component search intact but vetoes
-     * such an unverified policy choice and returns that same component's
-     * best completed result.  Corpus alternatives already carry a complete
-     * equivalence audit and therefore remain eligible for seeded variation. */
-    if (found && result != NULL && randomMode == FC_RANDOM_USER_GAME &&
-        result->randomSelectionUsed && !result->randomEligibilityVerified) {
-        found = fc_analyze_five_star_profile_with_hint(
-            board, side, forbiddenBlack, &component, seed,
-            FC_RANDOM_EVALUATION, hintX, hintY, result);
-        if (result != NULL) {
-            result->seed = seed;
-            result->randomMode = FC_RANDOM_USER_GAME;
-            result->randomCandidateCount = 1;
-            result->randomSelectionUsed = false;
-            result->randomSelectedRank = 0;
-            result->randomEligibilityVerified = true;
-            fc_finalize_random_telemetry(result);
-        }
-    }
-    if (result != NULL) {
-        result->hybridComponent = side == -1
-            ? FC_HYBRID_COMPONENT_WHITE_PROOF_ENGINE
-            : FC_HYBRID_COMPONENT_BLACK_V51;
-    }
-    return found;
-}
-
-bool fc_analyze_five_star_v521_hybrid_with_hint(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    int blackWorkerCount,
-    uint64_t seed,
-    FCRandomMode randomMode,
-    int hintX,
-    int hintY,
-    FCAnalysisResult *result)
-{
-    if (side != 1 && side != -1) return false;
-    if (!fc_research_worker_count_is_valid(blackWorkerCount))
-        blackWorkerCount = 1;
-    bool parallelBlack = blackWorkerCount > 1;
-    FCAIProfile component = side == -1
-        ? fc_profile_five_star_proof_engine_candidate()
-        : parallelBlack
-        ? fc_profile_five_star_v521_parallel_hybrid_candidate()
-        : fc_profile_five_star_v521_serial_hybrid_control();
-    if (side == 1) {
-        component.parallelProofEnabled = parallelBlack;
-        component.proofWorkerCount = blackWorkerCount;
-        component.proofParallelNodeBudget = component.proofNodeBudget *
-            (uint64_t)blackWorkerCount;
-    }
-    bool found = fc_analyze_five_star_profile_with_hint(
-        board, side, forbiddenBlack, &component, seed, randomMode,
-        hintX, hintY, result);
-    if (found && result != NULL && randomMode == FC_RANDOM_USER_GAME &&
-        result->randomSelectionUsed && !result->randomEligibilityVerified) {
-        found = fc_analyze_five_star_profile_with_hint(
-            board, side, forbiddenBlack, &component, seed,
-            FC_RANDOM_EVALUATION, hintX, hintY, result);
-        if (result != NULL) {
-            result->seed = seed;
-            result->randomMode = FC_RANDOM_USER_GAME;
-            result->randomCandidateCount = 1;
-            result->randomSelectionUsed = false;
-            result->randomSelectedRank = 0;
-            result->randomEligibilityVerified = true;
-            fc_finalize_random_telemetry(result);
-        }
-    }
-    if (result != NULL) {
-        result->hybridComponent = side == -1
-            ? FC_HYBRID_COMPONENT_WHITE_PROOF_ENGINE
-            : parallelBlack
-            ? FC_HYBRID_COMPONENT_BLACK_V521_PARALLEL
-            : FC_HYBRID_COMPONENT_BLACK_V521_SERIAL;
-    }
-    return found;
-}
-
-bool fc_analyze_five_star_v57_hybrid_with_hint(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    int blackWorkerCount,
-    uint64_t seed,
-    FCRandomMode randomMode,
-    int hintX,
-    int hintY,
-    FCAnalysisResult *result)
-{
-    if (side != 1 && side != -1) return false;
-    if (!fc_research_worker_count_is_valid(blackWorkerCount))
-        blackWorkerCount = 1;
-    FCAIProfile component = side == -1
-        ? fc_profile_five_star_proof_engine_candidate()
-        : fc_profile_five_star_v57_hybrid_candidate();
-    if (side == -1) {
-        /* Keep the measured white proof parameters, but expose the same
-         * reversible decision/recovery contract as the v5.7 black path.  The
-         * old 5.4 component otherwise bypasses fork recovery on exactly the
-         * white fallback positions in the audit. */
-        FCAIProfile recovery = fc_profile_five_star_v57_hybrid_candidate();
-        component.decisionHardLimitMs = recovery.decisionHardLimitMs;
-        component.decisionLedgerVersion = recovery.decisionLedgerVersion;
-        component.decisionNodeBudget = recovery.decisionNodeBudget;
-        component.decisionMemoryBudgetBytes =
-            recovery.decisionMemoryBudgetBytes;
-        component.decisionCorpusQueryBudget =
-            recovery.decisionCorpusQueryBudget;
-        component.incrementalLegalityEnabled =
-            recovery.incrementalLegalityEnabled;
-        component.validateLegalityCache = recovery.validateLegalityCache;
-        component.recoverySearchEnabled = recovery.recoverySearchEnabled;
-    }
-    if (side == 1) {
-        component.parallelProofEnabled = blackWorkerCount > 1;
-        component.proofWorkerCount = blackWorkerCount;
-        component.proofParallelNodeBudget = component.proofNodeBudget *
-            (uint64_t)blackWorkerCount;
-    }
-    bool found = fc_analyze_five_star_profile_with_hint(
-        board, side, forbiddenBlack, &component, seed, randomMode,
-        hintX, hintY, result);
-    if (found && result != NULL && randomMode == FC_RANDOM_USER_GAME &&
-        result->randomSelectionUsed && !result->randomEligibilityVerified) {
-        found = fc_analyze_five_star_profile_with_hint(
-            board, side, forbiddenBlack, &component, seed,
-            FC_RANDOM_EVALUATION, hintX, hintY, result);
-        if (result != NULL) {
-            result->seed = seed;
-            result->randomMode = FC_RANDOM_USER_GAME;
-            result->randomCandidateCount = 1;
-            result->randomSelectionUsed = false;
-            result->randomSelectedRank = 0;
-            result->randomEligibilityVerified = true;
-            fc_finalize_random_telemetry(result);
-        }
-    }
-    if (result != NULL) {
-        result->hybridComponent = side == -1
-            ? FC_HYBRID_COMPONENT_WHITE_PROOF_ENGINE
-            : FC_HYBRID_COMPONENT_BLACK_V57_PARALLEL;
-    }
-    return found;
-}
-
-bool fc_analyze_five_star_v57_thread_scheduler_with_hint(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    int workerCount,
-    uint64_t seed,
-    FCRandomMode randomMode,
-    int hintX,
-    int hintY,
-    FCAnalysisResult *result)
-{
-    if (side != 1 && side != -1) return false;
-    if (!fc_research_worker_count_is_valid(workerCount)) workerCount = 1;
-    FCAIProfile scheduler =
-        fc_profile_five_star_v57_thread_scheduler_candidate();
-    FCAIProfile component = side == -1
-        ? fc_profile_five_star_proof_engine_candidate() : scheduler;
-    if (side == -1) {
-        /* Preserve the measured v5.4 white search parameters while applying
-         * only the scheduler study to its dispatcher and shared ledger. */
-        component.decisionHardLimitMs = scheduler.decisionHardLimitMs;
-        component.decisionLedgerVersion = scheduler.decisionLedgerVersion;
-        component.decisionNodeBudget = scheduler.decisionNodeBudget;
-        component.decisionMemoryBudgetBytes =
-            scheduler.decisionMemoryBudgetBytes;
-        component.decisionCorpusQueryBudget =
-            scheduler.decisionCorpusQueryBudget;
-        component.incrementalLegalityEnabled =
-            scheduler.incrementalLegalityEnabled;
-        component.validateLegalityCache = scheduler.validateLegalityCache;
-        component.recoverySearchEnabled = scheduler.recoverySearchEnabled;
-        component.persistentWorkerPoolEnabled =
-            scheduler.persistentWorkerPoolEnabled;
-        component.parallelTokenBlockEnabled =
-            scheduler.parallelTokenBlockEnabled;
-        component.parallelTokenBlockSize = scheduler.parallelTokenBlockSize;
-    }
-    if (side == 1) {
-        component.parallelProofEnabled = workerCount > 1;
-        component.proofWorkerCount = workerCount;
-        component.proofParallelNodeBudget = component.proofNodeBudget *
-            (uint64_t)workerCount;
-    }
-    bool found = fc_analyze_five_star_profile_with_hint(
-        board, side, forbiddenBlack, &component, seed, randomMode,
-        hintX, hintY, result);
-    if (found && result != NULL && randomMode == FC_RANDOM_USER_GAME &&
-        result->randomSelectionUsed && !result->randomEligibilityVerified) {
-        found = fc_analyze_five_star_profile_with_hint(
-            board, side, forbiddenBlack, &component, seed,
-            FC_RANDOM_EVALUATION, hintX, hintY, result);
-        if (result != NULL) {
-            result->seed = seed;
-            result->randomMode = FC_RANDOM_USER_GAME;
-            result->randomCandidateCount = 1;
-            result->randomSelectionUsed = false;
-            result->randomSelectedRank = 0;
-            result->randomEligibilityVerified = true;
-            fc_finalize_random_telemetry(result);
-        }
-    }
-    if (result != NULL)
-        result->hybridComponent = side == -1
-            ? FC_HYBRID_COMPONENT_WHITE_PROOF_ENGINE
-            : FC_HYBRID_COMPONENT_BLACK_V57_PARALLEL;
-    return found;
-}
-
-bool fc_analyze_five_star_v541_thread_scheduler_with_hint(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    int workerCount,
-    uint64_t seed,
-    FCRandomMode randomMode,
-    int hintX,
-    int hintY,
-    FCAnalysisResult *result)
-{
-    if (side != 1 && side != -1) return false;
-    if (!fc_research_worker_count_is_valid(workerCount)) workerCount = 1;
-    FCAIProfile component =
-        fc_profile_five_star_v541_thread_scheduler_candidate();
-    component.workerCountOverride = workerCount;
-    component.proofWorkerCount = workerCount;
-    bool found = fc_analyze_five_star_profile_with_hint(
-        board, side, forbiddenBlack, &component, seed, randomMode,
-        hintX, hintY, result);
-    if (found && result != NULL && randomMode == FC_RANDOM_USER_GAME &&
-        result->randomSelectionUsed && !result->randomEligibilityVerified) {
-        found = fc_analyze_five_star_profile_with_hint(
-            board, side, forbiddenBlack, &component, seed,
-            FC_RANDOM_EVALUATION, hintX, hintY, result);
-        if (result != NULL) {
-            result->seed = seed;
-            result->randomMode = FC_RANDOM_USER_GAME;
-            result->randomCandidateCount = 1;
-            result->randomSelectionUsed = false;
-            result->randomSelectedRank = 0;
-            result->randomEligibilityVerified = true;
-            fc_finalize_random_telemetry(result);
-        }
-    }
-    if (result != NULL)
-        result->hybridComponent = FC_HYBRID_COMPONENT_V541_THREAD_SCHEDULER;
-    return found;
-}
-
-const char *fc_hybrid_component_name(int component)
-{
-    switch (component) {
-        case FC_HYBRID_COMPONENT_BLACK_V51:
-            return "black-production-v51";
-        case FC_HYBRID_COMPONENT_WHITE_PROOF_ENGINE:
-            return "white-proof-engine";
-        case FC_HYBRID_COMPONENT_BLACK_V521_PARALLEL:
-            return "black-v521-parallel-root-8w";
-        case FC_HYBRID_COMPONENT_BLACK_V521_SERIAL:
-            return "black-v521-serial-1w-control";
-        case FC_HYBRID_COMPONENT_BLACK_V57_PARALLEL:
-            return "black-v521-independent-root-parallel-8w-5s";
-        case FC_HYBRID_COMPONENT_V57_BRANCH_FIRST:
-            return "v57-branch-first-recursive-8w-5s";
-        case FC_HYBRID_COMPONENT_V541_THREAD_SCHEDULER:
-            return "v541-persistent-pool-token-blocks-8w-5s";
-        default:
-            return "none";
-    }
-}
-
-const char *fc_hybrid_component_version(int component)
-{
-    switch (component) {
-        case FC_HYBRID_COMPONENT_BLACK_V51:
-            return "5.1.0-elite-rule-partitioned-local-v2";
-        case FC_HYBRID_COMPONENT_WHITE_PROOF_ENGINE:
-            return "5.4.1-transactional-deadline-root-parallel-5s";
-        case FC_HYBRID_COMPONENT_BLACK_V521_PARALLEL:
-            return "5.2.3-overlap-aware-deeper-root-parallel-8w-5s";
-        case FC_HYBRID_COMPONENT_BLACK_V521_SERIAL:
-            return "5.2.3-active-proof-serial-1w-5s-control";
-        case FC_HYBRID_COMPONENT_BLACK_V57_PARALLEL:
-            return "5.7.0-white-v541-black-v521-independent-root-parallel8-5s";
-        case FC_HYBRID_COMPONENT_V57_BRANCH_FIRST:
-            return "5.7.2-branch-first-preview-recursive-pool-14d-5s";
-        case FC_HYBRID_COMPONENT_V541_THREAD_SCHEDULER:
-            return "5.4.2-v541-persistent-pool-token-blocks-8w-5s";
-        default:
-            return "none";
-    }
-}
-
 bool fc_analyze_five_star_with_hint(
     const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     int side,
@@ -12331,7 +9470,7 @@ bool fc_analyze_five_star_with_hint(
     int hintY,
     FCAnalysisResult *result)
 {
-    FCAIProfile profile = fc_profile_five_star();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     return fc_analyze_five_star_profile_with_hint(
         board, side, forbiddenBlack, &profile, seed, randomMode,
         hintX, hintY, result);
@@ -12340,180 +9479,139 @@ bool fc_analyze_five_star_with_hint(
 size_t fc_profile_snapshot(const FCAIProfile *profile, char *buffer, size_t capacity)
 {
     if (profile == NULL || buffer == NULL || capacity == 0) return 0;
-    size_t graphNodeCapacity = profile->proofGraphNodeCapacity > 0
-        ? profile->proofGraphNodeCapacity : FC_DFPN_NODE_CAPACITY;
-    size_t graphEdgeCapacity = profile->proofGraphEdgeCapacity > 0
-        ? profile->proofGraphEdgeCapacity : FC_DFPN_EDGE_CAPACITY;
-    if (graphNodeCapacity > FC_DFPN_NODE_CAPACITY)
-        graphNodeCapacity = FC_DFPN_NODE_CAPACITY;
-    if (graphEdgeCapacity > FC_DFPN_EDGE_CAPACITY)
-        graphEdgeCapacity = FC_DFPN_EDGE_CAPACITY;
-    size_t proofSessionMemoryBytes =
-        profile->proofTranspositionCapacity * sizeof(FCDFPNTTEntry) +
-        graphNodeCapacity * sizeof(FCDFPNNode) +
-        graphEdgeCapacity * sizeof(FCDFPNEdge);
-    size_t proofParallelPeakMemoryBytes = proofSessionMemoryBytes *
-        (size_t)fc_effective_worker_count(profile);
-    int length = snprintf(buffer, capacity,
-        "{\"name\":\"%s\",\"version\":\"%s\",\"maxDepth\":%d,"
-        "\"quiescenceDepth\":%d,\"fourDepth\":%d,"
-        "\"doubleThreeDepth\":%d,\"forcingDepth\":%d,"
-        "\"candidateLimit\":%d,\"nodeBudget\":%llu,"
-        "\"timeBudgetMs\":%u,\"transpositionCapacity\":%zu,"
-        "\"attackWeight\":%d,\"defenseWeight\":%d,"
-        "\"centerWeight\":%d,\"nearBestWindow\":%d,"
-        "\"randomTemperature\":%.3f,\"maxRandomCandidates\":%d,"
-        "\"proofEnabled\":%s,\"proofEngineCandidate\":%s,"
-        "\"proofCandidateStagesEnabled\":%s,"
-        "\"parallelProofEnabled\":%s,"
-        "\"openingBookEnabled\":%s,"
-        "\"proofSearchClass\":%d,\"proofMaxDepth\":%d,"
-        "\"proofNodeBudget\":%llu,\"proofParallelNodeBudget\":%llu,"
-        "\"proofTimeBudgetMs\":%u,\"proofWorkerCount\":%d,"
-        "\"workerCountOverride\":%d,"
-        "\"proofTranspositionCapacity\":%zu,"
-        "\"proofGraphNodeCapacity\":%zu,"
-        "\"proofGraphEdgeCapacity\":%zu,"
-        "\"proofSessionMemoryBytes\":%zu,"
-        "\"proofParallelPeakMemoryBytes\":%zu,"
-        "\"lossAwareEnabled\":%s,\"quietThreatEnabled\":%s,"
-        "\"proofEscapeCandidateLimit\":%d,\"proofQuietRootLimit\":%d,"
-        "\"proofEmergencyTimeBudgetMs\":%u,"
-        "\"decisionTimeBudgetMs\":%u,"
-        "\"decisionHardLimitMs\":%u,\"decisionLedgerVersion\":%u,"
-        "\"decisionNodeBudget\":%llu,\"decisionMemoryBudgetBytes\":%zu,"
-        "\"decisionCorpusQueryBudget\":%u,"
-        "\"incrementalLegalityEnabled\":%s,"
-        "\"validateLegalityCache\":%s,\"recoverySearchEnabled\":%s,"
-        "\"forkFirstRecoveryEnabled\":%s,"
-        "\"persistentWorkerPoolEnabled\":%s,"
-        "\"parallelTokenBlockEnabled\":%s,"
-        "\"parallelTokenBlockSize\":%u,"
-        "\"branchFirstSearchEnabled\":%s,"
-        "\"branchFirstMinRemainingDepth\":%d,"
-        "\"branchFirstMinBranchCount\":%d,"
-        "\"branchFirstMaxBranches\":%d,"
-        "\"branchFirstPreviewDepth\":%d,"
-        "\"branchFirstAdvancedFourDepthBonus\":%d,"
-        "\"branchFirstAdvancedThreeDepthBonus\":%d,"
-        "\"branchFirstTacticalDepthCap\":%d,"
-        "\"opponentGuardEnabled\":%s,"
-        "\"opponentGuardVCFMaxDepth\":%d,"
-        "\"opponentGuardVCFNodeBudget\":%llu,"
-        "\"opponentGuardVCFTimeBudgetMs\":%u,"
-        "\"opponentGuardVCTMaxDepth\":%d,"
-        "\"opponentGuardVCTNodeBudget\":%llu,"
-        "\"opponentGuardVCTTimeBudgetMs\":%u,"
-        "\"opponentGuardReservedNodes\":%llu,"
-        "\"opponentGuardReservedTimeMs\":%u,"
-        "\"opponentGuardStructuralVCTEnabled\":%s,"
-        "\"opponentGuardMaxAlternatives\":%d,"
-        "\"opponentGuardImmediateBlockEnabled\":%s,"
-        "\"opponentGuardTwoStepForkEnabled\":%s,"
-        "\"opponentGuardForkMaxReplies\":%d,"
-        "\"opponentGuardForkNodeBudget\":%llu,"
-        "\"opponentGuardForkTimeBudgetMs\":%u,"
-        "\"opponentGuardVCTOnUnknownEnabled\":%s,"
-        "\"opponentGuardRecoveryReservedNodes\":%llu,"
-        "\"opponentGuardRecoveryReservedTimeMs\":%u,"
-        "\"earlyVCFSentinelEnabled\":%s,"
-        "\"earlyVCFSentinelPolicy\":%d,"
-        "\"earlyVCFBaseDepth\":%d,"
-        "\"earlyVCFMaxDepth\":%d,"
-        "\"earlyVCFNodeBudget\":%llu,"
-        "\"earlyVCFTimeBudgetMs\":%u,"
-        "\"earlyVCFMaxAlternatives\":%d,"
-        "\"blackDoubleThreeDefenseEnabled\":%s,"
-        "\"blackDoubleThreeMaxGains\":%d,"
-        "\"blackDoubleThreeMaxCandidates\":%d,"
-        "\"blackDoubleThreeTimeBudgetMs\":%u,"
-        "\"blackDoubleThreeDefenseWeight\":%d,"
-        "\"eliteCorpusEnabled\":%s,\"corpusVersion\":\"%s\","
-        "\"corpusScoreMargin\":%d,\"corpusMinGames\":%d,"
-        "\"corpusMinEvents\":%d}",
-        profile->name, profile->version, profile->maxDepth,
-        profile->quiescenceDepth, profile->fourDepth,
-        profile->doubleThreeDepth, profile->forcingDepth,
-        profile->candidateLimit, (unsigned long long)profile->nodeBudget,
-        profile->timeBudgetMs, profile->transpositionCapacity,
-        profile->attackWeight, profile->defenseWeight,
-        profile->centerWeight, profile->nearBestWindow,
-        profile->randomTemperature, profile->maxRandomCandidates,
+    return (snprintf)(buffer, capacity,
+        "{"
+        "\"name\":\"%s\""
+        ",\"version\":\"%s\""
+        ",\"maxDepth\":%lld"
+        ",\"quiescenceDepth\":%lld"
+        ",\"fourDepth\":%lld"
+        ",\"doubleThreeDepth\":%lld"
+        ",\"forcingDepth\":%lld"
+        ",\"candidateLimit\":%lld"
+        ",\"nodeBudget\":%lld"
+        ",\"timeBudgetMs\":%lld"
+        ",\"transpositionCapacity\":%lld"
+        ",\"attackWeight\":%lld"
+        ",\"defenseWeight\":%lld"
+        ",\"centerWeight\":%lld"
+        ",\"nearBestWindow\":%lld"
+        ",\"randomTemperature\":%.17g"
+        ",\"maxRandomCandidates\":%lld"
+        ",\"proofEnabled\":%s"
+        ",\"proofEngineCandidate\":%s"
+        ",\"proofCandidateStagesEnabled\":%s"
+        ",\"parallelProofEnabled\":%s"
+        ",\"openingBookEnabled\":%s"
+        ",\"proofSearchClass\":%lld"
+        ",\"proofMaxDepth\":%lld"
+        ",\"proofNodeBudget\":%lld"
+        ",\"proofParallelNodeBudget\":%lld"
+        ",\"proofTimeBudgetMs\":%lld"
+        ",\"proofWorkerCount\":%lld"
+        ",\"workerCountOverride\":%lld"
+        ",\"proofTranspositionCapacity\":%lld"
+        ",\"proofGraphNodeCapacity\":%lld"
+        ",\"proofGraphEdgeCapacity\":%lld"
+        ",\"lossAwareEnabled\":%s"
+        ",\"quietThreatEnabled\":%s"
+        ",\"proofEscapeCandidateLimit\":%lld"
+        ",\"proofQuietRootLimit\":%lld"
+        ",\"proofEmergencyTimeBudgetMs\":%lld"
+        ",\"decisionTimeBudgetMs\":%lld"
+        ",\"eliteCorpusEnabled\":%s"
+        ",\"decisionHardLimitMs\":%lld"
+        ",\"decisionLedgerVersion\":%lld"
+        ",\"decisionNodeBudget\":%lld"
+        ",\"decisionMemoryBudgetBytes\":%lld"
+        ",\"decisionCorpusQueryBudget\":%lld"
+        ",\"opponentGuardEnabled\":%s"
+        ",\"opponentGuardVCFMaxDepth\":%lld"
+        ",\"opponentGuardVCFNodeBudget\":%lld"
+        ",\"opponentGuardVCFTimeBudgetMs\":%lld"
+        ",\"opponentGuardVCTMaxDepth\":%lld"
+        ",\"opponentGuardVCTNodeBudget\":%lld"
+        ",\"opponentGuardVCTTimeBudgetMs\":%lld"
+        ",\"opponentGuardReservedNodes\":%lld"
+        ",\"opponentGuardReservedTimeMs\":%lld"
+        ",\"opponentGuardStructuralVCTEnabled\":%s"
+        ",\"opponentGuardMaxAlternatives\":%lld"
+        ",\"earlyVCFSentinelEnabled\":%s"
+        ",\"earlyVCFSentinelPolicy\":%lld"
+        ",\"earlyVCFBaseDepth\":%lld"
+        ",\"earlyVCFMaxDepth\":%lld"
+        ",\"earlyVCFNodeBudget\":%lld"
+        ",\"earlyVCFTimeBudgetMs\":%lld"
+        ",\"earlyVCFMaxAlternatives\":%lld"
+        ",\"corpusScoreMargin\":%lld"
+        ",\"corpusMinGames\":%lld"
+        ",\"corpusMinEvents\":%lld"
+        "}",
+        profile->name,
+        profile->version,
+        (long long)profile->maxDepth,
+        (long long)profile->quiescenceDepth,
+        (long long)profile->fourDepth,
+        (long long)profile->doubleThreeDepth,
+        (long long)profile->forcingDepth,
+        (long long)profile->candidateLimit,
+        (long long)profile->nodeBudget,
+        (long long)profile->timeBudgetMs,
+        (long long)profile->transpositionCapacity,
+        (long long)profile->attackWeight,
+        (long long)profile->defenseWeight,
+        (long long)profile->centerWeight,
+        (long long)profile->nearBestWindow,
+        profile->randomTemperature,
+        (long long)profile->maxRandomCandidates,
         profile->proofEnabled ? "true" : "false",
         profile->proofEngineCandidate ? "true" : "false",
         profile->proofCandidateStagesEnabled ? "true" : "false",
         profile->parallelProofEnabled ? "true" : "false",
         profile->openingBookEnabled ? "true" : "false",
-        profile->proofSearchClass, profile->proofMaxDepth,
-        (unsigned long long)profile->proofNodeBudget,
-        (unsigned long long)profile->proofParallelNodeBudget,
-        profile->proofTimeBudgetMs, profile->proofWorkerCount,
-        profile->workerCountOverride,
-        profile->proofTranspositionCapacity,
-        profile->proofGraphNodeCapacity, profile->proofGraphEdgeCapacity,
-        proofSessionMemoryBytes, proofParallelPeakMemoryBytes,
+        (long long)profile->proofSearchClass,
+        (long long)profile->proofMaxDepth,
+        (long long)profile->proofNodeBudget,
+        (long long)profile->proofParallelNodeBudget,
+        (long long)profile->proofTimeBudgetMs,
+        (long long)profile->proofWorkerCount,
+        (long long)profile->workerCountOverride,
+        (long long)profile->proofTranspositionCapacity,
+        (long long)profile->proofGraphNodeCapacity,
+        (long long)profile->proofGraphEdgeCapacity,
         profile->lossAwareEnabled ? "true" : "false",
         profile->quietThreatEnabled ? "true" : "false",
-        profile->proofEscapeCandidateLimit, profile->proofQuietRootLimit,
-        profile->proofEmergencyTimeBudgetMs,
-        profile->decisionTimeBudgetMs,
-        profile->decisionHardLimitMs,
-        profile->decisionLedgerVersion,
-        (unsigned long long)profile->decisionNodeBudget,
-        profile->decisionMemoryBudgetBytes,
-        profile->decisionCorpusQueryBudget,
-        profile->incrementalLegalityEnabled ? "true" : "false",
-        profile->validateLegalityCache ? "true" : "false",
-        profile->recoverySearchEnabled ? "true" : "false",
-        profile->forkFirstRecoveryEnabled ? "true" : "false",
-        profile->persistentWorkerPoolEnabled ? "true" : "false",
-        profile->parallelTokenBlockEnabled ? "true" : "false",
-        profile->parallelTokenBlockSize,
-        profile->branchFirstSearchEnabled ? "true" : "false",
-        profile->branchFirstMinRemainingDepth,
-        profile->branchFirstMinBranchCount,
-        profile->branchFirstMaxBranches,
-        profile->branchFirstPreviewDepth,
-        profile->branchFirstAdvancedFourDepthBonus,
-        profile->branchFirstAdvancedThreeDepthBonus,
-        profile->branchFirstTacticalDepthCap,
-        profile->opponentGuardEnabled ? "true" : "false",
-        profile->opponentGuardVCFMaxDepth,
-        (unsigned long long)profile->opponentGuardVCFNodeBudget,
-        profile->opponentGuardVCFTimeBudgetMs,
-        profile->opponentGuardVCTMaxDepth,
-        (unsigned long long)profile->opponentGuardVCTNodeBudget,
-        profile->opponentGuardVCTTimeBudgetMs,
-        (unsigned long long)profile->opponentGuardReservedNodes,
-        profile->opponentGuardReservedTimeMs,
-        profile->opponentGuardStructuralVCTEnabled ? "true" : "false",
-        profile->opponentGuardMaxAlternatives,
-        profile->opponentGuardImmediateBlockEnabled ? "true" : "false",
-        profile->opponentGuardTwoStepForkEnabled ? "true" : "false",
-        profile->opponentGuardForkMaxReplies,
-        (unsigned long long)profile->opponentGuardForkNodeBudget,
-        profile->opponentGuardForkTimeBudgetMs,
-        profile->opponentGuardVCTOnUnknownEnabled ? "true" : "false",
-        (unsigned long long)profile->opponentGuardRecoveryReservedNodes,
-        profile->opponentGuardRecoveryReservedTimeMs,
-        profile->earlyVCFSentinelEnabled ? "true" : "false",
-        profile->earlyVCFSentinelPolicy,
-        profile->earlyVCFBaseDepth,
-        profile->earlyVCFMaxDepth,
-        (unsigned long long)profile->earlyVCFNodeBudget,
-        profile->earlyVCFTimeBudgetMs,
-        profile->earlyVCFMaxAlternatives,
-        profile->blackDoubleThreeDefenseEnabled ? "true" : "false",
-        profile->blackDoubleThreeMaxGains,
-        profile->blackDoubleThreeMaxCandidates,
-        profile->blackDoubleThreeTimeBudgetMs,
-        profile->blackDoubleThreeDefenseWeight,
+        (long long)profile->proofEscapeCandidateLimit,
+        (long long)profile->proofQuietRootLimit,
+        (long long)profile->proofEmergencyTimeBudgetMs,
+        (long long)profile->decisionTimeBudgetMs,
         profile->eliteCorpusEnabled ? "true" : "false",
-        profile->eliteCorpusEnabled ? fc_elite_corpus_version() : "none",
-        profile->corpusScoreMargin, profile->corpusMinGames,
-        profile->corpusMinEvents);
-    if (length < 0) return 0;
-    return (size_t)length < capacity ? (size_t)length : capacity - 1;
+        (long long)profile->decisionHardLimitMs,
+        (long long)profile->decisionLedgerVersion,
+        (long long)profile->decisionNodeBudget,
+        (long long)profile->decisionMemoryBudgetBytes,
+        (long long)profile->decisionCorpusQueryBudget,
+        profile->opponentGuardEnabled ? "true" : "false",
+        (long long)profile->opponentGuardVCFMaxDepth,
+        (long long)profile->opponentGuardVCFNodeBudget,
+        (long long)profile->opponentGuardVCFTimeBudgetMs,
+        (long long)profile->opponentGuardVCTMaxDepth,
+        (long long)profile->opponentGuardVCTNodeBudget,
+        (long long)profile->opponentGuardVCTTimeBudgetMs,
+        (long long)profile->opponentGuardReservedNodes,
+        (long long)profile->opponentGuardReservedTimeMs,
+        profile->opponentGuardStructuralVCTEnabled ? "true" : "false",
+        (long long)profile->opponentGuardMaxAlternatives,
+        profile->earlyVCFSentinelEnabled ? "true" : "false",
+        (long long)profile->earlyVCFSentinelPolicy,
+        (long long)profile->earlyVCFBaseDepth,
+        (long long)profile->earlyVCFMaxDepth,
+        (long long)profile->earlyVCFNodeBudget,
+        (long long)profile->earlyVCFTimeBudgetMs,
+        (long long)profile->earlyVCFMaxAlternatives,
+        (long long)profile->corpusScoreMargin,
+        (long long)profile->corpusMinGames,
+        (long long)profile->corpusMinEvents);
 }
 
 const char *fc_tactical_name(int tacticalClass)

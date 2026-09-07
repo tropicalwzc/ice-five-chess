@@ -135,7 +135,7 @@ static void run_full_guard_fixture(const EarlyVCFFixture *fixture)
     fill_board(fixture, board);
     int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
     memcpy(before, board, sizeof(before));
-    FCAIProfile profile = fc_profile_five_star_opponent_guard_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     FCOpponentGuardAudit audit;
     bool ok = fc_audit_opponent_after_move(
         (const int (*)[FC_BOARD_SIZE])board, fixture->side, false,

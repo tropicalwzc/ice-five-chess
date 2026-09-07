@@ -58,7 +58,7 @@ static void print_diagnostics(const char *name, FCProofDiagnostics d)
 
 int main(void)
 {
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     profile.proofTimeBudgetMs = 0;
     profile.proofEmergencyTimeBudgetMs = 0;
     profile.proofNodeBudget = 18000;

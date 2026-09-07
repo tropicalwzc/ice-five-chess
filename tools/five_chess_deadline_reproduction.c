@@ -50,7 +50,7 @@ int main(void)
              {9,12,1},{9,11,-1},{10,12,1},{8,12,-1},{10,10,1}}
         }
     };
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     for (size_t fixture_index = 0;
          fixture_index < sizeof(fixtures) / sizeof(fixtures[0]);
          fixture_index++) {

@@ -1653,7 +1653,7 @@
 -(void) five_star_analysisboard:(int) mode
 {
     // The promoted five-star selection adds the bounded early micro-VCF
-    // sentinel while retaining exact 5.4.1 as the rollback/control profile.
+    // sentinel. Historical five-star variants have been retired.
     production_ai_profile=fc_profile_five_star_early_micro_vcf_candidate();
     [self optimized_analysisboard:mode];
 }

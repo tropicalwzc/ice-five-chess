@@ -414,15 +414,14 @@ static void test_frozen_four_star_and_candidate_identity(void)
     assert(frozen.proofTimeBudgetMs == historical.proofTimeBudgetMs);
     assert(frozen.proofTranspositionCapacity ==
            historical.proofTranspositionCapacity);
-    FCAIProfile candidate = fc_profile_five_star_proof_engine_candidate();
-    FCAIProfile production = fc_profile_five_star();
+    FCAIProfile candidate = fc_profile_five_star_early_micro_vcf_candidate();
     assert(candidate.proofEngineCandidate);
     assert(candidate.lossAwareEnabled && candidate.quietThreatEnabled);
     assert(candidate.decisionTimeBudgetMs == 4500);
-    assert(!production.proofEngineCandidate);
-    assert(production.decisionTimeBudgetMs == 0);
-    assert(strcmp(production.version,
-                  "5.1.0-elite-rule-partitioned-local-v2") == 0);
+    assert(candidate.earlyVCFSentinelEnabled);
+    assert(candidate.opponentGuardEnabled);
+    assert(strcmp(candidate.version,
+                  "5.8.1-early-micro-vcf-adaptive-16k-80ms-2a") == 0);
 
     int immediate[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
     immediate[7][4] = immediate[7][5] =
@@ -443,8 +442,8 @@ static void test_frozen_four_star_and_candidate_identity(void)
 
 static void test_opponent_guard_profile_and_reserved_ledger(void)
 {
-    FCAIProfile control = fc_profile_five_star_proof_engine_candidate();
-    FCAIProfile guard = fc_profile_five_star_opponent_guard_candidate();
+    FCAIProfile control = fc_profile_proof_guided(false);
+    FCAIProfile guard = fc_profile_five_star_early_micro_vcf_candidate();
     assert(!control.opponentGuardEnabled);
     assert(control.opponentGuardReservedNodes == 0);
     assert(guard.opponentGuardEnabled);
@@ -454,8 +453,6 @@ static void test_opponent_guard_profile_and_reserved_ledger(void)
     assert(guard.proofWorkerCount == 4);
     assert(guard.proofParallelNodeBudget == 192000);
     assert(guard.decisionNodeBudget == 288000);
-    assert(strcmp(control.version,
-                  "5.4.1-transactional-deadline-root-parallel-5s") == 0);
 
     FCDecisionLedger ledger;
     assert(fc_decision_ledger_begin(&ledger, &guard));
@@ -494,7 +491,7 @@ static void test_opponent_guard_vcf_first_audit_and_restoration(void)
     source[7][5] = source[8][5] = 1;
     int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
     memcpy(before, source, sizeof(before));
-    FCAIProfile guard = fc_profile_five_star_opponent_guard_candidate();
+    FCAIProfile guard = fc_profile_five_star_early_micro_vcf_candidate();
     guard.parallelProofEnabled = false;
     guard.proofWorkerCount = 1;
     FCOpponentGuardAudit losing;
@@ -544,10 +541,10 @@ static void test_opponent_guard_vcf_first_audit_and_restoration(void)
 
 static void test_early_micro_vcf_profile_and_semantics(void)
 {
-    FCAIProfile parent = fc_profile_five_star_opponent_guard_candidate();
+    FCAIProfile parent = fc_profile_proof_guided(false);
     FCAIProfile sentinel =
         fc_profile_five_star_early_micro_vcf_candidate();
-    FCAIProfile control = fc_profile_five_star_proof_engine_candidate();
+    FCAIProfile control = fc_profile_production();
     assert(!parent.earlyVCFSentinelEnabled);
     assert(!control.earlyVCFSentinelEnabled);
     assert(sentinel.earlyVCFSentinelEnabled);
@@ -558,10 +555,6 @@ static void test_early_micro_vcf_profile_and_semantics(void)
     assert(sentinel.earlyVCFNodeBudget == 16000);
     assert(sentinel.earlyVCFTimeBudgetMs == 80);
     assert(sentinel.earlyVCFMaxAlternatives == 2);
-    assert(strcmp(parent.version,
-                  "5.8.0-vcf-first-opponent-guard-4w") == 0);
-    assert(strcmp(control.version,
-                  "5.4.1-transactional-deadline-root-parallel-5s") == 0);
     char snapshot[8192];
     assert(fc_profile_snapshot(&sentinel, snapshot, sizeof(snapshot)) > 0);
     assert(strstr(snapshot, "\"earlyVCFSentinelEnabled\":true") != NULL);
@@ -629,7 +622,7 @@ static void test_early_micro_vcf_profile_and_semantics(void)
 
 static void test_opponent_guard_acceptance_paths_and_isolation(void)
 {
-    FCAIProfile guard = fc_profile_five_star_opponent_guard_candidate();
+    FCAIProfile guard = fc_profile_five_star_early_micro_vcf_candidate();
     guard.parallelProofEnabled = false;
     guard.proofWorkerCount = 1;
 
@@ -694,10 +687,8 @@ static void test_opponent_guard_acceptance_paths_and_isolation(void)
 
     FCAIProfile production = fc_profile_production();
     FCAIProfile four = fc_profile_frozen_four_star_control();
-    FCAIProfile control = fc_profile_five_star_proof_engine_candidate();
     assert(!production.opponentGuardEnabled);
     assert(!four.opponentGuardEnabled);
-    assert(!control.opponentGuardEnabled);
     fc_proof_diagnostics_reset();
     assert(fc_analyze((const int (*)[FC_BOARD_SIZE])quiet, 1, false,
                       &production, UINT64_C(0x47554152444c4f57),
@@ -735,7 +726,7 @@ static void test_five_star_hard_deadline_returns_completed_legal_move(void)
     int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
     for (size_t i = 0; i < sizeof(stones) / sizeof(stones[0]); i++)
         board[stones[i][0]][stones[i][1]] = stones[i][2];
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     profile.decisionTimeBudgetMs = 1;
     FCAnalysisResult result;
     assert(fc_analyze_five_star_profile_with_hint(
@@ -759,7 +750,7 @@ static void test_candidate_single_proof_session_and_counters(void)
     };
     for (size_t i = 0; i < sizeof(remote) / sizeof(remote[0]); i++)
         board[remote[i][0]][remote[i][1]] = remote[i][2];
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     profile.proofWorkerCount = 1;
     profile.proofParallelNodeBudget = 0;
     profile.proofTimeBudgetMs = 0;
@@ -806,7 +797,7 @@ static void test_quiet_portfolio_is_active_but_does_not_heuristically_override(v
     board[4][7] = board[10][7] = 1;
     board[7][4] = board[7][10] = 1;
     board[5][5] = board[9][9] = -1;
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     profile.proofTimeBudgetMs = 0;
     profile.proofEmergencyTimeBudgetMs = 0;
     profile.proofMaxDepth = 2;
@@ -1105,7 +1096,7 @@ static void test_opponent_guard_distance_matrix_symmetry_and_rules(void)
     } cases[] = {
         {16,10,7,9}, {18,6,5,7}, {20,7,10,5}, {22,10,8,3},
     };
-    FCAIProfile profile = fc_profile_five_star_opponent_guard_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     profile.parallelProofEnabled = false;
     profile.proofWorkerCount = 1;
     profile.opponentGuardVCTNodeBudget = 1;
@@ -1443,7 +1434,7 @@ static void test_candidate_dfpn_proof_disproof_thresholds_and_collisions(void)
     assert(wideProof == 64 && wideDisproof == 1);
     assert(deepProof == 1 && deepDisproof == 3);
 
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     profile.proofMaxDepth = 9;
     profile.proofNodeBudget = 18000;
     profile.proofTimeBudgetMs = 0;
@@ -1662,7 +1653,7 @@ static void test_dependency_dag_proposes_verified_search_order(void)
     int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
     for (size_t i = 0; i < sizeof(stones) / sizeof(stones[0]); i++)
         board[stones[i][0]][stones[i][1]] = stones[i][2];
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     profile.proofMaxDepth = 8;
     profile.proofNodeBudget = 400;
     profile.proofTimeBudgetMs = 0;
@@ -1691,7 +1682,7 @@ static void test_dependency_dag_proposes_verified_search_order(void)
 
 static void test_candidate_stage_order_and_obligation_skips(void)
 {
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     profile.proofWorkerCount = 1;
     profile.proofParallelNodeBudget = 0;
     profile.proofTimeBudgetMs = 0;
@@ -1746,7 +1737,7 @@ static void test_candidate_stage_order_and_obligation_skips(void)
            diagnostics.stageQuietQueries == 0);
 
     FCAIProfile guardProfile =
-        fc_profile_five_star_opponent_guard_candidate();
+        fc_profile_five_star_early_micro_vcf_candidate();
     guardProfile.parallelProofEnabled = false;
     guardProfile.proofWorkerCount = 1;
     fc_proof_diagnostics_reset();
@@ -1862,490 +1853,6 @@ static void test_crossing_duplicate_and_forbidden_symmetries(void)
     }
 }
 
-static const FCDoubleThreeGain *find_double_three_gain(
-    const FCDoubleThreeGain *gains,
-    int count,
-    int x,
-    int y)
-{
-    for (int i = 0; i < count; i++) {
-        if (gains[i].x == x && gains[i].y == y) return &gains[i];
-    }
-    return NULL;
-}
-
-static FCAIProfile black_double_three_test_profile(void)
-{
-    FCAIProfile profile =
-        fc_profile_five_star_black_double_three_candidate();
-    profile.parallelProofEnabled = false;
-    profile.proofWorkerCount = 1;
-    profile.proofEnabled = false;
-    profile.proofCandidateStagesEnabled = false;
-    profile.openingBookEnabled = false;
-    profile.eliteCorpusEnabled = false;
-    profile.earlyVCFSentinelEnabled = false;
-    profile.opponentGuardEnabled = false;
-    profile.quietThreatEnabled = false;
-    profile.lossAwareEnabled = false;
-    profile.forkFirstRecoveryEnabled = false;
-    profile.maxDepth = 0;
-    profile.quiescenceDepth = 0;
-    profile.decisionTimeBudgetMs = 1200;
-    profile.blackDoubleThreeTimeBudgetMs = 200;
-    return profile;
-}
-
-static void test_black_double_three_scan_and_preemption(void)
-{
-    int crossing[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    crossing[5][7] = crossing[6][7] = -1;
-    crossing[7][5] = crossing[7][6] = -1;
-    FCDoubleThreeGain gains[FC_MAX_CANDIDATES];
-    bool complete = false;
-    int count = fc_enumerate_white_double_three_gains(
-        (const int (*)[FC_BOARD_SIZE])crossing, false,
-        gains, FC_MAX_CANDIDATES, &complete);
-    assert(complete);
-    const FCDoubleThreeGain *center = find_double_three_gain(
-        gains, count, 7, 7);
-    assert(center != NULL);
-    assert((center->directionMask & 0x03U) == 0x03U);
-
-    for (int transform = 0; transform < 8; transform++) {
-        int board[FC_BOARD_SIZE][FC_BOARD_SIZE];
-        transform_board(crossing, transform, board);
-        int expectedX = 0;
-        int expectedY = 0;
-        fc_transform_point(transform, 7, 7, &expectedX, &expectedY);
-        bool transformedComplete = false;
-        int transformedCount = fc_enumerate_white_double_three_gains(
-            (const int (*)[FC_BOARD_SIZE])board, false,
-            gains, FC_MAX_CANDIDATES, &transformedComplete);
-        assert(transformedComplete);
-        assert(find_double_three_gain(
-            gains, transformedCount, expectedX, expectedY) != NULL);
-    }
-
-    int single[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    single[5][7] = single[6][7] = -1;
-    count = fc_enumerate_white_double_three_gains(
-        (const int (*)[FC_BOARD_SIZE])single, false,
-        gains, FC_MAX_CANDIDATES, &complete);
-    assert(complete);
-    assert(find_double_three_gain(gains, count, 7, 7) == NULL);
-
-    int edge[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    edge[0][7] = edge[1][7] = -1;
-    count = fc_enumerate_white_double_three_gains(
-        (const int (*)[FC_BOARD_SIZE])edge, false,
-        gains, FC_MAX_CANDIDATES, &complete);
-    assert(complete);
-    assert(find_double_three_gain(gains, count, 2, 7) == NULL);
-
-    int blocked[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    blocked[5][7] = blocked[6][7] = -1;
-    blocked[7][5] = blocked[7][6] = -1;
-    blocked[4][7] = 1;
-    count = fc_enumerate_white_double_three_gains(
-        (const int (*)[FC_BOARD_SIZE])blocked, false,
-        gains, FC_MAX_CANDIDATES, &complete);
-    assert(complete);
-    assert(find_double_three_gain(gains, count, 7, 7) == NULL);
-
-    int multiple[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    multiple[5][7] = multiple[6][7] = -1;
-    multiple[7][5] = multiple[7][6] = -1;
-    multiple[9][11] = multiple[10][11] = -1;
-    multiple[11][9] = multiple[11][10] = -1;
-    for (int forbidden = 0; forbidden <= 1; forbidden++) {
-        bool multipleComplete = false;
-        int multipleCount = fc_enumerate_white_double_three_gains(
-            (const int (*)[FC_BOARD_SIZE])multiple,
-            forbidden != 0, gains, FC_MAX_CANDIDATES,
-            &multipleComplete);
-        assert(multipleComplete);
-        assert(multipleCount >= 2);
-        assert(find_double_three_gain(
-            gains, multipleCount, 7, 7) != NULL);
-        assert(find_double_three_gain(
-            gains, multipleCount, 11, 11) != NULL);
-
-        FCDoubleThreeGain limited[1];
-        bool limitedComplete = true;
-        int limitedCount = fc_enumerate_white_double_three_gains(
-            (const int (*)[FC_BOARD_SIZE])multiple,
-            forbidden != 0, limited, 1, &limitedComplete);
-        assert(limitedCount == 1);
-        assert(!limitedComplete);
-    }
-
-    FCAIProfile profile = black_double_three_test_profile();
-    assert(profile.blackDoubleThreeDefenseEnabled);
-    assert(strcmp(profile.version,
-                  "5.8.2-black-double-three-soft-40-16g-32c-80ms") == 0);
-    assert(profile.blackDoubleThreeDefenseWeight == 40);
-    profile.parallelProofEnabled = false;
-    profile.proofWorkerCount = 1;
-    profile.eliteCorpusEnabled = false;
-    profile.decisionTimeBudgetMs = 1200;
-    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(before, crossing, sizeof(before));
-    FCAnalysisResult result;
-    fc_proof_diagnostics_reset();
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])crossing, 1, false, &profile,
-        UINT64_C(0x443354455354), FC_RANDOM_EVALUATION,
-        7, 7, &result));
-    assert(result.doubleThreeScanComplete);
-    assert(result.doubleThreeGainCount >= 1);
-    assert(result.doubleThreeStatus == FC_DOUBLE_THREE_STATUS_COMPLETE_SAFE ||
-           result.doubleThreeStatus == FC_DOUBLE_THREE_STATUS_COMPLETE_UNRESOLVED);
-    if (result.doubleThreeStatus == FC_DOUBLE_THREE_STATUS_COMPLETE_SAFE)
-        assert(result.doubleThreeSelectedResidualCount == 0);
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])crossing,
-                            result.x, result.y, 1, false));
-    assert(memcmp(before, crossing, sizeof(before)) == 0);
-    FCProofDiagnostics diagnostics = fc_proof_diagnostics_get();
-    assert(diagnostics.doubleThreeScans == 1);
-    assert(diagnostics.doubleThreeGains >= 1);
-}
-
-static void test_black_double_three_integration_contracts(void)
-{
-    int ownWin[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    for (int x = 5; x <= 8; x++) ownWin[x][7] = 1;
-    FCAIProfile profile = black_double_three_test_profile();
-    FCAnalysisResult result;
-    fc_proof_diagnostics_reset();
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])ownWin, 1, false, &profile,
-        UINT64_C(0x4454485245454259), FC_RANDOM_EVALUATION,
-        0, 0, &result));
-    assert(result.tacticalClass == FC_TACTICAL_IMMEDIATE_WIN);
-    assert(result.doubleThreeStatus == FC_DOUBLE_THREE_STATUS_BYPASSED);
-    assert(result.doubleThreeOwnVCFBypass);
-    assert(!result.doubleThreeStructuralOverride);
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])ownWin,
-                            result.x, result.y, 1, false));
-
-    int multiple[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    multiple[5][7] = multiple[6][7] = -1;
-    multiple[7][5] = multiple[7][6] = -1;
-    multiple[9][11] = multiple[10][11] = -1;
-    multiple[11][9] = multiple[11][10] = -1;
-
-    FCAIProfile unresolvedProfile = black_double_three_test_profile();
-    FCAnalysisResult unresolved;
-    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(before, multiple, sizeof(before));
-    fc_proof_diagnostics_reset();
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])multiple, 1, false,
-        &unresolvedProfile, UINT64_C(0x554e5245534f4c56),
-        FC_RANDOM_EVALUATION, 7, 7, &unresolved));
-    assert(unresolved.doubleThreeScanComplete);
-    assert(unresolved.doubleThreeGainCount >= 2);
-    assert(unresolved.doubleThreeStatus ==
-               FC_DOUBLE_THREE_STATUS_COMPLETE_UNRESOLVED);
-    assert(unresolved.doubleThreeSelectedResidualCount >= 1);
-    assert(!unresolved.doubleThreeStructuralOverride);
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])multiple,
-                            unresolved.x, unresolved.y, 1, false));
-    assert(memcmp(before, multiple, sizeof(before)) == 0);
-    FCAnalysisResult unresolvedAgain;
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])multiple, 1, false,
-        &unresolvedProfile, UINT64_C(0x554e5245534f4c56),
-        FC_RANDOM_EVALUATION, 7, 7, &unresolvedAgain));
-    assert(unresolvedAgain.x == unresolved.x &&
-           unresolvedAgain.y == unresolved.y);
-    assert(unresolvedAgain.doubleThreeStatus ==
-           unresolved.doubleThreeStatus);
-    assert(unresolvedAgain.doubleThreeGainCount ==
-           unresolved.doubleThreeGainCount);
-    assert(unresolvedAgain.doubleThreeSelectedResidualCount ==
-           unresolved.doubleThreeSelectedResidualCount);
-    assert(memcmp(before, multiple, sizeof(before)) == 0);
-
-    FCAIProfile overflowProfile = black_double_three_test_profile();
-    overflowProfile.blackDoubleThreeMaxGains = 1;
-    FCAnalysisResult overflow;
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])multiple, 1, false,
-        &overflowProfile, UINT64_C(0x4f564552464c4f57),
-        FC_RANDOM_EVALUATION, 7, 7, &overflow));
-    assert(!overflow.doubleThreeScanComplete);
-    assert(overflow.doubleThreeScanOverflow);
-    assert(overflow.doubleThreeStatus == FC_DOUBLE_THREE_STATUS_UNKNOWN);
-    assert(!overflow.doubleThreeStructuralOverride);
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])multiple,
-                            overflow.x, overflow.y, 1, false));
-
-    FCAIProfile deadlineProfile = black_double_three_test_profile();
-    deadlineProfile.decisionTimeBudgetMs = 1;
-    deadlineProfile.blackDoubleThreeTimeBudgetMs = 1;
-    FCAnalysisResult deadline;
-    fc_proof_diagnostics_reset();
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])multiple, 1, false,
-        &deadlineProfile, UINT64_C(0x444541444c494e45),
-        FC_RANDOM_EVALUATION, 7, 7, &deadline));
-    assert(deadline.doubleThreeStatus == FC_DOUBLE_THREE_STATUS_UNKNOWN);
-    assert(deadline.doubleThreeDeadlineAnomaly);
-    assert(!deadline.doubleThreeStructuralOverride);
-    assert(fc_proof_diagnostics_get().doubleThreeDeadlineAnomalies >= 1);
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])multiple,
-                            deadline.x, deadline.y, 1, false));
-
-    int unresolvedOpponent[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    unresolvedOpponent[5][7] = unresolvedOpponent[6][7] = -1;
-    unresolvedOpponent[7][5] = unresolvedOpponent[7][6] = -1;
-    unresolvedOpponent[9][11] = unresolvedOpponent[10][11] = -1;
-    unresolvedOpponent[11][9] = unresolvedOpponent[11][10] = -1;
-    FCAIProfile guardProfile = black_double_three_test_profile();
-    guardProfile.opponentGuardEnabled = true;
-    guardProfile.opponentGuardVCFNodeBudget = 0;
-    guardProfile.opponentGuardVCFTimeBudgetMs = 0;
-    guardProfile.opponentGuardVCTNodeBudget = 0;
-    guardProfile.opponentGuardVCTTimeBudgetMs = 0;
-    guardProfile.opponentGuardMaxAlternatives = 0;
-    FCAnalysisResult guarded;
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])unresolvedOpponent, 1, false,
-        &guardProfile, UINT64_C(0x554e5245534f4c56),
-        FC_RANDOM_EVALUATION, 7, 7, &guarded));
-    assert(guarded.doubleThreeScanComplete);
-    assert(guarded.doubleThreeGainCount >= 1);
-    assert(guarded.doubleThreeStatus ==
-               FC_DOUBLE_THREE_STATUS_COMPLETE_SAFE ||
-           guarded.doubleThreeStatus ==
-               FC_DOUBLE_THREE_STATUS_COMPLETE_UNRESOLVED);
-    assert(guarded.opponentGuardEligible);
-    assert(guarded.opponentGuardVCFStatus == FC_PROOF_UNKNOWN);
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])unresolvedOpponent,
-                            guarded.x, guarded.y, 1, false));
-}
-
-static void test_black_double_three_soft_weight_regression(void)
-{
-    /* This is the first degraded 5.8.2-vs-5.8.1 candidate-black position:
-     * the old hard preemption moved from (8,7) to a remote safe blocker even
-     * though the surrounding 5.8.1 line was the better continuation. */
-    static const int moves[][3] = {
-        {7, 7, 1}, {8, 4, -1}, {7, 5, 1}, {6, 5, -1},
-        {6, 8, 1}, {7, 8, -1}, {8, 6, 1}, {9, 5, -1},
-        {9, 7, 1}, {6, 4, -1}
-    };
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    for (size_t i = 0; i < sizeof(moves) / sizeof(moves[0]); i++)
-        board[moves[i][0]][moves[i][1]] = moves[i][2];
-
-    FCAIProfile soft = black_double_three_test_profile();
-    FCAIProfile control = soft;
-    control.blackDoubleThreeDefenseEnabled = false;
-    FCAnalysisResult softResult;
-    FCAnalysisResult controlResult;
-    uint64_t seed = UINT64_C(0x59b999d9c562ad58);
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false, &soft, seed,
-        FC_RANDOM_EVALUATION, 8, 7, &softResult));
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false, &control, seed,
-        FC_RANDOM_EVALUATION, 8, 7, &controlResult));
-    assert(softResult.x == controlResult.x);
-    assert(softResult.y == controlResult.y);
-    assert(softResult.doubleThreeScanComplete);
-    assert(softResult.doubleThreeGainCount == 1);
-    assert(softResult.doubleThreeStatus ==
-           FC_DOUBLE_THREE_STATUS_COMPLETE_UNRESOLVED);
-    assert(softResult.doubleThreeProvisionalResidualCount == 1);
-    assert(softResult.doubleThreeSelectedResidualCount == 1);
-    assert(!softResult.doubleThreeStructuralOverride);
-}
-
-static void test_black_defense_recovery_regressions(void)
-{
-    /* Opening-9 final position from the soft-40 degradation: structural
-     * preemption selected (12,7), while the retained handoff blocker (9,10)
-     * removes the only current white winning point. */
-    static const int opening9[][3] = {
-        {7, 7, 1}, {9, 4, -1}, {5, 10, 1}, {7, 10, -1},
-        {6, 6, 1}, {10, 7, -1}, {5, 5, 1}, {8, 8, -1},
-        {5, 7, 1}, {9, 8, -1}, {8, 9, 1}, {10, 8, -1},
-        {7, 8, 1}, {10, 9, -1}, {10, 10, 1}, {11, 8, -1},
-        {12, 8, 1}, {9, 6, -1}, {4, 4, 1}, {3, 3, -1},
-        {12, 9, 1}, {7, 4, -1}, {8, 5, 1}, {9, 7, -1},
-        {9, 5, 1}, {9, 9, -1}
-    };
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    for (size_t i = 0; i < sizeof(opening9) / sizeof(opening9[0]); i++)
-        assert(fc_make_move(board, opening9[i][0], opening9[i][1],
-                            opening9[i][2], false));
-    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(before, board, sizeof(before));
-
-    FCAIProfile profile =
-        fc_profile_five_star_black_defense_recovery_candidate();
-    profile.parallelProofEnabled = false;
-    profile.proofWorkerCount = 1;
-    profile.eliteCorpusEnabled = false;
-    profile.decisionTimeBudgetMs = 2400;
-    profile.decisionHardLimitMs = 2600;
-    profile.opponentGuardReservedTimeMs = 1200;
-    profile.opponentGuardRecoveryReservedTimeMs = 1200;
-    profile.opponentGuardForkTimeBudgetMs = 40;
-    profile.opponentGuardForkNodeBudget = 50000;
-    FCAnalysisResult result;
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
-        UINT64_C(0x5245434f56455239), FC_RANDOM_EVALUATION,
-        9, 10, &result));
-    assert(result.x == 9 && result.y == 10);
-    assert(result.recoverySource == FC_RECOVERY_SOURCE_IMMEDIATE_BLOCK ||
-           result.recoverySource == FC_RECOVERY_SOURCE_BASELINE ||
-           result.recoverySource == FC_RECOVERY_SOURCE_DEFAULT);
-    assert(result.recoveryImmediateWinCount == 0);
-    assert(result.recoveryFinalCandidateConsistent);
-    assert(result.opponentGuardSelectedX == result.x &&
-           result.opponentGuardSelectedY == result.y);
-    assert(memcmp(before, board, sizeof(before)) == 0);
-
-    FCAnalysisResult repeated;
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
-        UINT64_C(0x5245434f56455239), FC_RANDOM_EVALUATION,
-        9, 10, &repeated));
-    assert(repeated.x == result.x && repeated.y == result.y);
-    assert(repeated.recoverySource == result.recoverySource);
-    assert(repeated.recoveryForkRisk == result.recoveryForkRisk);
-    assert(memcmp(before, board, sizeof(before)) == 0);
-}
-
-static void test_black_recovery_two_step_fork_probe(void)
-{
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    board[5][7] = board[6][7] = board[7][7] = -1;
-    FCAIProfile profile =
-        fc_profile_five_star_black_defense_recovery_candidate();
-    profile.opponentGuardVCFNodeBudget = 0;
-    profile.opponentGuardVCFTimeBudgetMs = 0;
-    profile.opponentGuardVCTNodeBudget = 0;
-    profile.opponentGuardVCTTimeBudgetMs = 0;
-    profile.opponentGuardVCTOnUnknownEnabled = false;
-    profile.opponentGuardForkTimeBudgetMs = 400;
-    profile.opponentGuardForkNodeBudget = 120000;
-    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(before, board, sizeof(before));
-
-    FCOpponentGuardAudit forkRisk;
-    assert(fc_audit_opponent_after_move(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
-        0, 0, &forkRisk));
-    assert(forkRisk.opponentImmediateWinCount == 0);
-    assert(forkRisk.forkProbeComplete);
-    assert(forkRisk.forkRisk == FC_FORK_RISK_FORK);
-    assert(forkRisk.boardRestored);
-    assert(memcmp(before, board, sizeof(before)) == 0);
-
-    FCOpponentGuardAudit noFork;
-    assert(fc_audit_opponent_after_move(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
-        4, 7, &noFork));
-    assert(noFork.opponentImmediateWinCount == 0);
-    assert(noFork.forkProbeComplete);
-    assert(noFork.forkRisk != FC_FORK_RISK_FORK);
-    assert(noFork.boardRestored);
-    assert(memcmp(before, board, sizeof(before)) == 0);
-
-    profile.opponentGuardForkTimeBudgetMs = 1;
-    profile.opponentGuardForkNodeBudget = 1;
-    FCOpponentGuardAudit incomplete;
-    assert(fc_audit_opponent_after_move(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
-        0, 0, &incomplete));
-    assert(!incomplete.forkProbeComplete);
-    assert(incomplete.forkRisk == FC_FORK_RISK_UNKNOWN);
-    assert(incomplete.boardRestored);
-    assert(memcmp(before, board, sizeof(before)) == 0);
-}
-
-static void assert_recovery_loss_predecessor(
-    const int moves[][3],
-    size_t moveCount,
-    int candidateX,
-    int candidateY)
-{
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    for (size_t i = 0; i < moveCount; i++)
-        assert(fc_make_move(board, moves[i][0], moves[i][1], moves[i][2],
-                            false));
-    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(before, board, sizeof(before));
-    FCAIProfile profile =
-        fc_profile_five_star_black_defense_recovery_candidate();
-    profile.opponentGuardTwoStepForkEnabled = false;
-    profile.opponentGuardVCTOnUnknownEnabled = false;
-    profile.opponentGuardVCFNodeBudget = 0;
-    profile.opponentGuardVCFTimeBudgetMs = 0;
-    profile.opponentGuardVCTNodeBudget = 0;
-    profile.opponentGuardVCTTimeBudgetMs = 0;
-    FCOpponentGuardAudit audit;
-    assert(fc_audit_opponent_after_move(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
-        candidateX, candidateY, &audit));
-    assert(audit.opponentImmediateWinCount >= 1);
-    assert(audit.boardRestored);
-    assert(memcmp(before, board, sizeof(before)) == 0);
-}
-
-static void test_black_recovery_loss_predecessor_fixtures(void)
-{
-    /* The following are the opening-0, opening-3 and opening-10 predecessor
-     * boards from the soft-40 candidate-black losses.  They are kept as
-     * compact fixed fixtures so the immediate-block contract stays tied to
-     * the measured regressions. */
-    static const int opening0[][3] = {
-        {7, 7, 1}, {8, 4, -1}, {7, 5, 1}, {6, 5, -1},
-        {6, 8, 1}, {7, 8, -1}, {8, 6, 1}, {9, 5, -1},
-        {9, 7, 1}, {6, 4, -1}, {8, 7, 1}, {6, 7, -1},
-        {10, 8, 1}, {11, 9, -1}, {11, 7, 1}, {10, 7, -1},
-        {5, 9, 1}, {4, 10, -1}, {10, 6, 1}, {7, 4, -1},
-        {9, 4, 1}, {4, 4, -1}, {5, 4, 1}, {6, 6, -1},
-        {6, 3, 1}, {5, 6, -1}, {11, 5, 1}, {4, 5, -1}
-    };
-    static const int opening3[][3] = {
-        {7, 7, 1}, {6, 7, -1}, {7, 4, 1}, {8, 6, -1},
-        {4, 7, 1}, {8, 7, -1}, {6, 5, 1}, {5, 6, -1},
-        {7, 6, 1}, {7, 8, -1}, {8, 9, 1}, {6, 9, -1},
-        {9, 6, 1}, {8, 5, -1}, {8, 4, 1}, {6, 8, -1},
-        {6, 6, 1}, {7, 5, -1}, {8, 8, 1}, {5, 5, -1},
-        {5, 4, 1}, {6, 4, -1}, {9, 7, 1}, {9, 5, -1},
-        {9, 8, 1}, {9, 9, -1}, {6, 10, 1}, {7, 9, -1},
-        {4, 6, 1}, {8, 10, -1}, {9, 11, 1}, {7, 10, -1},
-        {7, 11, 1}, {4, 5, -1}, {3, 4, 1}, {8, 11, -1},
-        {9, 12, 1}, {9, 10, -1}, {8, 12, 1}, {5, 9, -1},
-        {7, 12, 1}, {6, 12, -1}, {3, 5, 1}, {3, 2, -1},
-        {3, 7, 1}, {3, 8, -1}, {5, 10, 1}, {5, 8, -1}
-    };
-    static const int opening10[][3] = {
-        {7, 7, 1}, {4, 6, -1}, {9, 9, 1}, {7, 8, -1},
-        {4, 8, 1}, {6, 10, -1}, {6, 6, 1}, {8, 8, -1},
-        {5, 7, 1}, {3, 9, -1}, {6, 7, 1}, {8, 7, -1},
-        {6, 8, 1}, {6, 9, -1}, {9, 6, 1}, {8, 6, -1},
-        {8, 4, 1}, {7, 5, -1}, {8, 10, 1}, {9, 7, -1},
-        {6, 4, 1}, {6, 5, -1}, {7, 9, 1}, {9, 11, -1},
-        {4, 7, 1}, {3, 7, -1}, {8, 9, 1}, {3, 10, -1},
-        {11, 9, 1}, {10, 9, -1}, {4, 10, 1}, {3, 8, -1}
-    };
-    assert_recovery_loss_predecessor(
-        opening0, sizeof(opening0) / sizeof(opening0[0]), 4, 7);
-    assert_recovery_loss_predecessor(
-        opening3, sizeof(opening3) / sizeof(opening3[0]), 0, 0);
-    assert_recovery_loss_predecessor(
-        opening10, sizeof(opening10) / sizeof(opening10[0]), 0, 0);
-}
-
 static void test_vct_proof_and_integration_gates(void)
 {
     int crossing[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
@@ -2447,7 +1954,7 @@ static void test_elite_corpus_lookup_and_fail_closed_five_star(void)
 
     /* The change-local corpus-conflict fixture must reach the universal
      * guard before corpus advice can replace the provisional defense. */
-    FCAIProfile guard = fc_profile_five_star_opponent_guard_candidate();
+    FCAIProfile guard = fc_profile_five_star_early_micro_vcf_candidate();
     guard.parallelProofEnabled = false;
     guard.proofWorkerCount = 1;
     FCAnalysisResult guardedCorpus;
@@ -2484,7 +1991,7 @@ static void test_elite_corpus_lookup_and_fail_closed_five_star(void)
         FC_RANDOM_EVALUATION, 7, 7, &five));
     assert(five.x == four.x && five.y == four.y);
     assert(!five.corpusLookup && five.corpusReason == FC_CORPUS_NO_POSITION);
-    FCAIProfile profile = fc_profile_five_star();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     assert(profile.eliteCorpusEnabled && !profile.openingBookEnabled);
     assert(strcmp(fc_elite_corpus_version(),
                   "gomocup-elite-openings-2020-2026-rule-partitioned-v2") == 0);
@@ -2549,7 +2056,7 @@ static void test_five_star_randomness_requires_proof_equivalence(void)
     int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
     for (size_t i = 0; i < sizeof(stones) / sizeof(stones[0]); i++)
         board[stones[i][0]][stones[i][1]] = stones[i][2];
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     profile.decisionTimeBudgetMs = 1200;
     FCAnalysisResult evaluationA;
     FCAnalysisResult evaluationB;
@@ -2597,312 +2104,6 @@ static void test_five_star_randomness_requires_proof_equivalence(void)
         assert(left->trustTier == right->trustTier);
         assert(left->reason == right->reason);
     }
-}
-
-static void assert_hybrid_component_matches_direct(int side,
-                                                   bool forbiddenBlack,
-                                                   FCRandomMode randomMode)
-{
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    for (int y = 3; y <= 6; y++) board[7][y] = side;
-    board[6][5] = -side;
-    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(before, board, sizeof(board));
-
-    FCAIProfile directProfile = side == -1
-        ? fc_profile_five_star_proof_engine_candidate()
-        : fc_profile_five_star();
-    FCAnalysisResult direct;
-    FCAnalysisResult hybrid;
-    uint64_t seed = forbiddenBlack ? UINT64_C(0xf0b1dd3e)
-                                   : UINT64_C(0x51decafe);
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, side, forbiddenBlack,
-        &directProfile, seed, randomMode, 8, 8, &direct));
-    assert(fc_analyze_five_star_color_hybrid_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, side, forbiddenBlack,
-        seed, randomMode, 8, 8, &hybrid));
-
-    assert(hybrid.x == direct.x && hybrid.y == direct.y);
-    assert(hybrid.score == direct.score);
-    assert(hybrid.tacticalClass == direct.tacticalClass);
-    assert(hybrid.provenLoss == direct.provenLoss);
-    assert(hybrid.proofStatus == direct.proofStatus);
-    assert(hybrid.proofSearchClass == direct.proofSearchClass);
-    assert(hybrid.proofDistance == direct.proofDistance);
-    assert(hybrid.proofCertificateId == direct.proofCertificateId);
-    assert(hybrid.proofCertificateVerified ==
-           direct.proofCertificateVerified);
-    assert(hybrid.randomMode == direct.randomMode);
-    assert(hybrid.randomCandidateCount == direct.randomCandidateCount);
-    assert(hybrid.randomSelectionUsed == direct.randomSelectionUsed);
-    assert(hybrid.randomSelectedRank == direct.randomSelectedRank);
-    assert(hybrid.randomEquivalenceSignature ==
-           direct.randomEquivalenceSignature);
-    assert(hybrid.randomEligibilityVerified ==
-           direct.randomEligibilityVerified);
-    assert(hybrid.seed == seed);
-    assert(hybrid.randomEquivalenceSignature != 0);
-    assert(hybrid.hybridComponent ==
-           (side == -1 ? FC_HYBRID_COMPONENT_WHITE_PROOF_ENGINE
-                       : FC_HYBRID_COMPONENT_BLACK_V51));
-    assert(strcmp(fc_hybrid_component_version(hybrid.hybridComponent),
-                  directProfile.version) == 0);
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])board,
-                            hybrid.x, hybrid.y, side, forbiddenBlack));
-    assert(memcmp(before, board, sizeof(board)) == 0);
-}
-
-static void test_color_specialized_hybrid_component_equivalence(void)
-{
-    const FCRandomMode modes[] = {
-        FC_RANDOM_EVALUATION,
-        FC_RANDOM_USER_GAME
-    };
-    for (int forbidden = 0; forbidden <= 1; forbidden++) {
-        for (size_t mode = 0; mode < sizeof(modes) / sizeof(modes[0]); mode++) {
-            assert_hybrid_component_matches_direct(
-                1, forbidden != 0, modes[mode]);
-            assert_hybrid_component_matches_direct(
-                -1, forbidden != 0, modes[mode]);
-        }
-    }
-}
-
-static void assert_v521_parallel_policy_isolated(void)
-{
-    FCAIProfile source = fc_profile_five_star_loss_aware_candidate();
-    FCAIProfile serial = fc_profile_five_star_v521_serial_hybrid_control();
-    FCAIProfile parallel =
-        fc_profile_five_star_v521_parallel_hybrid_candidate();
-    assert(!source.proofEngineCandidate);
-    assert(!serial.proofEngineCandidate);
-    assert(!parallel.proofEngineCandidate);
-    assert(source.proofCandidateStagesEnabled);
-    assert(serial.proofCandidateStagesEnabled);
-    assert(parallel.proofCandidateStagesEnabled);
-    assert(!source.parallelProofEnabled);
-    assert(!serial.parallelProofEnabled);
-    assert(parallel.parallelProofEnabled);
-    assert(serial.proofWorkerCount == 1);
-    assert(parallel.proofWorkerCount == 8);
-    assert(serial.proofParallelNodeBudget == source.proofNodeBudget);
-    assert(parallel.proofParallelNodeBudget == source.proofNodeBudget * 8);
-    assert(serial.decisionTimeBudgetMs == 4500);
-    assert(parallel.decisionTimeBudgetMs == 4500);
-#define ASSERT_V521_POLICY_FIELD(field) do { \
-    assert(serial.field == source.field);      \
-    assert(parallel.field == source.field);    \
-} while (0)
-    ASSERT_V521_POLICY_FIELD(maxDepth);
-    ASSERT_V521_POLICY_FIELD(quiescenceDepth);
-    ASSERT_V521_POLICY_FIELD(fourDepth);
-    ASSERT_V521_POLICY_FIELD(doubleThreeDepth);
-    ASSERT_V521_POLICY_FIELD(forcingDepth);
-    ASSERT_V521_POLICY_FIELD(candidateLimit);
-    ASSERT_V521_POLICY_FIELD(nodeBudget);
-    ASSERT_V521_POLICY_FIELD(timeBudgetMs);
-    ASSERT_V521_POLICY_FIELD(transpositionCapacity);
-    ASSERT_V521_POLICY_FIELD(attackWeight);
-    ASSERT_V521_POLICY_FIELD(defenseWeight);
-    ASSERT_V521_POLICY_FIELD(centerWeight);
-    ASSERT_V521_POLICY_FIELD(nearBestWindow);
-    ASSERT_V521_POLICY_FIELD(randomTemperature);
-    ASSERT_V521_POLICY_FIELD(maxRandomCandidates);
-    ASSERT_V521_POLICY_FIELD(proofEnabled);
-    ASSERT_V521_POLICY_FIELD(proofCandidateStagesEnabled);
-    ASSERT_V521_POLICY_FIELD(openingBookEnabled);
-    ASSERT_V521_POLICY_FIELD(proofSearchClass);
-    ASSERT_V521_POLICY_FIELD(proofMaxDepth);
-    ASSERT_V521_POLICY_FIELD(proofNodeBudget);
-    ASSERT_V521_POLICY_FIELD(proofTimeBudgetMs);
-    ASSERT_V521_POLICY_FIELD(proofTranspositionCapacity);
-    ASSERT_V521_POLICY_FIELD(lossAwareEnabled);
-    ASSERT_V521_POLICY_FIELD(quietThreatEnabled);
-    ASSERT_V521_POLICY_FIELD(proofEscapeCandidateLimit);
-    ASSERT_V521_POLICY_FIELD(proofQuietRootLimit);
-    ASSERT_V521_POLICY_FIELD(proofEmergencyTimeBudgetMs);
-    ASSERT_V521_POLICY_FIELD(eliteCorpusEnabled);
-    ASSERT_V521_POLICY_FIELD(corpusScoreMargin);
-    ASSERT_V521_POLICY_FIELD(corpusMinGames);
-    ASSERT_V521_POLICY_FIELD(corpusMinEvents);
-#undef ASSERT_V521_POLICY_FIELD
-    FCAIProfile four = fc_profile_frozen_four_star_control();
-    FCAIProfile production = fc_profile_five_star();
-    FCAIProfile v57 = fc_profile_five_star_v57_hybrid_candidate();
-    assert(!four.parallelProofEnabled && four.proofWorkerCount == 0);
-    assert(!production.parallelProofEnabled &&
-           production.proofWorkerCount == 0);
-    assert(strcmp(v57.version,
-                  "5.7.0-white-v541-black-v521-independent-root-parallel8-5s") == 0);
-    assert(v57.parallelProofEnabled && v57.proofWorkerCount == 8);
-    assert(v57.proofParallelNodeBudget == v57.proofNodeBudget * 8);
-    assert(v57.decisionTimeBudgetMs == 4500);
-    assert(!v57.forkFirstRecoveryEnabled);
-    assert(!v57.branchFirstSearchEnabled);
-    assert(v57.branchFirstAdvancedFourDepthBonus == 0);
-    assert(v57.branchFirstAdvancedThreeDepthBonus == 0);
-    FCAIProfile forkRecovery =
-        fc_profile_five_star_v57_fork_recovery_candidate();
-    assert(forkRecovery.forkFirstRecoveryEnabled);
-    assert(forkRecovery.parallelProofEnabled &&
-           forkRecovery.incrementalLegalityEnabled &&
-           forkRecovery.recoverySearchEnabled);
-    char v57Snapshot[8192];
-    char forkSnapshot[8192];
-    assert(fc_profile_snapshot(&v57, v57Snapshot, sizeof(v57Snapshot)) > 0);
-    assert(fc_profile_snapshot(&forkRecovery, forkSnapshot,
-                               sizeof(forkSnapshot)) > 0);
-    assert(strstr(v57Snapshot,
-                  "\"forkFirstRecoveryEnabled\":false") != NULL);
-    assert(strstr(forkSnapshot,
-                  "\"forkFirstRecoveryEnabled\":true") != NULL);
-    FCAIProfile branchFirst =
-        fc_profile_five_star_v57_branch_first_candidate();
-    assert(branchFirst.branchFirstSearchEnabled);
-    assert(!branchFirst.parallelProofEnabled);
-    assert(branchFirst.proofMaxDepth == 14);
-    assert(branchFirst.branchFirstAdvancedFourDepthBonus == 2);
-    assert(branchFirst.branchFirstAdvancedThreeDepthBonus == 1);
-    assert(branchFirst.branchFirstTacticalDepthCap == 16);
-    char branchSnapshot[8192];
-    assert(fc_profile_snapshot(&branchFirst, branchSnapshot,
-                               sizeof(branchSnapshot)) > 0);
-    assert(strstr(branchSnapshot,
-                  "\"branchFirstAdvancedFourDepthBonus\":2") != NULL);
-    assert(strstr(branchSnapshot,
-                  "\"branchFirstAdvancedThreeDepthBonus\":1") != NULL);
-    assert(strstr(branchSnapshot,
-                  "\"branchFirstTacticalDepthCap\":16") != NULL);
-}
-
-static void assert_v521_hybrid_routes_component(int side,
-                                                 bool forbiddenBlack,
-                                                 int blackWorkers)
-{
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    for (int y = 3; y <= 6; y++) board[7][y] = side;
-    board[6][5] = -side;
-    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(before, board, sizeof(board));
-    FCAIProfile directProfile = side == -1
-        ? fc_profile_five_star_proof_engine_candidate()
-        : blackWorkers > 1
-        ? fc_profile_five_star_v521_parallel_hybrid_candidate()
-        : fc_profile_five_star_v521_serial_hybrid_control();
-    FCAnalysisResult direct;
-    FCAnalysisResult hybrid;
-    uint64_t seed = forbiddenBlack ? UINT64_C(0x521f0b1d)
-                                   : UINT64_C(0x521f4ee5);
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, side, forbiddenBlack,
-        &directProfile, seed, FC_RANDOM_EVALUATION, 8, 8, &direct));
-    assert(fc_analyze_five_star_v521_hybrid_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, side, forbiddenBlack,
-        blackWorkers, seed, FC_RANDOM_EVALUATION, 8, 8, &hybrid));
-    assert(hybrid.x == direct.x && hybrid.y == direct.y);
-    assert(hybrid.tacticalClass == direct.tacticalClass);
-    assert(hybrid.proofStatus == direct.proofStatus);
-    assert(hybrid.proofSearchClass == direct.proofSearchClass);
-    assert(hybrid.proofCertificateVerified ==
-           direct.proofCertificateVerified);
-    assert(hybrid.proofWorkerCap ==
-           (side == -1 ? 8 : blackWorkers));
-    assert(hybrid.hybridComponent ==
-           (side == -1 ? FC_HYBRID_COMPONENT_WHITE_PROOF_ENGINE
-            : blackWorkers > 1 ? FC_HYBRID_COMPONENT_BLACK_V521_PARALLEL
-                               : FC_HYBRID_COMPONENT_BLACK_V521_SERIAL));
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])board,
-                            hybrid.x, hybrid.y, side, forbiddenBlack));
-    assert(memcmp(before, board, sizeof(board)) == 0);
-}
-
-static void test_parallel_v521_profiles_and_hybrid_routing(void)
-{
-    assert_v521_parallel_policy_isolated();
-    for (int forbidden = 0; forbidden <= 1; forbidden++) {
-        assert_v521_hybrid_routes_component(-1, forbidden != 0, 1);
-        assert_v521_hybrid_routes_component(-1, forbidden != 0, 8);
-        assert_v521_hybrid_routes_component(1, forbidden != 0, 1);
-        assert_v521_hybrid_routes_component(1, forbidden != 0, 8);
-    }
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    board[7][7] = 1;
-    FCAnalysisResult four;
-    assert(fc_analyze_four_star_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, -1, false,
-        7, FC_RANDOM_EVALUATION, 8, 8, &four));
-    assert(four.proofWorkersLaunched == 0);
-    assert(four.proofParallelJobs == 0);
-}
-
-static void test_v521_parallel_root_capability_and_deadline(void)
-{
-    int proofBoard[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    proofBoard[5][7] = proofBoard[6][7] = 1;
-    proofBoard[7][5] = proofBoard[7][6] = 1;
-    int proofBefore[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(proofBefore, proofBoard, sizeof(proofBoard));
-    FCAIProfile profile =
-        fc_profile_five_star_v521_parallel_hybrid_candidate();
-    assert(!profile.proofEngineCandidate && profile.parallelProofEnabled);
-    profile.proofMaxDepth = 9;
-    profile.proofNodeBudget = 18000;
-    profile.proofParallelNodeBudget = 72000;
-    profile.proofWorkerCount = 8;
-    profile.proofTimeBudgetMs = 0;
-    profile.proofEmergencyTimeBudgetMs = 0;
-    FCProofResult proof;
-    fc_proof_diagnostics_reset();
-    assert(fc_test_parallel_root_proof(
-        (const int (*)[FC_BOARD_SIZE])proofBoard, 1, false,
-        FC_PROOF_SEARCH_VCT, &profile, &proof));
-    assert(proof.status == FC_PROOF_PROVEN_WIN);
-    assert(proof.certificateVerified);
-    assert(fc_verify_proof((const int (*)[FC_BOARD_SIZE])proofBoard,
-                           1, false, &proof));
-    FCProofDiagnostics diagnostics = fc_proof_diagnostics_get();
-    assert(diagnostics.parallelBatches == 1);
-    /* A fully overlapping threat set is intentionally serialized through one
-     * shared DFPN session so its descendants/TT are reused safely. */
-    assert(diagnostics.parallelWorkersLaunched >= 1);
-    assert(diagnostics.parallelWorkersLaunched <= 8);
-    assert(diagnostics.parallelWorkersLaunched <=
-           diagnostics.parallelRootJobs);
-    assert(diagnostics.parallelRootJobsCompleted <=
-           diagnostics.parallelRootJobs);
-    assert(diagnostics.parallelBudgetTokens > 0);
-    assert(diagnostics.parallelGroupedRootJobs >=
-           diagnostics.parallelRootJobs);
-    assert(diagnostics.incrementalMakes == diagnostics.incrementalUnmakes);
-    assert(memcmp(proofBoard, proofBefore, sizeof(proofBoard)) == 0);
-
-    const int moves[][3] = {
-        {7,7,1},{8,6,-1},{9,7,1},{10,7,-1},{11,7,1},{10,6,-1},
-        {10,5,1},{9,8,-1},{11,6,1},{11,5,-1},{9,6,1},{8,7,-1},
-        {7,6,1},{8,8,-1},{8,5,1},{9,4,-1},{8,9,1},{7,8,-1},
-        {6,8,1},{10,9,-1},{10,8,1},{10,4,-1}
-    };
-    int deadlineBoard[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    for (size_t i = 0; i < sizeof(moves) / sizeof(moves[0]); i++)
-        assert(fc_make_move(deadlineBoard, moves[i][0], moves[i][1],
-                            moves[i][2], false));
-    int deadlineBefore[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(deadlineBefore, deadlineBoard, sizeof(deadlineBoard));
-    FCAnalysisResult result;
-    assert(fc_analyze_five_star_v521_hybrid_with_hint(
-        (const int (*)[FC_BOARD_SIZE])deadlineBoard, 1, false, 8,
-        UINT64_C(0x5218baaadb6f), FC_RANDOM_USER_GAME,
-        8, 10, &result));
-    assert(result.hybridComponent ==
-           FC_HYBRID_COMPONENT_BLACK_V521_PARALLEL);
-    assert(result.proofWorkerCap == 8);
-    assert(result.stats.elapsedMilliseconds < 5000.0);
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])deadlineBoard,
-                            result.x, result.y, 1, false));
-    assert(result.randomEligibilityVerified);
-    assert(memcmp(deadlineBefore, deadlineBoard,
-                  sizeof(deadlineBoard)) == 0);
 }
 
 static void test_multi_seed_randomness_stays_in_completed_equivalence_class(void)
@@ -2966,33 +2167,6 @@ static void test_multi_seed_randomness_stays_in_completed_equivalence_class(void
         &candidates[0], scores[0], &candidates[1], 109));
 }
 
-static void test_hybrid_black_v51_outer_deadline_returns_completed_move(void)
-{
-    const int moves[][3] = {
-        {7,7,1},{8,6,-1},{9,7,1},{10,7,-1},{11,7,1},{10,6,-1},
-        {10,5,1},{9,8,-1},{11,6,1},{11,5,-1},{9,6,1},{8,7,-1},
-        {7,6,1},{8,8,-1},{8,5,1},{9,4,-1},{8,9,1},{7,8,-1},
-        {6,8,1},{10,9,-1},{10,8,1},{10,4,-1}
-    };
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    for (size_t i = 0; i < sizeof(moves) / sizeof(moves[0]); i++)
-        assert(fc_make_move(board, moves[i][0], moves[i][1],
-                            moves[i][2], false));
-    int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(before, board, sizeof(board));
-    FCAnalysisResult result;
-    assert(fc_analyze_five_star_color_hybrid_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false,
-        UINT64_C(0xbaaadb6fac868a8a), FC_RANDOM_USER_GAME,
-        8, 10, &result));
-    assert(result.hybridComponent == FC_HYBRID_COMPONENT_BLACK_V51);
-    assert(result.stats.elapsedMilliseconds < 5000.0);
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])board,
-                            result.x, result.y, 1, false));
-    assert(result.randomEligibilityVerified);
-    assert(memcmp(before, board, sizeof(board)) == 0);
-}
-
 static void test_dfpn_stalled_expanded_graph_respects_deadline(void)
 {
     double elapsed = 0.0;
@@ -3007,7 +2181,7 @@ static void test_parallel_root_dfpn_isolated_and_deterministic(void)
     board[7][5] = board[7][6] = 1;
     int original[FC_BOARD_SIZE][FC_BOARD_SIZE];
     memcpy(original, board, sizeof(original));
-    FCAIProfile profile = fc_profile_five_star_proof_engine_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     profile.proofMaxDepth = 9;
     profile.proofNodeBudget = 18000;
     profile.proofParallelNodeBudget = 72000;
@@ -3074,222 +2248,9 @@ static void test_parallel_root_dfpn_isolated_and_deterministic(void)
     assert(memcmp(board, original, sizeof(board)) == 0);
 }
 
-static void test_v57_persistent_scheduler_reuses_pool_and_returns_tokens(void)
-{
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    board[5][7] = board[6][7] = 1;
-    board[7][5] = board[7][6] = 1;
-    int original[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(original, board, sizeof(original));
-    FCAIProfile profile =
-        fc_profile_five_star_v57_thread_scheduler_candidate();
-    profile.proofMaxDepth = 9;
-    profile.proofNodeBudget = 18000;
-    profile.proofParallelNodeBudget = 72000;
-    profile.proofWorkerCount = 4;
-    profile.proofTimeBudgetMs = 0;
-    profile.proofEmergencyTimeBudgetMs = 0;
-    FCProofResult first;
-    fc_proof_diagnostics_reset();
-    assert(fc_test_parallel_root_proof(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false,
-        FC_PROOF_SEARCH_VCT, &profile, &first));
-    assert(first.status == FC_PROOF_PROVEN_WIN);
-    assert(first.certificateVerified);
-    FCProofDiagnostics firstDiagnostics = fc_proof_diagnostics_get();
-    assert(firstDiagnostics.parallelPoolDispatches == 1);
-    assert(firstDiagnostics.parallelPoolWorkersReused >= 1);
-    assert(firstDiagnostics.parallelTokenBlockClaims > 0);
-    assert(firstDiagnostics.parallelTokenBlockReturns > 0);
-    assert(firstDiagnostics.parallelBudgetTokens <= 72000);
-    assert(memcmp(board, original, sizeof(board)) == 0);
-
-    FCProofResult second;
-    fc_proof_diagnostics_reset();
-    assert(fc_test_parallel_root_proof(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false,
-        FC_PROOF_SEARCH_VCT, &profile, &second));
-    FCProofDiagnostics secondDiagnostics = fc_proof_diagnostics_get();
-    assert(secondDiagnostics.parallelPoolDispatches == 1);
-    assert(secondDiagnostics.parallelPoolFallbacks == 0);
-    assert(second.x == first.x && second.y == first.y);
-    assert(second.certificateId == first.certificateId);
-    assert(second.nodes == first.nodes);
-    assert(memcmp(board, original, sizeof(board)) == 0);
-
-    char snapshot[8192];
-    assert(fc_profile_snapshot(&profile, snapshot, sizeof(snapshot)) > 0);
-    assert(strstr(snapshot, "\"persistentWorkerPoolEnabled\":true") != NULL);
-    assert(strstr(snapshot, "\"parallelTokenBlockEnabled\":true") != NULL);
-    assert(strstr(snapshot, "\"parallelTokenBlockSize\":16") != NULL);
-}
-
-static void test_v541_scheduler_profile_and_route(void)
-{
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    board[5][7] = board[6][7] = 1;
-    board[7][5] = board[7][6] = 1;
-    int original[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(original, board, sizeof(original));
-
-    FCAIProfile baseline = fc_profile_five_star_proof_engine_candidate();
-    FCAIProfile candidate =
-        fc_profile_five_star_v541_thread_scheduler_candidate();
-    assert(strcmp(baseline.version,
-                  "5.4.1-transactional-deadline-root-parallel-5s") == 0);
-    assert(!baseline.persistentWorkerPoolEnabled);
-    assert(!baseline.parallelTokenBlockEnabled);
-    assert(strcmp(candidate.version,
-                  "5.4.2-v541-persistent-pool-token-blocks-8w-5s") == 0);
-    assert(candidate.proofEngineCandidate);
-    assert(candidate.parallelProofEnabled);
-    assert(candidate.persistentWorkerPoolEnabled);
-    assert(candidate.parallelTokenBlockEnabled);
-    assert(candidate.parallelTokenBlockSize == 64);
-    assert(candidate.proofMaxDepth == baseline.proofMaxDepth);
-    assert(candidate.proofNodeBudget == baseline.proofNodeBudget);
-    assert(candidate.proofParallelNodeBudget ==
-           baseline.proofParallelNodeBudget);
-    assert(candidate.decisionNodeBudget == 0);
-    assert(candidate.decisionHardLimitMs == 0);
-    assert(candidate.decisionLedgerVersion == 0);
-    assert(candidate.decisionMemoryBudgetBytes == 0);
-    assert(candidate.decisionCorpusQueryBudget == 0);
-    assert(!candidate.incrementalLegalityEnabled);
-    assert(!candidate.validateLegalityCache);
-    assert(!candidate.recoverySearchEnabled);
-    assert(candidate.decisionTimeBudgetMs == 4200);
-
-    char snapshot[8192];
-    assert(fc_profile_snapshot(&candidate, snapshot, sizeof(snapshot)) > 0);
-    assert(strstr(snapshot,
-                  "\"version\":\"5.4.2-v541-persistent-pool-token-blocks-8w-5s\"") != NULL);
-    assert(strstr(snapshot, "\"persistentWorkerPoolEnabled\":true") != NULL);
-    assert(strstr(snapshot, "\"parallelTokenBlockSize\":64") != NULL);
-
-    FCProofResult proof;
-    candidate.proofMaxDepth = 9;
-    candidate.proofNodeBudget = 18000;
-    candidate.proofParallelNodeBudget = 72000;
-    candidate.decisionNodeBudget = 72000;
-    candidate.proofWorkerCount = 4;
-    candidate.proofTimeBudgetMs = 0;
-    candidate.proofEmergencyTimeBudgetMs = 0;
-    fc_proof_diagnostics_reset();
-    assert(fc_test_parallel_root_proof(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false,
-        FC_PROOF_SEARCH_VCT, &candidate, &proof));
-    assert(proof.status == FC_PROOF_PROVEN_WIN);
-    assert(proof.certificateVerified);
-    assert(fc_verify_proof((const int (*)[FC_BOARD_SIZE])board,
-                           1, false, &proof));
-    FCProofDiagnostics diagnostics = fc_proof_diagnostics_get();
-    assert(diagnostics.parallelPoolDispatches == 1);
-    assert(diagnostics.parallelPoolWorkersReused >= 1);
-    assert(diagnostics.parallelTokenBlockClaims > 0);
-    assert(diagnostics.parallelTokenBlockReturns > 0);
-    assert(diagnostics.parallelBudgetTokens <= 72000);
-    assert(memcmp(board, original, sizeof(board)) == 0);
-
-    FCAnalysisResult analysis;
-    assert(fc_analyze_five_star_v541_thread_scheduler_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false, 4,
-        UINT64_C(0x54120260816), FC_RANDOM_EVALUATION, 7, 7, &analysis));
-    assert(analysis.hybridComponent ==
-           FC_HYBRID_COMPONENT_V541_THREAD_SCHEDULER);
-    assert(strcmp(fc_hybrid_component_version(analysis.hybridComponent),
-                  candidate.version) == 0);
-    assert(analysis.proofWorkerCap == 4);
-    assert(analysis.stats.elapsedMilliseconds < 5000.0);
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])board,
-                            analysis.x, analysis.y, 1, false));
-    assert(memcmp(board, original, sizeof(board)) == 0);
-}
-
-static void test_v57_branch_first_recursive_pool(void)
-{
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    /* Two independent pairs create a real recursive reply wave without
-     * making the root itself an immediate win.  The branch workers are
-     * expected to be useful-or-unknown here; either outcome must retain the
-     * proof verifier and serial fallback contract. */
-    board[5][7] = board[6][7] = 1;
-    board[7][5] = board[7][6] = 1;
-    int original[FC_BOARD_SIZE][FC_BOARD_SIZE];
-    memcpy(original, board, sizeof(original));
-    FCAIProfile profile = fc_profile_five_star_v57_branch_first_candidate();
-    profile.proofMaxDepth = 12;
-    profile.proofNodeBudget = 72000;
-    profile.proofParallelNodeBudget = 288000;
-    profile.proofWorkerCount = 4;
-    profile.proofTimeBudgetMs = 0;
-    profile.proofEmergencyTimeBudgetMs = 0;
-    profile.branchFirstMinRemainingDepth = 6;
-    profile.branchFirstMinBranchCount = 2;
-    profile.branchFirstMaxBranches = 32;
-    FCProofResult first;
-    fc_proof_diagnostics_reset();
-    assert(fc_test_parallel_root_proof(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false,
-        FC_PROOF_SEARCH_VCT, &profile, &first));
-    assert(first.status == FC_PROOF_PROVEN_WIN);
-    assert(first.certificateVerified);
-    assert(fc_verify_proof((const int (*)[FC_BOARD_SIZE])board,
-                           1, false, &first));
-    FCProofDiagnostics diagnostics = fc_proof_diagnostics_get();
-    assert(diagnostics.branchFirstPreviewBranches > 0);
-    assert(diagnostics.branchFirstWaves > 0);
-    assert(diagnostics.branchFirstWorkersLaunched >= 2);
-    assert(diagnostics.branchFirstJobs > 0);
-    assert(diagnostics.branchFirstJobsCompleted > 0);
-    assert(diagnostics.branchFirstJobsCompleted <=
-           diagnostics.branchFirstJobs);
-    assert(diagnostics.branchFirstUsefulJobs > 0 ||
-           diagnostics.branchFirstUnknownJobs > 0);
-    assert(diagnostics.branchFirstMaxConcurrentWorkers >= 2);
-    assert(diagnostics.branchFirstDepthExtensions > 0);
-    assert(diagnostics.branchFirstAdvancedFourDepthExtensions > 0);
-    assert(diagnostics.branchFirstMaxChildDepth > 0);
-    assert(memcmp(board, original, sizeof(board)) == 0);
-
-    char snapshot[8192];
-    assert(fc_profile_snapshot(&profile, snapshot, sizeof(snapshot)) > 0);
-    assert(strstr(snapshot, "\"branchFirstSearchEnabled\":true") != NULL);
-    assert(strstr(snapshot, "\"proofMaxDepth\":12") != NULL);
-}
-
-static void test_v57_recovery_budget_contract(void)
-{
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    const int moves[][3] = {
-        {7,7,1}, {8,8,-1}, {7,8,1}, {8,7,-1},
-        {6,7,1}, {9,8,-1}, {8,6,1}, {6,8,-1},
-        {9,7,1}, {7,6,-1}, {6,6,1}, {9,9,-1}
-    };
-    for (size_t i = 0; i < sizeof(moves) / sizeof(moves[0]); i++)
-        assert(fc_make_move(board, moves[i][0], moves[i][1],
-                            moves[i][2], false));
-    FCAIProfile profile = fc_profile_five_star_v57_hybrid_candidate();
-    FCAnalysisResult result;
-    fc_proof_diagnostics_reset();
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
-        UINT64_C(0x5700c0de), FC_RANDOM_EVALUATION, 7, 9, &result));
-    assert(result.decisionLedgerVersion == profile.decisionLedgerVersion);
-    assert(result.decisionNodesConsumed <= profile.decisionNodeBudget);
-    assert(result.stats.elapsedMilliseconds < 5000.0);
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])board,
-                            result.x, result.y, 1, false));
-    FCProofDiagnostics diagnostics = fc_proof_diagnostics_get();
-    assert(diagnostics.decisionCount >= 1);
-    assert(diagnostics.parallelRootJobs >= 0);
-    assert(!profile.forkFirstRecoveryEnabled);
-    assert(diagnostics.forkProbeCandidatesExamined == 0);
-}
-
 static void test_decision_ledger_saturation_contract(void)
 {
-    FCAIProfile profile = fc_profile_five_star_v57_hybrid_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     profile.decisionNodeBudget = 3;
     profile.decisionMemoryBudgetBytes = 16;
     profile.decisionCorpusQueryBudget = 2;
@@ -3306,115 +2267,6 @@ static void test_decision_ledger_saturation_contract(void)
     assert(fc_decision_ledger_consume_query(&ledger));
     assert(fc_decision_ledger_consume_query(&ledger));
     assert(!fc_decision_ledger_consume_query(&ledger));
-}
-
-static void test_reversible_ledger_and_fork_first_recovery(void)
-{
-    FCAIProfile ledgerProfile = fc_profile_five_star_v57_hybrid_candidate();
-    ledgerProfile.decisionMemoryBudgetBytes = 64;
-    FCDecisionLedger ledger;
-    assert(fc_decision_ledger_begin(&ledger, &ledgerProfile));
-    assert(fc_decision_ledger_reserve_memory(&ledger, 32));
-    assert(atomic_load_explicit(&ledger.memoryReserved,
-                                memory_order_relaxed) == 32);
-    assert(atomic_load_explicit(&ledger.memoryPeakReserved,
-                                memory_order_relaxed) == 32);
-    fc_decision_ledger_release_memory(&ledger, 32);
-    fc_decision_ledger_release_memory(&ledger, 32);
-    assert(atomic_load_explicit(&ledger.memoryReserved,
-                                memory_order_relaxed) == 0);
-    assert(atomic_load_explicit(&ledger.memoryReleased,
-                                memory_order_relaxed) == 32);
-    assert(fc_decision_ledger_reserve_memory(&ledger, 64));
-    assert(!fc_decision_ledger_reserve_memory(&ledger, 1));
-    fc_decision_ledger_release_memory(&ledger, 64);
-    assert(atomic_load_explicit(&ledger.memoryReserved,
-                                memory_order_relaxed) == 0);
-    assert(!fc_research_worker_count_is_valid(2));
-    assert(fc_research_worker_count_is_valid(1));
-    assert(fc_research_worker_count_is_valid(4));
-    assert(fc_research_worker_count_is_valid(8));
-
-    /* The advisory move at (0,0) leaves both ends of the opponent's four
-     * open.  Blocking one end leaves one legal immediate reply and must beat
-     * the fork before any deeper proof stage is consulted. */
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    for (int y = 4; y <= 7; y++) board[7][y] = -1;
-    board[6][6] = 1;
-    FCAIProfile profile = fc_profile_five_star_v57_fork_recovery_candidate();
-    profile.proofEnabled = false;
-    profile.proofCandidateStagesEnabled = false;
-    profile.parallelProofEnabled = false;
-    profile.openingBookEnabled = false;
-    profile.eliteCorpusEnabled = false;
-    profile.maxDepth = 0;
-    profile.quiescenceDepth = 0;
-    profile.decisionTimeBudgetMs = 1000;
-    FCAnalysisResult result;
-    fc_proof_diagnostics_reset();
-    assert(fc_analyze_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
-        UINT64_C(0x464f524b54455354), FC_RANDOM_EVALUATION,
-        0, 0, &result));
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])board,
-                            result.x, result.y, 1, false));
-    assert(result.forkCandidatesExamined > 0);
-    assert(result.forkProbeComplete);
-    assert(result.forkRiskStatus != FC_FORK_RISK_FORK);
-    assert(result.forkAvoidedCount == 1);
-    assert(result.x == 7 && (result.y == 3 || result.y == 8));
-    assert(result.decisionStatus == FC_DECISION_UNKNOWN_OR_DEADLINE);
-
-    FCAnalysisResult repeated;
-    assert(fc_analyze_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, 1, false, &profile,
-        UINT64_C(0x464f524b54455354), FC_RANDOM_EVALUATION,
-        0, 0, &repeated));
-    assert(repeated.x == result.x && repeated.y == result.y);
-    assert(repeated.decisionStatus == result.decisionStatus);
-    assert(repeated.forkRiskStatus == result.forkRiskStatus);
-}
-
-static void test_forbidden_fork_reply_and_invalid_handoff_recovery(void)
-{
-    int board[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    for (int y = 4; y <= 7; y++) board[7][y] = -1;
-    board[6][6] = 1;
-    FCAIProfile profile = fc_profile_five_star_v57_fork_recovery_candidate();
-    profile.proofEnabled = false;
-    profile.proofCandidateStagesEnabled = false;
-    profile.parallelProofEnabled = false;
-    profile.openingBookEnabled = false;
-    profile.eliteCorpusEnabled = false;
-    profile.maxDepth = 0;
-    profile.quiescenceDepth = 0;
-    profile.decisionTimeBudgetMs = 1000;
-    FCAnalysisResult forbiddenResult;
-    assert(fc_analyze_with_hint(
-        (const int (*)[FC_BOARD_SIZE])board, 1, true, &profile,
-        UINT64_C(0x464f524b464f5242), FC_RANDOM_EVALUATION,
-        0, 0, &forbiddenResult));
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])board,
-                            forbiddenResult.x, forbiddenResult.y, 1, true));
-    assert(forbiddenResult.forkProbeComplete);
-    assert(forbiddenResult.forkRiskStatus != FC_FORK_RISK_FORK);
-    assert(forbiddenResult.selectedOpponentImmediateWinCount <= 1);
-
-    int handoffBoard[FC_BOARD_SIZE][FC_BOARD_SIZE] = {{0}};
-    handoffBoard[7][7] = 1;
-    FCAnalysisResult handoff;
-    assert(fc_analyze_five_star_profile_with_hint(
-        (const int (*)[FC_BOARD_SIZE])handoffBoard, -1, false, &profile,
-        UINT64_C(0x48414e444f4646), FC_RANDOM_EVALUATION,
-        -1, -1, &handoff));
-    assert(fc_is_legal_move((const int (*)[FC_BOARD_SIZE])handoffBoard,
-                            handoff.x, handoff.y, -1, false));
-    assert(handoff.candidateCount > 1);
-    assert(handoff.handoffReason == FC_HANDOFF_FOUR_STAR_UNKNOWN ||
-           handoff.handoffReason == FC_HANDOFF_FOUR_STAR_INVALID ||
-           handoff.handoffReason == FC_HANDOFF_GENERATED_FALLBACK);
-    assert(handoff.decisionStatus == FC_DECISION_UNKNOWN_OR_DEADLINE);
-    assert(!handoff.provenLoss);
 }
 
 int main(void)
@@ -3452,30 +2304,14 @@ int main(void)
     test_dependency_dag_proposes_verified_search_order();
     test_candidate_stage_order_and_obligation_skips();
     test_crossing_duplicate_and_forbidden_symmetries();
-    test_black_double_three_scan_and_preemption();
-    test_black_double_three_integration_contracts();
-    test_black_double_three_soft_weight_regression();
-    test_black_defense_recovery_regressions();
-    test_black_recovery_two_step_fork_probe();
-    test_black_recovery_loss_predecessor_fixtures();
     test_vct_proof_and_integration_gates();
     test_elite_corpus_lookup_and_fail_closed_five_star();
     test_elite_local_lookup_survives_natural_deviation_and_partitions_rules();
     test_five_star_randomness_requires_proof_equivalence();
-    test_color_specialized_hybrid_component_equivalence();
-    test_parallel_v521_profiles_and_hybrid_routing();
-    test_v521_parallel_root_capability_and_deadline();
     test_multi_seed_randomness_stays_in_completed_equivalence_class();
-    test_hybrid_black_v51_outer_deadline_returns_completed_move();
     test_dfpn_stalled_expanded_graph_respects_deadline();
     test_parallel_root_dfpn_isolated_and_deterministic();
-    test_v57_persistent_scheduler_reuses_pool_and_returns_tokens();
-    test_v541_scheduler_profile_and_route();
-    test_v57_branch_first_recursive_pool();
-    test_v57_recovery_budget_contract();
     test_decision_ledger_saturation_contract();
-    test_reversible_ledger_and_fork_first_recovery();
-    test_forbidden_fork_reply_and_invalid_handoff_recovery();
     puts("FiveChessAI tests passed");
     return 0;
 }

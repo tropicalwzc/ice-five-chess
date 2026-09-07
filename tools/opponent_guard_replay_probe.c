@@ -20,7 +20,7 @@ int fc_replay_opponent_guard_probe(
 {
     int before[FC_BOARD_SIZE][FC_BOARD_SIZE];
     memcpy(before, board, sizeof(before));
-    FCAIProfile profile = fc_profile_five_star_opponent_guard_candidate();
+    FCAIProfile profile = fc_profile_five_star_early_micro_vcf_candidate();
     FCOpponentGuardAudit audit;
     bool audited = fc_audit_opponent_after_move(
         board, side, forbiddenBlack, &profile, x, y, &audit);

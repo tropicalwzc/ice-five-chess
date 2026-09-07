@@ -28,17 +28,6 @@ typedef enum {
 } FCRandomMode;
 
 typedef enum {
-    FC_HYBRID_COMPONENT_NONE = 0,
-    FC_HYBRID_COMPONENT_BLACK_V51 = 1,
-    FC_HYBRID_COMPONENT_WHITE_PROOF_ENGINE = 2,
-    FC_HYBRID_COMPONENT_BLACK_V521_PARALLEL = 3,
-    FC_HYBRID_COMPONENT_BLACK_V521_SERIAL = 4,
-    FC_HYBRID_COMPONENT_BLACK_V57_PARALLEL = 5,
-    FC_HYBRID_COMPONENT_V57_BRANCH_FIRST = 6,
-    FC_HYBRID_COMPONENT_V541_THREAD_SCHEDULER = 7
-} FCHybridComponent;
-
-typedef enum {
     FC_TACTICAL_NORMAL = 0,
     FC_TACTICAL_IMMEDIATE_WIN = 1,
     FC_TACTICAL_MUST_DEFEND = 2,
@@ -154,15 +143,6 @@ typedef enum {
 } FCOpponentGuardSkipReason;
 
 typedef enum {
-    FC_DOUBLE_THREE_STATUS_NONE = 0,
-    FC_DOUBLE_THREE_STATUS_COMPLETE_NO_GAINS = 1,
-    FC_DOUBLE_THREE_STATUS_COMPLETE_SAFE = 2,
-    FC_DOUBLE_THREE_STATUS_COMPLETE_UNRESOLVED = 3,
-    FC_DOUBLE_THREE_STATUS_UNKNOWN = 4,
-    FC_DOUBLE_THREE_STATUS_BYPASSED = 5
-} FCDoubleThreeStatus;
-
-typedef enum {
     FC_GUARD_CLASS_UNKNOWN = 0,
     FC_GUARD_CLASS_VERIFIED_LOSS = 1,
     FC_GUARD_CLASS_IMMEDIATELY_SAFE_UNKNOWN = 2,
@@ -214,12 +194,6 @@ typedef struct {
     int x;
     int y;
 } FCPoint;
-
-typedef struct {
-    int x;
-    int y;
-    uint8_t directionMask;
-} FCDoubleThreeGain;
 
 typedef struct {
     FCPoint gain;
@@ -338,30 +312,7 @@ typedef struct {
     uint64_t decisionNodeBudget;
     size_t decisionMemoryBudgetBytes;
     uint32_t decisionCorpusQueryBudget;
-    bool incrementalLegalityEnabled;
-    bool validateLegalityCache;
-    bool recoverySearchEnabled;
-    /* Experimental fork-first candidate recovery is opt-in.  This is kept
-     * separate from legacy legal fallback/loss-aware recovery. */
-    bool forkFirstRecoveryEnabled;
-    /* The v5.7 scheduler study is opt-in so the rolled-back v5.7 profile
-     * remains an immutable comparison point. */
-    bool persistentWorkerPoolEnabled;
-    bool parallelTokenBlockEnabled;
-    uint32_t parallelTokenBlockSize;
-    /* The v5.7 branch-first study keeps root obligations ordered and only
-     * dispatches sufficiently long recursive reply waves. */
-    bool branchFirstSearchEnabled;
-    int branchFirstMinRemainingDepth;
-    int branchFirstMinBranchCount;
-    int branchFirstMaxBranches;
-    int branchFirstPreviewDepth;
-    /* Tactical recursive waves may spend their parallel headroom on a
-     * slightly deeper continuation.  Zero preserves the serial/default
-     * profile contract. */
-    int branchFirstAdvancedFourDepthBonus;
-    int branchFirstAdvancedThreeDepthBonus;
-    int branchFirstTacticalDepthCap;
+
     /* Isolated five-star defensive acceptance boundary. Zero/false keeps
      * every historical profile byte-for-byte behaviorally equivalent. */
     bool opponentGuardEnabled;
@@ -375,16 +326,7 @@ typedef struct {
     uint32_t opponentGuardReservedTimeMs;
     bool opponentGuardStructuralVCTEnabled;
     int opponentGuardMaxAlternatives;
-    /* Isolated recovery controls.  These are deliberately separate from the
-     * historical guard knobs so control profiles remain unchanged. */
-    bool opponentGuardImmediateBlockEnabled;
-    bool opponentGuardTwoStepForkEnabled;
-    int opponentGuardForkMaxReplies;
-    uint64_t opponentGuardForkNodeBudget;
-    uint32_t opponentGuardForkTimeBudgetMs;
-    bool opponentGuardVCTOnUnknownEnabled;
-    uint64_t opponentGuardRecoveryReservedNodes;
-    uint32_t opponentGuardRecoveryReservedTimeMs;
+
     /* A cheap strict-VCF sentinel runs before own-proof work.  It shares the
      * opponent-guard reservation and never replaces the final VCF/VCT guard. */
     bool earlyVCFSentinelEnabled;
@@ -394,16 +336,7 @@ typedef struct {
     uint64_t earlyVCFNodeBudget;
     uint32_t earlyVCFTimeBudgetMs;
     int earlyVCFMaxAlternatives;
-    /* Isolated 5.8.2 black-side structural preemption.  Zero/false keeps
-     * every historical profile behaviorally unchanged. */
-    bool blackDoubleThreeDefenseEnabled;
-    int blackDoubleThreeMaxGains;
-    int blackDoubleThreeMaxCandidates;
-    uint32_t blackDoubleThreeTimeBudgetMs;
-    /* 0..100.  Lower values make a single-threat structural switch pay a
-     * larger distance cost against the existing move; 100 retains the hard
-     * preemption behavior used by the initial 5.8.2 candidate. */
-    int blackDoubleThreeDefenseWeight;
+
     int corpusScoreMargin;
     int corpusMinGames;
     int corpusMinEvents;
@@ -509,7 +442,6 @@ typedef struct {
     int randomSelectedRank;
     uint64_t randomEquivalenceSignature;
     bool randomEligibilityVerified;
-    int hybridComponent;
     int fourStarX;
     int fourStarY;
     int handoffReason;
@@ -587,18 +519,6 @@ typedef struct {
     double earlyVCFDownstreamBudgetRemainingMs;
     bool earlyVCFFinalGuardOnlyLoss;
     bool earlyVCFEvidenceMismatch;
-    FCDoubleThreeStatus doubleThreeStatus;
-    bool doubleThreeScanComplete;
-    bool doubleThreeScanOverflow;
-    int doubleThreeGainCount;
-    int doubleThreeProvisionalResidualCount;
-    int doubleThreeSelectedResidualCount;
-    int doubleThreeCandidatesExamined;
-    int doubleThreeCandidatesEliminated;
-    bool doubleThreeOwnVCFBypass;
-    bool doubleThreeStructuralOverride;
-    bool doubleThreeRollback;
-    bool doubleThreeDeadlineAnomaly;
     bool corpusLookup;
     int corpusPositionIndex;
     int corpusCandidateCount;
@@ -752,26 +672,6 @@ typedef struct {
     uint64_t forkProbeUnknownCandidates;
     uint64_t forkProbeAvoidedForks;
     uint64_t forkProbeIncompleteDecisions;
-    uint64_t branchFirstPreviewBranches;
-    uint64_t branchFirstAdvancedFourPreviews;
-    uint64_t branchFirstAdvancedThreePreviews;
-    uint64_t branchFirstPreviewIncomplete;
-    uint64_t branchFirstWaves;
-    uint64_t branchFirstWorkersLaunched;
-    uint64_t branchFirstJobs;
-    uint64_t branchFirstJobsCompleted;
-    uint64_t branchFirstVerifiedJobs;
-    uint64_t branchFirstUsefulJobs;
-    uint64_t branchFirstMergeFailures;
-    uint64_t branchFirstUnknownJobs;
-    uint64_t branchFirstMaxConcurrentWorkers;
-    uint64_t branchFirstDispatchFallbacks;
-    uint64_t branchFirstSerialFallbacks;
-    uint64_t branchFirstDepthExtensions;
-    uint64_t branchFirstAdvancedFourDepthExtensions;
-    uint64_t branchFirstAdvancedThreeDepthExtensions;
-    uint64_t branchFirstMaxChildDepth;
-    uint64_t branchFirstDeadlineStops;
     uint64_t opponentGuardEligibleDecisions;
     uint64_t opponentGuardSkippedDisabled;
     uint64_t opponentGuardSkippedImmediateWins;
@@ -803,16 +703,6 @@ typedef struct {
     uint64_t earlyVCFDeadlineExhaustions;
     uint64_t earlyVCFRollbacks;
     uint64_t earlyVCFEvidenceMismatches;
-    uint64_t doubleThreeScans;
-    uint64_t doubleThreeCompleteScans;
-    uint64_t doubleThreeIncompleteScans;
-    uint64_t doubleThreeGains;
-    uint64_t doubleThreeCandidatesExamined;
-    uint64_t doubleThreeCandidatesEliminated;
-    uint64_t doubleThreeStructuralOverrides;
-    uint64_t doubleThreeOwnVCFBypasses;
-    uint64_t doubleThreeRollbacks;
-    uint64_t doubleThreeDeadlineAnomalies;
 } FCProofDiagnostics;
 
 /* One resource ledger is shared by all stages of a five-star move.  Memory
@@ -889,21 +779,7 @@ FCAIProfile fc_profile_narrow_deep_d2(void);
 FCAIProfile fc_profile_narrow_deep_d3(void);
 FCAIProfile fc_profile_proof_guided(bool openingBookEnabled);
 FCAIProfile fc_profile_frozen_four_star_control(void);
-FCAIProfile fc_profile_five_star(void);
-FCAIProfile fc_profile_five_star_loss_aware_candidate(void);
-FCAIProfile fc_profile_five_star_proof_engine_candidate(void);
-FCAIProfile fc_profile_five_star_opponent_guard_candidate(void);
 FCAIProfile fc_profile_five_star_early_micro_vcf_candidate(void);
-FCAIProfile fc_profile_five_star_black_double_three_candidate(void);
-FCAIProfile fc_profile_five_star_black_defense_recovery_candidate(void);
-FCAIProfile fc_profile_five_star_v541_thread_scheduler_candidate(void);
-FCAIProfile fc_profile_five_star_color_hybrid_candidate(void);
-FCAIProfile fc_profile_five_star_v521_serial_hybrid_control(void);
-FCAIProfile fc_profile_five_star_v521_parallel_hybrid_candidate(void);
-FCAIProfile fc_profile_five_star_v57_hybrid_candidate(void);
-FCAIProfile fc_profile_five_star_v57_fork_recovery_candidate(void);
-FCAIProfile fc_profile_five_star_v57_thread_scheduler_candidate(void);
-FCAIProfile fc_profile_five_star_v57_branch_first_candidate(void);
 
 void fc_proof_diagnostics_reset(void);
 FCProofDiagnostics fc_proof_diagnostics_get(void);
@@ -967,13 +843,6 @@ bool fc_is_legal_move(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
                       int y,
                       int side,
                       bool forbiddenBlack);
-
-int fc_enumerate_white_double_three_gains(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    bool forbiddenBlack,
-    FCDoubleThreeGain *out,
-    int capacity,
-    bool *complete);
 
 bool fc_has_five(const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
                  int x,
@@ -1198,60 +1067,6 @@ bool fc_analyze_five_star_profile_with_hint(
     int hintY,
     FCAnalysisResult *result);
 
-bool fc_analyze_five_star_color_hybrid_with_hint(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    uint64_t seed,
-    FCRandomMode randomMode,
-    int hintX,
-    int hintY,
-    FCAnalysisResult *result);
-
-bool fc_analyze_five_star_v521_hybrid_with_hint(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    int blackWorkerCount,
-    uint64_t seed,
-    FCRandomMode randomMode,
-    int hintX,
-    int hintY,
-    FCAnalysisResult *result);
-
-bool fc_analyze_five_star_v57_hybrid_with_hint(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    int blackWorkerCount,
-    uint64_t seed,
-    FCRandomMode randomMode,
-    int hintX,
-    int hintY,
-    FCAnalysisResult *result);
-
-bool fc_analyze_five_star_v57_thread_scheduler_with_hint(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    int workerCount,
-    uint64_t seed,
-    FCRandomMode randomMode,
-    int hintX,
-    int hintY,
-    FCAnalysisResult *result);
-
-bool fc_analyze_five_star_v541_thread_scheduler_with_hint(
-    const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
-    int side,
-    bool forbiddenBlack,
-    int workerCount,
-    uint64_t seed,
-    FCRandomMode randomMode,
-    int hintX,
-    int hintY,
-    FCAnalysisResult *result);
-
 bool fc_audit_opponent_micro_vcf_after_move(
     const int board[FC_BOARD_SIZE][FC_BOARD_SIZE],
     int side,
@@ -1262,9 +1077,6 @@ bool fc_audit_opponent_micro_vcf_after_move(
     FCOpponentGuardAudit *audit,
     int *effectiveDepth,
     bool *adaptiveEscalated);
-
-const char *fc_hybrid_component_name(int component);
-const char *fc_hybrid_component_version(int component);
 
 size_t fc_profile_snapshot(const FCAIProfile *profile, char *buffer, size_t capacity);
 const char *fc_tactical_name(int tacticalClass);
